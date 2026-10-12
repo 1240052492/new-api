@@ -13,7 +13,22 @@ build
 logs
 web/dist
 web/node_modules
+# Environment variables - DO NOT COMMIT SENSITIVE DATA
 .env
+.env.local
+.env.production
+.env.staging
+.env.*.local
+.env.*.production
+
+# Secrets and credentials
+.secrets/
+secrets.json
+*.key
+*.pem
+*.p12
+
+# Application binaries
 one-api
 new-api
 /__debug_bin*
