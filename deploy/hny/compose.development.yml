@@ -1,0 +1,84 @@
+name: new-api-dev-hny
+
+services:
+  new-api-dev:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: new-api-dev-hny:1a4166d8e
+    container_name: new-api-dev-hny
+    restart: unless-stopped
+    command: --log-dir /app/logs
+    ports:
+      - "127.0.0.1:3001:3000"
+    volumes:
+      - new_api_dev_data:/data
+      - new_api_dev_logs:/app/logs
+    environment:
+      SQL_DSN: postgresql://new_api_dev:${DEV_POSTGRES_PASSWORD}@postgres-dev:5432/new-api-dev
+      REDIS_CONN_STRING: redis://:${DEV_REDIS_PASSWORD}@redis-dev:6379
+      SESSION_SECRET: ${DEV_SESSION_SECRET}
+      CRYPTO_SECRET: ${DEV_CRYPTO_SECRET}
+      TZ: Asia/Shanghai
+      ERROR_LOG_ENABLED: "true"
+      BATCH_UPDATE_ENABLED: "true"
+      NODE_NAME: new-api-dev-hny
+      SESSION_COOKIE_SECURE: "false"
+      TRUSTED_PROXIES: none
+    depends_on:
+      postgres-dev:
+        condition: service_healthy
+      redis-dev:
+        condition: service_healthy
+    networks:
+      - new-api-dev-network
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q -O - http://localhost:3000/api/status | grep -q '\"success\":true' || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+
+  postgres-dev:
+    image: postgres:15
+    container_name: new-api-dev-hny-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: new_api_dev
+      POSTGRES_PASSWORD: ${DEV_POSTGRES_PASSWORD}
+      POSTGRES_DB: new-api-dev
+    volumes:
+      - new_api_dev_pg_data:/var/lib/postgresql/data
+    networks:
+      - new-api-dev-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U new_api_dev -d new-api-dev"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  redis-dev:
+    image: redis:7-alpine
+    container_name: new-api-dev-hny-redis
+    restart: unless-stopped
+    command: ["redis-server", "--requirepass", "${DEV_REDIS_PASSWORD}"]
+    networks:
+      - new-api-dev-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "-a", "${DEV_REDIS_PASSWORD}", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  new_api_dev_data:
+    name: new-api-dev-hny-data
+  new_api_dev_logs:
+    name: new-api-dev-hny-logs
+  new_api_dev_pg_data:
+    name: new-api-dev-hny-pg-data
+
+networks:
+  new-api-dev-network:
+    name: new-api-dev-hny-network
+    driver: bridge

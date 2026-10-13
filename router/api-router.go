@@ -46,7 +46,12 @@ func SetApiRouter(router *gin.Engine) {
 		apiRouter.GET("/verification", middleware.EmailVerificationRateLimit(), middleware.TurnstileCheck(), controller.SendEmailVerification)
 		apiRouter.GET("/reset_password", middleware.CriticalRateLimit(), middleware.TurnstileCheck(), controller.SendPasswordResetEmail)
 		apiRouter.POST("/user/reset", middleware.CriticalRateLimit(), anonymousRequestBodyLimit, controller.ResetPassword)
-		// OAuth routes - specific routes must come before :provider wildcard
+		// OAuth Server endpoints (OAuth 2.0 Authorization Code Flow for external apps)
+		// These must come before other OAuth routes to avoid conflicts
+		apiRouter.GET("/oauth/authorize", middleware.UserAuth(), controller.OAuthAuthorize)
+		apiRouter.POST("/oauth/token", middleware.CriticalRateLimit(), middleware.DisableCache(), controller.OAuthToken)
+
+		// OAuth Client routes - specific routes must come before :provider wildcard
 		apiRouter.POST("/oauth/state", middleware.CriticalRateLimit(), middleware.DisableCache(), middleware.TryUserAuth(), anonymousRequestBodyLimit, controller.GenerateOAuthCode)
 		apiRouter.POST("/oauth/email/bind/start", middleware.UserAuth(), middleware.CriticalRateLimit(), middleware.UserCriticalRateLimit("account-security"), middleware.EmailVerificationRateLimit(), middleware.DisableCache(), controller.EmailBindStart)
 		apiRouter.POST("/oauth/email/bind/resend", middleware.UserAuth(), middleware.CriticalRateLimit(), middleware.UserCriticalRateLimit("account-security"), middleware.EmailVerificationRateLimit(), middleware.DisableCache(), controller.EmailBindResend)
@@ -185,6 +190,14 @@ func SetApiRouter(router *gin.Engine) {
 			subscriptionRoute.POST("/stripe/pay", middleware.CriticalRateLimit(), controller.SubscriptionRequestStripePay)
 			subscriptionRoute.POST("/creem/pay", middleware.CriticalRateLimit(), controller.SubscriptionRequestCreemPay)
 			subscriptionRoute.POST("/waffo-pancake/pay", middleware.CriticalRateLimit(), controller.SubscriptionRequestWaffoPancakePay)
+		}
+		// OAuth Applications Management (user-level)
+		oauthAdminRoute := apiRouter.Group("/admin/oauth/applications")
+		oauthAdminRoute.Use(middleware.UserAuth())
+		{
+			oauthAdminRoute.POST("/", controller.CreateOAuthApplication)
+			oauthAdminRoute.GET("/", controller.GetOAuthApplications)
+			oauthAdminRoute.DELETE("/:id", controller.DeleteOAuthApplication)
 		}
 		subscriptionAdminRoute := apiRouter.Group("/subscription/admin")
 		subscriptionAdminRoute.Use(middleware.AdminAuth())

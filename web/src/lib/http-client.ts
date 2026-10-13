@@ -47,7 +47,7 @@ declare module 'axios' {
 export type ApiRequestConfig = AxiosRequestConfig
 
 export const api = axios.create({
-  baseURL: '',
+  baseURL: import.meta.env.VITE_REACT_APP_SERVER_URL || '',
   withCredentials: true,
   headers: {
     // no-store forbids storage; no-cache also revalidates any older cached response.

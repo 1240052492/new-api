@@ -1,0 +1,3619 @@
+<!doctype html>
+<html lang="en">
+<head>
+<script>
+  if (!window.location.search) {
+    window.history.replaceState(null, '', '/usage-doc.html?theme=light&lang=zh-CN' + window.location.hash)
+  }
+</script>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script>
+  if (window.location.hostname === 'site.aiplantform.site') {
+    window.location.replace(`https://aiplantform.site${window.location.pathname}${window.location.search}${window.location.hash}`)
+  }
+</script>
+<link rel="icon" type="image/svg+xml" href="https://site.aiplantform.site/assets/relaybases-favicon-circle.svg?v=20260730-1">
+<link rel="stylesheet" href="https://site.aiplantform.site/relaybases-footer.css?v=20260730-4">
+<script src="https://site.aiplantform.site/assets/relaybases-document-catalog.js?v=20260810-2"></script>
+<script src="https://site.aiplantform.site/assets/relaybases-document-preferences.js?v=20260810-2"></script>
+<link rel="stylesheet" href="https://site.aiplantform.site/assets/relaybases-live-models.css?v=20260929-1">
+<title>智算星球 Usage Guide</title>
+<style>
+  .rb-guide {
+    --bg: #ffffff;
+    --text: #050505;
+    --muted: rgba(5, 5, 5, 0.56);
+    --muted-2: rgba(5, 5, 5, 0.4);
+    --line: rgba(5, 5, 5, 0.08);
+    --line-strong: rgba(5, 5, 5, 0.14);
+    --panel: #faf9f7;
+    --panel-2: #f4f3f1;
+    --code-bg: #121212;
+    --code-head: #1b1b1b;
+    --code-text: #f3f3f3;
+    --accent: #8f5d28;
+    --accent-soft: rgba(143, 93, 40, 0.1);
+    --code-card-bg: #ffffff;
+    --code-card-head: #f6f8fa;
+    --code-card-border: rgba(5, 5, 5, 0.12);
+    --code-card-divider: rgba(5, 5, 5, 0.08);
+    --code-card-label: #57606a;
+    --code-fg: #24292e;
+    --hl-keyword: #d73a49;
+    --hl-title: #6f42c1;
+    --hl-attr: #005cc5;
+    --hl-string: #032f62;
+    --hl-builtin: #e36209;
+    --hl-comment: #6a737d;
+    --hl-name: #22863a;
+    --button-text: #ffffff;
+    --topbar-h: 56px;
+    --sidebar-w: 234px;
+    --content-w: 760px;
+    --max-w: 1160px;
+    min-height: 100vh;
+    width: 100%;
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    font-size: 15px;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .rb-guide[data-theme="dark"],
+  [data-theme="dark"] .rb-guide,
+  html.dark .rb-guide,
+  body.dark .rb-guide,
+  .dark .rb-guide,
+  .theme-dark .rb-guide {
+    --bg: #131313;
+    --text: #f3f3f3;
+    --muted: #b1b1b1;
+    --muted-2: #727272;
+    --line: #ffffff14;
+    --line-strong: #ffffff26;
+    --panel: #1b1b1b;
+    --panel-2: #202020;
+    --code-bg: #0a0a0a;
+    --code-head: #161616;
+    --code-text: #f3f3f3;
+    --accent: #d9ab6a;
+    --accent-soft: rgba(217, 171, 106, 0.13);
+    --code-card-bg: #24292e;
+    --code-card-head: #1b1f23;
+    --code-card-border: #ffffff1f;
+    --code-card-divider: #ffffff14;
+    --code-card-label: #9aa5b1;
+    --code-fg: #e1e4e8;
+    --hl-keyword: #f97583;
+    --hl-title: #b392f0;
+    --hl-attr: #79b8ff;
+    --hl-string: #9ecbff;
+    --hl-builtin: #ffab70;
+    --hl-comment: #8b949e;
+    --hl-name: #85e89d;
+    --button-text: #0a0a0a;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    html:not([data-theme="light"]):not(.light) .rb-guide {
+      --bg: #131313;
+      --text: #f3f3f3;
+      --muted: #b1b1b1;
+      --muted-2: #727272;
+      --line: #ffffff14;
+      --line-strong: #ffffff26;
+      --panel: #1b1b1b;
+      --panel-2: #202020;
+      --code-bg: #0a0a0a;
+      --code-head: #161616;
+      --code-text: #f3f3f3;
+      --accent: #d9ab6a;
+      --accent-soft: rgba(217, 171, 106, 0.13);
+      --code-card-bg: #24292e;
+      --code-card-head: #1b1f23;
+      --code-card-border: #ffffff1f;
+      --code-card-divider: #ffffff14;
+      --code-card-label: #9aa5b1;
+      --code-fg: #e1e4e8;
+      --hl-keyword: #f97583;
+      --hl-title: #b392f0;
+      --hl-attr: #79b8ff;
+      --hl-string: #9ecbff;
+      --hl-builtin: #ffab70;
+      --hl-comment: #8b949e;
+      --hl-name: #85e89d;
+      --button-text: #0a0a0a;
+    }
+  }
+
+  .rb-guide,
+  .rb-guide * {
+    box-sizing: border-box;
+  }
+
+  :where(html) {
+    scroll-behavior: smooth;
+    scroll-padding-top: 76px;
+  }
+
+  :root,
+  body,
+  .rb-guide {
+    scrollbar-width: none !important;
+    -ms-overflow-style: none !important;
+  }
+
+  :root::-webkit-scrollbar,
+  body::-webkit-scrollbar,
+  .rb-guide::-webkit-scrollbar,
+  .rb-guide *::-webkit-scrollbar {
+    display: none !important;
+    width: 0 !important;
+    height: 0 !important;
+  }
+
+  body:has(> .rb-guide) {
+    margin: 0;
+  }
+
+  .rb-guide [hidden] {
+    display: none !important;
+  }
+
+  .rb-guide :where(h1, h2, h3, h4, p, ul, ol, figure, pre, nav) {
+    margin: 0;
+  }
+
+  .rb-guide a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .rb-guide code {
+    font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+  }
+
+  /* ---------- Top bar ---------- */
+  .rb-docs-topbar {
+    position: sticky;
+    top: 0;
+    z-index: 30;
+    border-bottom: 1px solid var(--line);
+    background: color-mix(in srgb, var(--bg) 84%, transparent);
+    -webkit-backdrop-filter: saturate(180%) blur(14px);
+    backdrop-filter: saturate(180%) blur(14px);
+  }
+
+  .rb-docs-topbar-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    height: var(--topbar-h);
+    max-width: var(--max-w);
+    margin: 0 auto;
+    padding: 0 24px;
+  }
+
+  .rb-docs-brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+    color: var(--text);
+    font-size: 14.5px;
+    font-weight: 580;
+    letter-spacing: -0.01em;
+  }
+
+  .rb-docs-brand img {
+    width: 22px;
+    height: 22px;
+    border-radius: 6px;
+    display: block;
+  }
+
+  .rb-guide[data-theme="dark"] .rb-docs-brand img {
+    filter: invert(1);
+  }
+
+  .rb-docs-brand-sub {
+    padding-left: 9px;
+    margin-left: 2px;
+    border-left: 1px solid var(--line-strong);
+    color: var(--muted);
+    font-weight: 460;
+  }
+
+  /* ---------- Layout ---------- */
+  .rb-guide-main {
+    width: 100%;
+  }
+
+  .rb-guide-panel {
+    display: grid;
+    grid-template-columns: var(--sidebar-w) minmax(0, 1fr);
+    gap: 0 56px;
+    align-items: start;
+    max-width: var(--max-w);
+    margin: 0 auto;
+    padding: 0 24px;
+  }
+
+  /* ---------- Sidebar nav ---------- */
+  .rb-docs-sidebar {
+    position: sticky;
+    top: var(--topbar-h);
+    align-self: start;
+    max-height: calc(100vh - var(--topbar-h));
+    overflow-y: auto;
+    padding: 34px 0 48px;
+    scrollbar-width: none;
+  }
+
+  .rb-docs-sidebar::-webkit-scrollbar {
+    display: none;
+  }
+
+  .rb-docs-navgroup + .rb-docs-navgroup {
+    margin-top: 24px;
+  }
+
+  .rb-docs-navgroup > p {
+    padding: 0 10px;
+    margin-bottom: 6px;
+    color: var(--muted-2);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+  }
+
+  .rb-docs-sidebar a {
+    display: block;
+    padding: 6px 10px;
+    border-radius: 8px;
+    color: var(--muted);
+    font-size: 13.5px;
+    font-weight: 500;
+    line-height: 1.4;
+    transition: color 150ms ease, background 150ms ease;
+  }
+
+  .rb-docs-sidebar a:hover {
+    color: var(--text);
+    background: color-mix(in srgb, var(--text) 5%, transparent);
+  }
+
+  .rb-docs-sidebar a.is-active {
+    color: var(--accent);
+    font-weight: 560;
+    background: var(--accent-soft);
+  }
+
+  /* ---------- Content column ---------- */
+  .rb-guide-content {
+    min-width: 0;
+    max-width: none;
+    padding: 50px 0 100px;
+  }
+
+  /* ---------- Hero / page header ---------- */
+  .rb-guide-hero {
+    scroll-margin-top: 84px;
+  }
+
+  .rb-guide-kicker {
+    display: block;
+    color: var(--muted);
+    font-size: 12.5px;
+    font-weight: 580;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  .rb-guide-hero h1 {
+    margin-top: 14px;
+    color: var(--text);
+    font-size: clamp(28px, 4vw, 34px);
+    line-height: 1.14;
+    font-weight: 500;
+    letter-spacing: -0.018em;
+    overflow-wrap: anywhere;
+  }
+
+  .rb-guide-lead {
+    max-width: 660px;
+    margin-top: 18px;
+    color: color-mix(in srgb, var(--text) 68%, transparent);
+    font-size: 16.5px;
+    line-height: 1.68;
+    text-align: left;
+    text-wrap: pretty;
+    overflow-wrap: anywhere;
+  }
+
+  .rb-guide-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 9px;
+    margin-top: 26px;
+  }
+
+  .rb-guide-action {
+    display: inline-flex;
+    align-items: center;
+    height: 34px;
+    border: 1px solid var(--line-strong);
+    border-radius: 8px;
+    padding: 0 14px;
+    color: var(--text);
+    font-size: 13px;
+    font-weight: 540;
+    transition: border-color 160ms ease, background 160ms ease;
+  }
+
+  .rb-guide-action:hover {
+    border-color: var(--text);
+    background: color-mix(in srgb, var(--text) 4%, transparent);
+  }
+
+  .rb-guide .rb-guide-action-primary {
+    border-color: var(--text);
+    background: var(--text);
+    color: var(--button-text);
+  }
+
+  .rb-guide .rb-guide-action-primary:hover {
+    background: color-mix(in srgb, var(--text) 86%, transparent);
+  }
+
+  /* ---------- Sections / prose ---------- */
+  .rb-guide-section {
+    margin-top: 60px;
+    scroll-margin-top: 84px;
+  }
+
+  .rb-guide-section h2 {
+    color: var(--text);
+    font-size: 23px;
+    line-height: 1.26;
+    font-weight: 560;
+    letter-spacing: -0.015em;
+  }
+
+  .rb-guide-section > p,
+  .rb-guide-copy {
+    max-width: 680px;
+    margin-top: 14px;
+    color: color-mix(in srgb, var(--text) 74%, transparent);
+    font-size: 15px;
+    line-height: 1.74;
+    overflow-wrap: anywhere;
+  }
+
+  .rb-guide-section strong {
+    color: var(--text);
+    font-weight: 580;
+  }
+
+  .rb-guide-ol {
+    max-width: 680px;
+    margin-top: 20px;
+    padding-left: 22px;
+    display: grid;
+    gap: 12px;
+  }
+
+  .rb-guide-ol li {
+    color: color-mix(in srgb, var(--text) 74%, transparent);
+    font-size: 15px;
+    line-height: 1.7;
+    padding-left: 4px;
+  }
+
+  .rb-guide-ol li::marker {
+    color: var(--muted-2);
+    font-weight: 600;
+  }
+
+  .rb-guide-ol b {
+    color: var(--text);
+    font-weight: 580;
+  }
+
+  .rb-guide-subhead {
+    margin-top: 34px;
+    color: var(--text);
+    font-size: 16px;
+    line-height: 1.4;
+    font-weight: 580;
+  }
+
+  /* ---------- Credits explainer ---------- */
+  .rb-credit-explainer {
+    margin-top: 24px;
+    padding: 20px;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    background: var(--panel);
+  }
+
+  .rb-credit-explainer > span {
+    display: block;
+    color: var(--muted);
+    font-size: 11px;
+    font-weight: 650;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
+  .rb-credit-explainer h3 {
+    margin: 8px 0 0;
+    color: var(--text);
+    font-size: 18px;
+    line-height: 1.42;
+    font-weight: 620;
+  }
+
+  .rb-credit-explainer > p {
+    max-width: 760px;
+    margin: 10px 0 0;
+  }
+
+  .rb-credit-facts {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1px;
+    margin: 18px 0 0;
+    overflow: hidden;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    background: var(--line);
+  }
+
+  .rb-credit-facts div {
+    min-width: 0;
+    padding: 14px;
+    background: var(--panel-2);
+  }
+
+  .rb-credit-facts dt {
+    color: var(--text);
+    font-size: 13px;
+    line-height: 1.4;
+    font-weight: 620;
+  }
+
+  .rb-credit-facts dd {
+    margin: 6px 0 0;
+    color: var(--muted);
+    font-size: 12.5px;
+    line-height: 1.62;
+  }
+
+  /* ---------- Callout ---------- */
+  .rb-guide-callout {
+    margin-top: 24px;
+    padding: 14px 16px;
+    border: 1px solid var(--line);
+    border-left: 2px solid var(--line-strong);
+    border-radius: 10px;
+    background: var(--panel);
+    color: color-mix(in srgb, var(--text) 72%, transparent);
+    font-size: 14px;
+    line-height: 1.66;
+  }
+
+  /* ---------- Inline code ---------- */
+  .rb-guide :not(pre) > code {
+    color: var(--accent);
+    font-size: 0.92em;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+  }
+
+  /* ---------- Code blocks (GitHub-highlighted, theme-adaptive) ---------- */
+  .rb-guide-code-grid {
+    display: grid;
+    gap: 14px;
+    margin-top: 22px;
+  }
+
+  .rb-guide-code-card {
+    min-width: 0;
+    border: 1px solid var(--code-card-border);
+    border-radius: 12px;
+    overflow: hidden;
+    background: var(--code-card-bg);
+  }
+
+  .rb-guide-code-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 7px 10px 7px 14px;
+    border-bottom: 1px solid var(--code-card-divider);
+    background: var(--code-card-head);
+  }
+
+  .rb-guide-code-head h3 {
+    color: var(--code-card-label);
+    font-size: 12px;
+    line-height: 1.4;
+    font-weight: 540;
+    letter-spacing: 0.01em;
+  }
+
+  .rb-guide-code-head h3 code {
+    color: inherit;
+    font-size: 1em;
+  }
+
+  .rb-guide-copy-btn {
+    appearance: none;
+    flex: 0 0 auto;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border: 0;
+    border-radius: 7px;
+    background: transparent;
+    color: var(--code-card-label);
+    cursor: pointer;
+    transition: background 150ms ease, color 150ms ease;
+  }
+
+  .rb-guide-copy-btn:hover {
+    background: color-mix(in srgb, var(--code-card-label) 18%, transparent);
+    color: var(--code-fg);
+  }
+
+  .rb-guide-copy-btn svg {
+    width: 15px;
+    height: 15px;
+    display: block;
+  }
+
+  .rb-guide-copy-btn .rb-ico-check {
+    display: none;
+  }
+
+  .rb-guide-copy-btn.is-copied .rb-ico-copy {
+    display: none;
+  }
+
+  .rb-guide-copy-btn.is-copied .rb-ico-check {
+    display: block;
+    color: #2da44e;
+  }
+
+  .rb-guide pre {
+    margin: 0;
+    max-width: 100%;
+    overflow: auto;
+    padding: 14px 16px;
+    background: var(--code-card-bg);
+    color: var(--code-fg);
+    scrollbar-width: none;
+  }
+
+  .rb-guide pre::-webkit-scrollbar {
+    display: none;
+  }
+
+  .rb-guide pre code,
+  .rb-guide pre code.hljs {
+    display: block;
+    min-width: min-content;
+    padding: 0;
+    background: transparent;
+    color: inherit;
+    font-size: 12.5px;
+    line-height: 1.7;
+    white-space: pre;
+  }
+
+  /* GitHub-style syntax tokens (highlight.js) */
+  .rb-guide .hljs {
+    color: var(--code-fg);
+    background: transparent;
+  }
+  .rb-guide :is(.hljs-doctag, .hljs-keyword, .hljs-meta .hljs-keyword, .hljs-template-tag, .hljs-template-variable, .hljs-type, .hljs-variable.language_) {
+    color: var(--hl-keyword);
+  }
+  .rb-guide :is(.hljs-title, .hljs-title.class_, .hljs-title.class_.inherited__, .hljs-title.function_) {
+    color: var(--hl-title);
+  }
+  .rb-guide :is(.hljs-attr, .hljs-attribute, .hljs-literal, .hljs-meta, .hljs-number, .hljs-operator, .hljs-selector-attr, .hljs-selector-class, .hljs-selector-id, .hljs-variable) {
+    color: var(--hl-attr);
+  }
+  .rb-guide :is(.hljs-string, .hljs-regexp, .hljs-meta .hljs-string) {
+    color: var(--hl-string);
+  }
+  .rb-guide :is(.hljs-built_in, .hljs-symbol) {
+    color: var(--hl-builtin);
+  }
+  .rb-guide :is(.hljs-comment, .hljs-code, .hljs-formula) {
+    color: var(--hl-comment);
+  }
+  .rb-guide :is(.hljs-name, .hljs-quote, .hljs-selector-tag, .hljs-selector-pseudo) {
+    color: var(--hl-name);
+  }
+  .rb-guide .hljs-section {
+    color: var(--hl-attr);
+    font-weight: 600;
+  }
+  .rb-guide .hljs-addition {
+    color: var(--hl-name);
+  }
+  .rb-guide .hljs-deletion {
+    color: var(--hl-keyword);
+  }
+
+  /* ---------- Tables ---------- */
+  .rb-guide-table {
+    width: 100%;
+    margin-top: 24px;
+    border-collapse: collapse;
+    table-layout: fixed;
+  }
+
+  .rb-guide-table th,
+  .rb-guide-table td {
+    padding: 12px 14px;
+    border-bottom: 1px solid var(--line);
+    color: color-mix(in srgb, var(--text) 72%, transparent);
+    font-size: 13.5px;
+    line-height: 1.55;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+    text-align: left;
+    vertical-align: top;
+  }
+
+  .rb-guide-table thead th {
+    color: var(--text);
+    font-size: 11.5px;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    border-bottom: 1px solid var(--line-strong);
+  }
+
+  .rb-guide-table tr:last-child td {
+    border-bottom: 0;
+  }
+
+  .rb-guide-table code {
+    word-break: break-all;
+  }
+
+  .rb-guide-endpoint-table th:nth-child(1) {
+    width: 34%;
+  }
+
+  .rb-guide-endpoint-table th:nth-child(2) {
+    width: 84px;
+  }
+
+  .rb-guide-endpoint-table :is(th, td):nth-child(2),
+  .rb-guide-endpoint-table td:nth-child(2) code {
+    white-space: nowrap;
+    word-break: normal;
+    overflow-wrap: normal;
+  }
+
+  .rb-guide-endpoint-table td:nth-child(3) code {
+    word-break: normal;
+    overflow-wrap: anywhere;
+  }
+
+  @media (max-width: 560px) {
+    .rb-guide-endpoint-table th:nth-child(1) {
+      width: 38%;
+    }
+
+    .rb-guide-endpoint-table th:nth-child(2) {
+      width: 64px;
+    }
+
+    .rb-guide-endpoint-table :is(th, td) {
+      padding-inline: 8px;
+    }
+  }
+
+  .rb-guide-endpoint-table + .rb-guide-note {
+    margin-top: 12px;
+  }
+
+  /* ---------- FAQ ---------- */
+  .rb-guide-faq {
+    margin-top: 22px;
+  }
+
+  .rb-guide-faq article {
+    padding: 18px 0;
+    border-top: 1px solid var(--line);
+  }
+
+  .rb-guide-faq article:last-child {
+    border-bottom: 1px solid var(--line);
+  }
+
+  .rb-guide-faq h3 {
+    color: var(--text);
+    font-size: 15px;
+    line-height: 1.4;
+    font-weight: 560;
+  }
+
+  .rb-guide-faq p {
+    margin-top: 8px;
+    color: var(--muted);
+    font-size: 14px;
+    line-height: 1.66;
+  }
+
+  /* ---------- Inline prose links ---------- */
+  .rb-guide-section :where(p, li, td) a,
+  .rb-guide-faq p a {
+    color: var(--accent);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+    text-decoration-color: color-mix(in srgb, var(--accent) 42%, transparent);
+  }
+
+  .rb-guide-section :where(p, li, td) a:hover,
+  .rb-guide-faq p a:hover {
+    text-decoration-color: var(--accent);
+  }
+
+  /* ---------- Footer ---------- */
+  .rb-guide-footer {
+    margin-top: 52px;
+    padding: 32px 0 8px;
+    border-top: 1px solid var(--line);
+    color: var(--muted);
+  }
+
+  .rb-guide-footer-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 28px 22px;
+  }
+
+  .rb-guide-footer-brand {
+    grid-column: 1 / -1;
+  }
+
+  .rb-guide-footer-brand > a {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    color: var(--text);
+    font-size: 15px;
+    font-weight: 600;
+  }
+
+  .rb-guide-footer-brand svg {
+    width: 28px;
+    height: 28px;
+  }
+
+  .rb-guide-footer-brand p {
+    margin-top: 8px;
+    color: var(--muted);
+    font-size: 12.5px;
+    line-height: 1.55;
+  }
+
+  .rb-guide-footer-col strong {
+    display: block;
+    color: var(--text);
+    font-size: 13px;
+    font-weight: 600;
+  }
+
+  .rb-guide-footer-col a {
+    display: block;
+    margin-top: 9px;
+    color: var(--muted);
+    font-size: 12.5px;
+    transition: color 160ms ease;
+  }
+
+  .rb-guide-footer-col a:hover {
+    color: var(--text);
+  }
+
+  @media (min-width: 760px) {
+    .rb-guide-footer-grid {
+      grid-template-columns: minmax(180px, 1.35fr) repeat(4, minmax(0, 1fr));
+    }
+
+    .rb-guide-footer-brand {
+      grid-column: auto;
+    }
+  }
+
+  /* ---------- Responsive ---------- */
+  @media (max-width: 1000px) {
+    .rb-guide-panel {
+      grid-template-columns: 1fr;
+      gap: 0;
+    }
+
+    .rb-docs-sidebar {
+      position: sticky;
+      top: var(--topbar-h);
+      z-index: 10;
+      display: flex;
+      flex-wrap: nowrap;
+      gap: 6px;
+      max-height: none;
+      overflow-x: auto;
+      padding: 12px 0;
+      margin: 0 -24px;
+      padding-left: 24px;
+      padding-right: 24px;
+      background: color-mix(in srgb, var(--bg) 88%, transparent);
+      -webkit-backdrop-filter: saturate(180%) blur(12px);
+      backdrop-filter: saturate(180%) blur(12px);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .rb-docs-navgroup {
+      display: inline-flex;
+      gap: 6px;
+      flex: 0 0 auto;
+    }
+
+    .rb-docs-navgroup + .rb-docs-navgroup {
+      margin-top: 0;
+      padding-left: 6px;
+      border-left: 1px solid var(--line);
+    }
+
+    .rb-docs-navgroup > p {
+      display: none;
+    }
+
+    .rb-docs-sidebar a {
+      flex: 0 0 auto;
+      white-space: nowrap;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 6px 12px;
+      font-size: 13px;
+    }
+
+    .rb-docs-sidebar a.is-active {
+      border-color: color-mix(in srgb, var(--accent) 40%, transparent);
+    }
+
+    .rb-guide-content {
+      max-width: none;
+      padding-top: 36px;
+    }
+  }
+
+  @media (max-width: 720px) {
+    .rb-credit-facts {
+      grid-template-columns: 1fr;
+    }
+
+    .rb-guide pre code {
+      min-width: 0;
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+    }
+  }
+
+  @media (max-width: 560px) {
+    .rb-docs-topbar-inner,
+    .rb-guide-panel {
+      padding: 0 16px;
+    }
+
+    .rb-docs-sidebar {
+      margin: 0 -16px;
+      padding-left: 16px;
+      padding-right: 16px;
+    }
+
+    .rb-docs-brand-sub {
+      display: none;
+    }
+
+    .rb-guide-content {
+      padding-top: 30px;
+      padding-bottom: 72px;
+    }
+
+    .rb-guide-section {
+      margin-top: 48px;
+    }
+  }
+</style>
+</head>
+<body>
+<section class="rb-guide not-prose" data-rb-page="usage-guide">
+  <header class="rb-docs-topbar">
+    <div class="rb-docs-topbar-inner">
+      <a class="rb-docs-brand" href="https://aiplantform.site/" target="_blank" rel="noopener noreferrer" aria-label="智算星球">
+        <img src="https://site.aiplantform.site/assets/relaybases-mark.svg" alt="" aria-hidden="true">
+        <span>智算星球</span>
+        <span class="rb-docs-brand-sub" data-i18n="nav.section">Docs</span>
+      </a>
+    </div>
+  </header>
+
+  <main class="rb-guide-main">
+      <article class="rb-guide-panel" data-lang-panel="zh-CN" hidden>
+        <aside class="rb-docs-sidebar" aria-label="文档导航">
+          <nav class="rb-docs-navgroup">
+            <p>开始</p>
+            <a href="#zh-overview">概览</a>
+            <a href="#zh-start">Credits 与 API 密钥</a>
+            <a href="#zh-endpoints">选择 API 地址</a>
+            <a href="#zh-auto-routing">自动路由</a>
+          </nav>
+          <nav class="rb-docs-navgroup">
+            <p>编码工具</p>
+            <a href="#zh-claude">Claude Code</a>
+            <a href="#zh-codex">Codex CLI</a>
+            <a href="#zh-clients">其他客户端</a>
+          </nav>
+          <nav class="rb-docs-navgroup">
+            <p>接口</p>
+            <a href="#zh-async-media-api">图片/视频任务</a>
+            <a href="#zh-seedance-api">Seedance 视频</a>
+            <a href="#zh-image-api">图片接口</a>
+          </nav>
+          <nav class="rb-docs-navgroup">
+            <p>参考</p>
+            <a href="#zh-commands">常用命令</a>
+            <a href="#zh-trouble">故障排查</a>
+          </nav>
+        </aside>
+
+        <div class="rb-guide-content">
+        <header class="rb-guide-hero" id="zh-overview">
+          <span class="rb-guide-kicker">使用教程</span>
+          <h1>快速开始</h1>
+          <p class="rb-guide-lead">智算星球 提供 OpenAI、Anthropic、Gemini 兼容的 API 接入。本页说明如何购买 API Credits、创建 API 密钥，并在 Claude Code、Codex CLI 等客户端中完成配置。</p>
+          <div class="rb-guide-actions">
+            <a class="rb-guide-action rb-guide-action-primary" href="https://aiplantform.site/dashboard/overview" target="_blank" rel="noopener noreferrer">打开控制台</a>
+            <a class="rb-guide-action" href="https://aiplantform.site/wallet" target="_blank" rel="noopener noreferrer">购买 Credits</a>
+            <a class="rb-guide-action" href="https://aiplantform.site/keys" target="_blank" rel="noopener noreferrer">API 密钥</a>
+          </div>
+        </header>
+
+        <section class="rb-guide-section" id="zh-start">
+          <h2>API Credits 与 API 密钥</h2>
+          <p>首次使用时，先准备可用的 API Credits，再按客户端用途创建 API 密钥。明确使用单一路线时，可为 Claude、OpenAI、Gemini、图像等分组分别创建密钥；需要跨多个可用分组自动匹配模型时，可使用 <code>auto</code> 分组。</p>
+
+          <div class="rb-credit-explainer" id="zh-credits">
+            <span>计价单位</span>
+            <h3>⚡ 表示 智算星球 API Credits</h3>
+            <p>⚡ 是 API Credits 的展示单位。充值后，Credits 会记入账户，并在调用 API 时按模型价格、分组倍率和实际用量扣减；⚡ 不是 USD 或其他货币，也不是电子货币或加密货币。</p>
+            <dl class="rb-credit-facts">
+              <div><dt>余额与用量</dt><dd>余额、模型价格和用量费用使用 ⚡ 显示，例如 ⚡0.08。</dd></div>
+              <div><dt>实际付款</dt><dd>订单以 USD 计价；结账页和付款记录会显示实际收取的金额与币种。</dd></div>
+              <div><dt>退款</dt><dd>符合条件的未使用付费 Credits 可按退款政策退回原付款方式；⚡ 本身不可转让、交易或提现。</dd></div>
+            </dl>
+          </div>
+
+          <ol class="rb-guide-ol">
+            <li><b>购买 Credits。</b>打开 Credits 页面，确认“实际支付”和“到账 Credits”，选择金额并按页面提示完成支付。</li>
+            <li><b>打开 API 密钥页。</b>从控制台左侧进入 API 密钥页面，确认已有密钥和分组。</li>
+            <li><b>创建密钥。</b>填写名称，选择对应分组，设置过期时间和额度。完整密钥只在创建后显示一次。</li>
+            <li><b>配置客户端。</b>把密钥写入环境变量或本地配置文件，不要提交到公开仓库，也不要出现在截图或日志里。</li>
+          </ol>
+        </section>
+
+        <section class="rb-guide-section" id="zh-endpoints">
+          <h2>选择 API 地址</h2>
+          <p>标准地址和美国直连地址使用相同的 API 密钥、模型名称、账户余额与计费规则，区别只在网络路径。一般情况下优先使用标准地址；长时间同步请求遇到 Cloudflare 代理超时时，再改用美国直连地址。</p>
+
+          <table class="rb-guide-table">
+            <thead>
+              <tr>
+                <th>地址</th>
+                <th>Base URL</th>
+                <th>适用场景</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><b>标准 API</b></td>
+                <td><code>https://www.aiplantform.site</code></td>
+                <td>经 Cloudflare 加速，网络兼容性更好，适合作为默认地址；长时间同步请求可能受到代理超时限制。</td>
+              </tr>
+              <tr>
+                <td><b>美国直连 API</b></td>
+                <td><code>https://us.aiplantform.site</code></td>
+                <td>直连美国源站，不受 Cloudflare 代理超时限制，适合长时间同步请求；部分网络环境可能无法访问。</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <div class="rb-guide-callout">
+            协议路径保持不变：Anthropic 原生协议使用上表中的域名，不添加 <code>/v1</code>；OpenAI 兼容协议在所选域名后添加 <code>/v1</code>。图片和视频任务仍使用媒体创作地址 <code>https://aigc.aiplantform.site</code>。
+          </div>
+
+          <p class="rb-guide-note">直连地址只绕过 Cloudflare 代理，不代表请求永远不会因客户端、源站、上游模型或网络中断而失败。若直连地址无法访问，请切回标准地址。</p>
+        </section>
+
+        <section class="rb-guide-section" id="zh-auto-routing">
+          <h2>自动路由与故障转移</h2>
+          <p>创建或编辑 API 密钥时选择 <code>auto</code> 分组，智算星球 会按照控制台显示的优先顺序，检查该密钥有权使用、支持当前模型且存在可用线路的分组，并选择第一个可用分组。</p>
+
+          <ol class="rb-guide-ol">
+            <li><b>打开 API 密钥。</b>进入控制台的“API 密钥”页面，创建新密钥或编辑现有密钥。</li>
+            <li><b>选择 auto。</b>在“分组”中选择 <code>auto</code>。</li>
+            <li><b>确认分组顺序。</b>推荐保留“继承全局 Auto 顺序”，自动跟随平台维护的完整顺序；也可为单个密钥选择候选分组并拖动排序。</li>
+            <li><b>开启跨分组重试。</b>开启后，如果当前分组已经选中线路但调用失败，系统会继续按顺序尝试后续分组。</li>
+            <li><b>保存并照常调用。</b>客户端的 Base URL、模型名和密钥使用方式均无需改变。</li>
+          </ol>
+
+          <div class="rb-guide-callout">
+            路由说明：如果某个候选分组不支持当前模型或没有可用线路，系统会直接检查下一个分组；“跨分组重试”控制的是已经选中线路但实际调用失败后，是否继续尝试后续分组。
+          </div>
+
+          <div class="rb-guide-callout">
+            计费说明：<code>auto</code> 没有独立倍率。每次请求按最终实际命中的分组倍率、模型价格和实际用量扣减 Credits；如果所有候选分组均无可用线路，请求仍会失败。
+          </div>
+
+          <p class="rb-guide-note">继承模式会使用平台当前维护的完整 Auto 顺序；自定义顺序保存为该密钥的独立配置，并始终受账户当前分组权限约束。现有密钥不会自动切换为 <code>auto</code>。</p>
+        </section>
+
+        <section class="rb-guide-section" id="zh-claude">
+          <h2>Claude Code</h2>
+          <p>Claude Code 使用 Anthropic 原生协议，Base URL 不需要 <code>/v1</code>。建议为 Claude 单独创建一个 Claude 分组的 API 密钥。</p>
+
+          <div class="rb-guide-callout">
+            Anthropic Base URL：<code>https://www.aiplantform.site</code>。建议通过 <code>ANTHROPIC_AUTH_TOKEN</code> 读取密钥，不要写进项目代码。
+          </div>
+
+          <h3 class="rb-guide-subhead">环境准备</h3>
+          <p class="rb-guide-copy">Claude Code 需要 Node.js 18 或更高版本。已经安装过 Node.js 的用户，可以直接跳到安装 Claude Code。</p>
+
+          <table class="rb-guide-table">
+            <thead>
+              <tr>
+                <th>平台</th>
+                <th>推荐方式</th>
+                <th>验证命令</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>macOS</td>
+                <td><code>brew update && brew install node</code>，也可以从 <code>nodejs.org</code> 下载 LTS 安装包。</td>
+                <td><code>node --version && npm --version</code></td>
+              </tr>
+              <tr>
+                <td>Windows</td>
+                <td>从 <code>nodejs.org</code> 下载 LTS 版本，或用 <code>choco install nodejs</code> / <code>scoop install nodejs</code>。</td>
+                <td><code>node --version; npm --version</code></td>
+              </tr>
+              <tr>
+                <td>Linux</td>
+                <td>Ubuntu / Debian 推荐 NodeSource；也可以用系统包管理器安装 <code>nodejs</code> 和 <code>npm</code>。</td>
+                <td><code>node --version && npm --version</code></td>
+              </tr>
+            </tbody>
+          </table>
+
+          <h3 class="rb-guide-subhead">安装 Claude Code</h3>
+          <div class="rb-guide-code-grid">
+            <div class="rb-guide-code-card">
+              <div class="rb-guide-code-head">
+                <h3>macOS Native</h3>
+              </div>
+              <pre><code>brew install --cask claude-code
+
+# 或使用官方脚本
+curl -fsSL https://claude.ai/install.sh | bash</code></pre>
+            </div>
+            <div class="rb-guide-code-card">
+              <div class="rb-guide-code-head">
+                <h3>Windows Native</h3>
+              </div>
+              <pre><code># PowerShell
+irm https://claude.ai/install.ps1 | iex
+
+# CMD
+curl -fsSL https://claude.ai/install.cmd -o install.cmd && install.cmd</code></pre>
+            </div>
+            <div class="rb-guide-code-card">
+              <div class="rb-guide-code-head">
+                <h3>Linux Native</h3>
+              </div>
+              <pre><code>curl -fsSL https://claude.ai/install.sh | bash
+
+# Alpine Linux 如遇 ripgrep 依赖问题
+apk add libgcc libstdc++ ripgrep
+export USE_BUILTIN_RIPGREP=0</code></pre>
+            </div>
+            <div class="rb-guide-code-card">
+              <div class="rb-guide-code-head">
+                <h3>NPM 备用安装</h3>
+              </div>
+              <pre><code>npm install -g @anthropic-ai/claude-code
+claude --version
+claude doctor</code></pre>
+            </div>
+          </div>
+
+          <h3 class="rb-guide-subhead">连接 智算星球</h3>
+          <div class="rb-guide-code-grid">
+            <div class="rb-guide-code-card">
+              <div class="rb-guide-code-head">
+                <h3>macOS / Linux 临时环境变量</h3>
+              </div>
+              <pre><code>export ANTHROPIC_BASE_URL="https://www.aiplantform.site"
+export ANTHROPIC_AUTH_TOKEN="sk-relaybases-..."
+
+claude</code></pre>
+            </div>
+            <div class="rb-guide-code-card">
+              <div class="rb-guide-code-head">
+                <h3>macOS / Linux 永久写入</h3>
+              </div>
+              <pre><code>echo 'export ANTHROPIC_BASE_URL="https://www.aiplantform.site"' >> ~/.zshrc
+echo 'export ANTHROPIC_AUTH_TOKEN="sk-relaybases-..."' >> ~/.zshrc
+source ~/.zshrc</code></pre>
+            </div>
+            <div class="rb-guide-code-card">
+              <div class="rb-guide-code-head">
+                <h3>Windows PowerShell</h3>
+              </div>
+              <pre><code>$env:ANTHROPIC_BASE_URL = "https://www.aiplantform.site"
+$env:ANTHROPIC_AUTH_TOKEN = "sk-relaybases-..."
+
+[System.Environment]::SetEnvironmentVariable(
+  "ANTHROPIC_BASE_URL",
+  "https://www.aiplantform.site",
+  [System.EnvironmentVariableTarget]::User
+)
+[System.Environment]::SetEnvironmentVariable(
+  "ANTHROPIC_AUTH_TOKEN",
+  "sk-relaybases-...",
+  [System.EnvironmentVariableTarget]::User
+)</code></pre>
+            </div>
+            <div class="rb-guide-code-card">
+              <div class="rb-guide-code-head">
+                <h3>~/.claude/settings.json</h3>
+              </div>
+              <pre><code>{
+  "env": {
+    "ANTHROPIC_BASE_URL": "https://www.aiplantform.site",
+    "ANTHROPIC_AUTH_TOKEN": "sk-relaybases-...",
+    "CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC": "1"
+  }
+}</code></pre>
+            </div>
+            <div class="rb-guide-code-card">
+              <div class="rb-guide-code-head">
+                <h3>VS Code 扩展</h3>
+              </div>
+              <pre><code># 安装 Claude Code for VS Code 后创建：
+# macOS / Linux: ~/.claude/config.json
+# Windows: C:\Users\你的用户名\.claude\config.json
+
+{
+  "primaryApiKey": "any-value"
+}</code></pre>
+            </div>
+            <div class="rb-guide-code-card">
+              <div class="rb-guide-code-head">
+                <h3>验证、启动和更新</h3>
+              </div>
+              <pre><code>echo $ANTHROPIC_BASE_URL
+echo $ANTHROPIC_AUTH_TOKEN
+
+cd /path/to/your/project
+claude
+
+npm install -g @anthropic-ai/claude-code</code></pre>
+            </div>
+          </div>
+        </section>
+
+        <section class="rb-guide-section" id="zh-codex">
+          <h2>Codex CLI</h2>
+          <p>Codex CLI 使用 OpenAI 兼容协议，Base URL 必须包含 <code>/v1</code>。建议使用 OpenAI 分组的 API 密钥，并通过环境变量读取。</p>
+
+          <div class="rb-guide-callout">
+            OpenAI 兼容 Base URL：<code>https://www.aiplantform.site/v1</code>。客户端里如果有 Base URL 字段，请填写这个完整地址。
+          </div>
+
+          <h3 class="rb-guide-subhead">环境准备</h3>
+          <p class="rb-guide-copy">Codex CLI 需要 Node.js 和 npm。安装前先确认终端能识别 <code>node</code> 和 <code>npm</code>。</p>
+
+          <table class="rb-guide-table">
+            <thead>
+              <tr>
+                <th>平台</th>
+                <th>推荐方式</th>
+                <th>验证命令</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>macOS</td>
+                <td><code>brew update && brew install node</code>，或从 <code>nodejs.org</code> 下载 LTS 安装包。</td>
+                <td><code>node --version && npm --version</code></td>
+              </tr>
+              <tr>
+                <td>Windows</td>
+                <td>安装 Node.js LTS，或使用 <code>choco install nodejs</code>、<code>scoop install nodejs</code>。</td>
+                <td><code>node --version; npm --version</code></td>
+              </tr>
+              <tr>
+                <td>Linux</td>
+                <td>使用 NodeSource、系统包管理器，或团队统一的 Node 版本管理工具。</td>
+                <td><code>node --version && npm --version</code></td>
+              </tr>
+            </tbody>
+          </table>
+
+          <h3 class="rb-guide-subhead">安装 Codex CLI</h3>
+          <div class="rb-guide-code-grid">
+            <div class="rb-guide-code-card">
+              <div class="rb-guide-code-head">
+                <h3>安装 Codex CLI</h3>
+              </div>
+              <pre><code>npm i -g @openai/codex</code></pre>
+            </div>
+            <div class="rb-guide-code-card">
+              <div class="rb-guide-code-head">
+                <h3>验证安装</h3>
+              </div>
+              <pre><code>codex --version
+
+cd /path/to/your/project
+codex</code></pre>
+            </div>
+          </div>
+
+          <h3 class="rb-guide-subhead">配置 智算星球</h3>
+          <div class="rb-guide-code-grid">
+            <div class="rb-guide-code-card rb-guide-code-card-wide">
+              <div class="rb-guide-code-head">
+                <h3>~/.codex/config.toml</h3>
+              </div>
+              <pre><code>model_provider = "rb"
+model = "gpt-5.5"
+model_reasoning_effort = "high"
+disable_response_storage = true
+sandbox_mode = "workspace-write"
+
+[features]
+plan_tool = true
+apply_patch_freeform = true
+view_image_tool = true
+web_search_request = true
+unified_exec = false
+streamable_shell = false
+rmcp_client = true
+
+[model_providers.rb]
+name = "rb"
+base_url = "https://www.aiplantform.site/v1"
+wire_api = "responses"
+env_key = "RELAYBASES_API_KEY"
+requires_openai_auth = true
+
+[sandbox_workspace_write]
+network_access = true</code></pre>
+            </div>
+            <div class="rb-guide-code-card">
+              <div class="rb-guide-code-head">
+                <h3>macOS / Linux 环境变量</h3>
+              </div>
+              <pre><code>export RELAYBASES_API_KEY="sk-relaybases-..."
+
+# 想永久生效就写入 shell 配置
+echo 'export RELAYBASES_API_KEY="sk-relaybases-..."' >> ~/.zshrc
+source ~/.zshrc</code></pre>
+            </div>
+            <div class="rb-guide-code-card">
+              <div class="rb-guide-code-head">
+                <h3>Windows PowerShell</h3>
+              </div>
+              <pre><code>[System.Environment]::SetEnvironmentVariable(
+  "RELAYBASES_API_KEY",
+  "sk-relaybases-...",
+  [System.EnvironmentVariableTarget]::User
+)</code></pre>
+            </div>
+            <div class="rb-guide-code-card">
+              <div class="rb-guide-code-head">
+                <h3>~/.codex/auth.json</h3>
+              </div>
+              <pre><code>{
+  "OPENAI_API_KEY": "sk-relaybases-..."
+}</code></pre>
+            </div>
+            <div class="rb-guide-code-card">
+              <div class="rb-guide-code-head">
+                <h3>VS Code 扩展</h3>
+              </div>
+              <pre><code># 安装 Codex - OpenAI's coding agent 后，
+# 确认本机已有 ~/.codex/config.toml、
+# ~/.codex/auth.json 和 RELAYBASES_API_KEY。
+
+codex</code></pre>
+            </div>
+            <div class="rb-guide-code-card">
+              <div class="rb-guide-code-head">
+                <h3>启动和更新</h3>
+              </div>
+              <pre><code>cd /path/to/your/project
+codex
+
+npm i -g @openai/codex</code></pre>
+            </div>
+          </div>
+        </section>
+
+        <section class="rb-guide-section" id="zh-live-models" data-rb-live-models="catalog"></section>
+
+        <section class="rb-guide-section" id="zh-clients">
+          <h2>其他客户端</h2>
+          <p>Cursor、Cline、Chatbox、Cherry Studio、Gemini CLI、Dify、N8N 等工具通常只需要 Base URL、模型名和 API 密钥。先确认客户端使用的是 Anthropic、OpenAI 兼容还是 Gemini 相关协议，再填对应端点。</p>
+
+          <table class="rb-guide-table">
+            <thead>
+              <tr>
+                <th>用途</th>
+                <th>Base URL</th>
+                <th>密钥分组</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Claude / Anthropic 原生协议</td>
+                <td><code>https://www.aiplantform.site</code></td>
+                <td>Claude 或 Anthropic 相关分组</td>
+              </tr>
+              <tr>
+                <td>OpenAI 兼容协议</td>
+                <td><code>https://www.aiplantform.site/v1</code></td>
+                <td>OpenAI / GPT / Codex 相关分组</td>
+              </tr>
+              <tr>
+                <td>Gemini 模型 / Gemini CLI</td>
+                <td>按客户端使用的 Gemini 或 OpenAI 兼容地址填写</td>
+                <td>使用实时模型详情中显示的 Gemini 可用分组</td>
+              </tr>
+              <tr>
+                <td>图像生成</td>
+                <td><code>https://aigc.aiplantform.site</code></td>
+                <td><code>media</code> 分组；使用同步图片端点，具体模型和价格以实时目录为准</td>
+              </tr>
+              <tr>
+                <td>图片与视频任务</td>
+                <td><code>https://aigc.aiplantform.site</code></td>
+                <td><code>media</code> 分组；同步视频调用 <code>/v1/video/generations</code>，异步任务调用 <code>/v1/videos</code>，Seedance 视频调用 <code>/v1/contents/generations/tasks</code></td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section class="rb-guide-section" id="zh-async-media-api">
+          <h2>图片与视频任务接口</h2>
+          <div data-rb-live-models="media"></div>
+          <p>使用 <code>media</code> 分组创建的 API Key，并从上方实时目录选择当前可用模型。图片可使用同步生成或编辑端点；视频可使用同步生成端点，也可按任务工作流使用异步端点。</p>
+
+          <table class="rb-guide-table rb-guide-endpoint-table">
+            <thead>
+              <tr>
+                <th>用途</th>
+                <th>方法</th>
+                <th>路径</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>同步生成图片</td>
+                <td><code>POST</code></td>
+                <td><code>/v1/<wbr>images/<wbr>generations</code></td>
+              </tr>
+              <tr>
+                <td>同步编辑图片</td>
+                <td><code>POST</code></td>
+                <td><code>/v1/<wbr>images/<wbr>edits</code></td>
+              </tr>
+              <tr>
+                <td>同步生成视频</td>
+                <td><code>POST</code></td>
+                <td><code>/v1/<wbr>video/<wbr>generations</code></td>
+              </tr>
+              <tr>
+                <td>提交异步任务</td>
+                <td><code>POST</code></td>
+                <td><code>/v1/<wbr>videos</code></td>
+              </tr>
+              <tr>
+                <td>查询异步任务</td>
+                <td><code>GET</code></td>
+                <td><code>/v1/<wbr>videos/<wbr>{task_id}</code></td>
+              </tr>
+              <tr>
+                <td>下载任务结果</td>
+                <td><code>GET</code></td>
+                <td><code>/v1/<wbr>videos/<wbr>{task_id}/<wbr>content</code></td>
+              </tr>
+              <tr>
+                <td>提交 Seedance 视频任务</td>
+                <td><code>POST</code></td>
+                <td><code>/v1/<wbr>contents/<wbr>generations/<wbr>tasks</code></td>
+              </tr>
+              <tr>
+                <td>查询 Seedance 视频任务</td>
+                <td><code>GET</code></td>
+                <td><code>/v1/<wbr>contents/<wbr>generations/<wbr>tasks/<wbr>{task_id}</code></td>
+              </tr>
+            </tbody>
+          </table>
+          <p class="rb-guide-note">以上路径的 Base URL 均为 <code>https://aigc.aiplantform.site</code>；Seedance 的参数与价格见下方 <a href="#zh-seedance-api">Seedance 视频</a> 小节。最终扣费以实时目录和控制台账单为准。</p>
+
+
+          <h3 class="rb-guide-subhead">同步图片生成</h3>
+          <div class="rb-guide-code-grid">
+            <div class="rb-guide-code-card rb-guide-code-card-wide">
+              <div class="rb-guide-code-head">
+                <h3>同步生成图片</h3>
+              </div>
+              <pre><code>curl -sS --max-time 600 -X POST "https://aigc.aiplantform.site/v1/images/generations" \
+  -H "Authorization: Bearer $RELAYBASES_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model": "CURRENT_IMAGE_MODEL",
+    "prompt": "生成一张干净的产品海报，白色背景，高级商业摄影质感",
+    "size": "1024x1024",
+    "n": 1,
+    "images": [
+      "https://your-cdn.com/reference.jpg"
+    ]
+  }'</code></pre>
+            </div>
+
+            <div class="rb-guide-code-card rb-guide-code-card-wide">
+              <div class="rb-guide-code-head">
+                <h3>同步返回格式</h3>
+              </div>
+              <pre><code>{
+  "created": 1714200180,
+  "data": [
+    {
+      "url": "https://.../generated/image.jpg"
+    }
+  ]
+}</code></pre>
+            </div>
+          </div>
+
+
+          <h3 class="rb-guide-subhead">同步视频调用</h3>
+          <div class="rb-guide-code-grid">
+            <article class="rb-guide-code-card">
+              <div class="rb-guide-code-head">
+                <h3>同步视频生成</h3>
+              </div>
+              <pre><code>curl -sS --max-time 600 -X POST "https://aigc.aiplantform.site/v1/video/generations" \
+  -H "Authorization: Bearer $RELAYBASES_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model": "CURRENT_MEDIA_MODEL",
+    "prompt": "一只玻璃纸鹤在桌面旋转，柔和侧光，微距镜头",
+    "duration": 4,
+    "aspect_ratio": "1:1"
+  }'</code></pre>
+            </article>
+            <article class="rb-guide-code-card">
+              <div class="rb-guide-code-head">
+                <h3>同步视频返回</h3>
+              </div>
+              <pre><code>{
+  "id": "task_xxx",
+  "task_id": "task_xxx",
+  "object": "video",
+  "model": "CURRENT_MEDIA_MODEL",
+  "status": "in_progress"
+}</code></pre>
+            </article>
+          </div>
+          <p class="rb-guide-note">同步视频入口返回任务对象后，继续用查询接口获取最终 <code>video_url</code>。异步任务入口适合需要后台排队或批量提交的场景；计费以实时模型详情和控制台账单为准。</p>
+
+          <h3 class="rb-guide-subhead">提交异步任务</h3>
+          <div class="rb-guide-code-grid">
+            <div class="rb-guide-code-card rb-guide-code-card-wide">
+              <div class="rb-guide-code-head">
+                <h3>异步图片任务</h3>
+              </div>
+              <pre><code>curl -sS -X POST "https://aigc.aiplantform.site/v1/videos" \
+  -H "Authorization: Bearer $RELAYBASES_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model": "CURRENT_IMAGE_MODEL",
+    "prompt": "生成一张干净的产品海报，白色背景，高级商业摄影质感",
+    "duration": 4,
+    "resolution": "2k",
+    "images": [
+      "https://your-cdn.com/reference.jpg"
+    ]
+  }'</code></pre>
+            </div>
+
+            <div class="rb-guide-code-card rb-guide-code-card-wide">
+              <div class="rb-guide-code-head">
+                <h3>首尾帧视频任务</h3>
+              </div>
+              <pre><code>curl -sS -X POST "https://aigc.aiplantform.site/v1/videos" \
+  -H "Authorization: Bearer $RELAYBASES_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model": "CURRENT_MEDIA_MODEL",
+    "prompt": "让主体从第一帧自然运动到最后一帧，电影感光线，镜头平稳",
+    "duration": 8,
+    "aspect_ratio": "16:9",
+    "images": [
+      "https://your-cdn.com/first-frame.jpg",
+      "https://your-cdn.com/last-frame.jpg"
+    ]
+  }'</code></pre>
+            </div>
+
+            <div class="rb-guide-code-card">
+              <div class="rb-guide-code-head">
+                <h3>多素材参考视频任务</h3>
+              </div>
+              <pre><code>curl -sS -X POST "https://aigc.aiplantform.site/v1/videos" \
+  -H "Authorization: Bearer $RELAYBASES_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model": "CURRENT_MEDIA_MODEL",
+    "prompt": "高质量产品广告片，镜头运动顺滑，商业质感",
+    "duration": 6,
+    "aspect_ratio": "16:9",
+    "image_url": "https://your-cdn.com/main-reference.jpg",
+    "extra_images": ["https://your-cdn.com/ref-1.jpg"],
+    "extra_videos": ["https://your-cdn.com/ref-video.mp4"],
+    "extra_audios": ["https://your-cdn.com/ref-audio.mp3"]
+  }'</code></pre>
+            </div>
+
+            <div class="rb-guide-code-card">
+              <div class="rb-guide-code-head">
+                <h3>视频编辑</h3>
+              </div>
+              <pre><code>curl -sS -X POST "https://aigc.aiplantform.site/v1/videos" \
+  -H "Authorization: Bearer $RELAYBASES_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model": "CURRENT_MEDIA_MODEL",
+    "prompt": "让参考视频更明亮、更电影感，保留主体动作",
+    "duration": 10,
+    "aspect_ratio": "16:9",
+    "video_url": "https://your-cdn.com/reference-video.mp4",
+    "Ingredients_images": [
+      "https://your-cdn.com/product.jpg"
+    ]
+  }'</code></pre>
+            </div>
+          </div>
+
+          <h3 class="rb-guide-subhead">查询任务和读取结果</h3>
+          <div class="rb-guide-code-grid">
+            <div class="rb-guide-code-card rb-guide-code-card-wide">
+              <div class="rb-guide-code-head">
+                <h3>轮询任务状态</h3>
+              </div>
+              <pre><code>curl -sS "https://aigc.aiplantform.site/v1/videos/TASK_ID" \
+  -H "Authorization: Bearer $RELAYBASES_API_KEY"</code></pre>
+            </div>
+
+            <div class="rb-guide-code-card rb-guide-code-card-wide">
+              <div class="rb-guide-code-head">
+                <h3>常见响应字段</h3>
+              </div>
+              <pre><code>{
+  "id": "task_385412",
+  "task_id": "task_385412",
+  "object": "video",
+  "model": "CURRENT_MEDIA_MODEL",
+  "status": "completed",
+  "task_status": "completed",
+  "progress": 100,
+  "image_url": null,
+  "video_url": "https://.../generated/video.mp4",
+  "url": "https://.../generated/video.mp4",
+  "result_urls": ["https://.../generated/video.mp4"]
+}</code></pre>
+            </div>
+
+            <div class="rb-guide-code-card rb-guide-code-card-wide">
+              <div class="rb-guide-code-head">
+                <h3>下载任务视频</h3>
+              </div>
+              <pre><code>curl -sS -L "https://aigc.aiplantform.site/v1/videos/TASK_ID/content" \
+  -H "Authorization: Bearer $RELAYBASES_API_KEY" \
+  -o generated-video.mp4</code></pre>
+              <p class="rb-guide-note">仅在任务状态为 <code>completed</code> 后读取内容。</p>
+            </div>
+          </div>
+
+          <div class="rb-guide-faq">
+            <article>
+              <h3>任务没有立刻返回图片或视频</h3>
+              <p>这是正常的。<code>/v1/videos</code> 是异步任务接口，提交成功后先返回 <code>task_id</code>，需要用查询接口轮询。状态为 <code>queued</code>、<code>processing</code> 或 <code>in_progress</code> 时继续等待；状态为 <code>completed</code> 时读取 <code>video_url</code>、<code>image_url</code>、<code>url</code> 或 <code>result_urls</code>。</p>
+            </article>
+            <article>
+              <h3>同步和异步怎么选</h3>
+              <p>同步图片使用 <code>/v1/images/generations</code> 或 <code>/v1/images/edits</code>，同步视频使用 <code>/v1/video/generations</code>，异步任务使用 <code>/v1/videos</code>。请从上方实时目录选择当前可用模型，并以目录和控制台账单为准。</p>
+            </article>
+            <article>
+              <h3>参数错误或任务失败怎么处理</h3>
+              <p>不同模型支持的媒体输入、图片数量、时长、比例和分辨率可能不同，请以实时模型详情为准。任务失败或被拒绝时以控制台账单为准；如出现异常扣费，请保留 <code>task_id</code> 并使用页面页脚中的支持链接提交核查。</p>
+            </article>
+            <article>
+              <h3>提示模型或分组不可用</h3>
+              <p>请确认 API Key 属于 <code>media</code> 分组，并确认请求地址是对应接口：同步图片使用 <code>/v1/images/generations</code>，同步视频使用 <code>/v1/video/generations</code>，异步任务使用 <code>/v1/videos</code>。不要把这些模型发到 <code>/v1/chat/completions</code> 或 <code>/v1/responses</code>。</p>
+            </article>
+          </div>
+        </section>
+
+        <section class="rb-guide-section" id="zh-seedance-api">
+          <h2>Seedance 视频（官方任务协议）</h2>
+          <p>豆包 Seedance 2.0、2.0 Fast、2.0 Mini 和 2.5 使用 Seedance 官方任务协议：提交任务后立即返回任务 ID，再轮询查询结果。请使用 <code>media</code> 分组创建的 API Key，Base URL 为 <code>https://aigc.aiplantform.site</code>。</p>
+
+          <table class="rb-guide-table rb-guide-endpoint-table">
+            <thead>
+              <tr>
+                <th>用途</th>
+                <th>方法</th>
+                <th>路径</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>创建任务</td>
+                <td><code>POST</code></td>
+                <td><code>/v1/<wbr>contents/<wbr>generations/<wbr>tasks</code></td>
+              </tr>
+              <tr>
+                <td>查询任务</td>
+                <td><code>GET</code></td>
+                <td><code>/v1/<wbr>contents/<wbr>generations/<wbr>tasks/<wbr>{task_id}</code></td>
+              </tr>
+            </tbody>
+          </table>
+          <p class="rb-guide-note">已经按 Seedance 官方任务协议接入的程序，只需把 Base URL 换成 <code>https://aigc.aiplantform.site/v1</code>，并使用 智算星球 API Key。</p>
+
+          <h3 class="rb-guide-subhead">模型与规格</h3>
+          <table class="rb-guide-table">
+            <thead>
+              <tr>
+                <th>模型</th>
+                <th>模型 ID</th>
+                <th>分辨率</th>
+                <th>时长</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Seedance 2.0</td>
+                <td><code>doubao-seedance-2-0-260128</code></td>
+                <td><code>480p</code> <code>720p</code> <code>1080p</code> <code>4k</code></td>
+                <td>4–15 秒</td>
+              </tr>
+              <tr>
+                <td>Seedance 2.0 Fast</td>
+                <td><code>doubao-seedance-2-0-fast-260128</code></td>
+                <td><code>480p</code> <code>720p</code></td>
+                <td>4–15 秒</td>
+              </tr>
+              <tr>
+                <td>Seedance 2.0 Mini</td>
+                <td><code>doubao-seedance-2-0-mini-260615</code></td>
+                <td><code>480p</code> <code>720p</code></td>
+                <td>4–15 秒</td>
+              </tr>
+              <tr>
+                <td>Seedance 2.5</td>
+                <td><code>doubao-seedance-2-5-260628</code></td>
+                <td><code>480p</code> <code>720p</code> <code>1080p</code></td>
+                <td>4–30 秒</td>
+              </tr>
+            </tbody>
+          </table>
+          <p class="rb-guide-note">画面比例支持 <code>16:9</code>、<code>9:16</code>、<code>1:1</code>、<code>21:9</code>、<code>4:3</code>、<code>3:4</code>，默认 <code>16:9</code>；不传 <code>duration</code> 时默认 4 秒。</p>
+
+          <h3 class="rb-guide-subhead">价格</h3>
+          <table class="rb-guide-table">
+            <thead>
+              <tr>
+                <th>模型</th>
+                <th>分辨率</th>
+                <th>不含参考视频</th>
+                <th>含参考视频</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Seedance 2.0</td>
+                <td><code>480p</code> <code>720p</code></td>
+                <td>⚡43.7 / 百万 token</td>
+                <td>⚡26.6 / 百万 token</td>
+              </tr>
+              <tr>
+                <td>Seedance 2.0</td>
+                <td><code>1080p</code></td>
+                <td>⚡48.45 / 百万 token</td>
+                <td>⚡29.45 / 百万 token</td>
+              </tr>
+              <tr>
+                <td>Seedance 2.0</td>
+                <td><code>4k</code></td>
+                <td>⚡24.7 / 百万 token</td>
+                <td>⚡15.2 / 百万 token</td>
+              </tr>
+              <tr>
+                <td>Seedance 2.0 Fast</td>
+                <td><code>480p</code> <code>720p</code></td>
+                <td>⚡35.15 / 百万 token</td>
+                <td>⚡20.9 / 百万 token</td>
+              </tr>
+              <tr>
+                <td>Seedance 2.0 Mini</td>
+                <td><code>480p</code> <code>720p</code></td>
+                <td>⚡21.85 / 百万 token</td>
+                <td>⚡13.3 / 百万 token</td>
+              </tr>
+              <tr>
+                <td>Seedance 2.5</td>
+                <td><code>480p</code> <code>720p</code></td>
+                <td>⚡66.5 / 百万 token</td>
+                <td>⚡39.9 / 百万 token</td>
+              </tr>
+              <tr>
+                <td>Seedance 2.5</td>
+                <td><code>1080p</code></td>
+                <td>⚡73.15 / 百万 token</td>
+                <td>⚡43.7 / 百万 token</td>
+              </tr>
+            </tbody>
+          </table>
+          <p class="rb-guide-note">按上游返回的实际 token 用量结算。请求的 <code>content</code> 中带 <code>video_url</code> 参考视频时，按“含参考视频”价格计费。token 用量约为 秒数 × 宽 × 高 × 24 ÷ 1024：480p 每秒约 0.96 万 token，720p 约 2.16 万，1080p 约 4.86 万，4K 约 19.44 万。例如 Seedance 2.0 生成 5 秒 720p 视频（不含参考视频）约 10.8 万 token，约 ⚡4.72。</p>
+
+          <h3 class="rb-guide-subhead">请求参数</h3>
+          <table class="rb-guide-table">
+            <thead>
+              <tr>
+                <th>字段</th>
+                <th>类型</th>
+                <th>必填</th>
+                <th>说明</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>model</code></td>
+                <td><code>string</code></td>
+                <td>是</td>
+                <td>上表中的模型 ID。</td>
+              </tr>
+              <tr>
+                <td><code>content</code></td>
+                <td><code>array</code></td>
+                <td>是</td>
+                <td>至少包含一个非空 <code>text</code> 条目；可附加 <code>image_url</code>、<code>video_url</code> 和 <code>audio_url</code>，规则见下表。</td>
+              </tr>
+              <tr>
+                <td><code>resolution</code></td>
+                <td><code>string</code></td>
+                <td>是</td>
+                <td>按模型填写上表支持的分辨率；填写模型不支持的值会被拒绝，不扣费。</td>
+              </tr>
+              <tr>
+                <td><code>duration</code></td>
+                <td><code>integer</code></td>
+                <td>否</td>
+                <td>视频秒数。Seedance 2.0、2.0 Fast 和 2.0 Mini 支持 4–15 秒；Seedance 2.5 支持 4–30 秒；省略时默认 4 秒。</td>
+              </tr>
+              <tr>
+                <td><code>ratio</code></td>
+                <td><code>string</code></td>
+                <td>否</td>
+                <td>画面比例，默认 <code>16:9</code>；支持 <code>16:9</code>、<code>9:16</code>、<code>1:1</code>、<code>21:9</code>、<code>4:3</code>、<code>3:4</code>。</td>
+              </tr>
+              <tr>
+                <td><code>seed</code></td>
+                <td><code>integer</code></td>
+                <td>否</td>
+                <td>随机种子，原样传递给生成服务。</td>
+              </tr>
+              <tr>
+                <td><code>generate_audio</code></td>
+                <td><code>boolean</code></td>
+                <td>否</td>
+                <td>是否生成音频，由上游模型能力决定。</td>
+              </tr>
+              <tr>
+                <td><code>watermark</code></td>
+                <td><code>boolean</code></td>
+                <td>否</td>
+                <td>水印设置，由上游模型能力决定。</td>
+              </tr>
+              <tr>
+                <td><code>return_last_frame</code></td>
+                <td><code>boolean</code></td>
+                <td>否</td>
+                <td>是否在上游支持时返回末帧。</td>
+              </tr>
+              <tr>
+                <td><code>priority</code></td>
+                <td><code>integer</code></td>
+                <td>否</td>
+                <td>任务优先级，原样传递给生成服务。</td>
+              </tr>
+              <tr>
+                <td><code>execution_expires_after</code></td>
+                <td><code>integer</code></td>
+                <td>否</td>
+                <td>任务执行有效期，单位及取值范围遵循上游协议。</td>
+              </tr>
+              <tr>
+                <td><code>tools</code></td>
+                <td><code>array</code></td>
+                <td>否</td>
+                <td>模型工具配置，原样传递给生成服务。</td>
+              </tr>
+              <tr>
+                <td><code>safety_identifier</code></td>
+                <td><code>string</code></td>
+                <td>否</td>
+                <td>调用方提供的安全标识。</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <h3 class="rb-guide-subhead">参考素材</h3>
+          <table class="rb-guide-table">
+            <thead>
+              <tr>
+                <th>类型</th>
+                <th>role</th>
+                <th>规则</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>text</code></td>
+                <td>—</td>
+                <td>必填，至少一个非空条目。</td>
+              </tr>
+              <tr>
+                <td><code>image_url</code></td>
+                <td><code>reference_image</code> <code>first_frame</code> <code>last_frame</code></td>
+                <td>公网 URL 或 <code>asset://…</code> 素材引用；首帧、尾帧各最多一张，使用首尾帧时图片总数最多两张，且不能同时传参考视频。</td>
+              </tr>
+              <tr>
+                <td><code>video_url</code></td>
+                <td><code>reference_video</code></td>
+                <td>公网 URL 或 <code>asset://…</code> 素材引用；携带后按“含参考视频”价格计费。</td>
+              </tr>
+              <tr>
+                <td><code>audio_url</code></td>
+                <td><code>reference_audio</code></td>
+                <td>公网 URL 或 <code>asset://…</code> 素材引用。</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <h3 class="rb-guide-subhead">调用示例</h3>
+          <div class="rb-guide-code-grid">
+            <div class="rb-guide-code-card rb-guide-code-card-wide">
+              <div class="rb-guide-code-head">
+                <h3>创建 Seedance 任务</h3>
+              </div>
+              <pre><code>curl -sS -X POST "https://aigc.aiplantform.site/v1/contents/generations/tasks" \
+  -H "Authorization: Bearer $RELAYBASES_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model": "doubao-seedance-2-0-260128",
+    "content": [
+      {"type": "text", "text": "海边日落，镜头缓慢推进，电影感光线"},
+      {"type": "image_url", "image_url": {"url": "https://your-cdn.com/reference.jpg"}, "role": "reference_image"}
+    ],
+    "resolution": "720p",
+    "duration": 5,
+    "ratio": "16:9",
+    "generate_audio": true
+  }'</code></pre>
+            </div>
+
+            <div class="rb-guide-code-card">
+              <div class="rb-guide-code-head">
+                <h3>创建返回</h3>
+              </div>
+              <pre><code>{
+  "id": "task_xxx"
+}</code></pre>
+            </div>
+
+            <div class="rb-guide-code-card">
+              <div class="rb-guide-code-head">
+                <h3>查询任务</h3>
+              </div>
+              <pre><code>curl -sS "https://aigc.aiplantform.site/v1/contents/generations/tasks/task_xxx" \
+  -H "Authorization: Bearer $RELAYBASES_API_KEY"</code></pre>
+            </div>
+
+            <div class="rb-guide-code-card rb-guide-code-card-wide">
+              <div class="rb-guide-code-head">
+                <h3>成功返回</h3>
+              </div>
+              <pre><code>{
+  "id": "task_xxx",
+  "model": "doubao-seedance-2-0-260128",
+  "status": "succeeded",
+  "content": {
+    "video_url": "https://.../result.mp4"
+  },
+  "resolution": "720p",
+  "duration": 5,
+  "ratio": "16:9",
+  "usage": {
+    "completion_tokens": 108000,
+    "total_tokens": 108000
+  }
+}</code></pre>
+            </div>
+          </div>
+
+          <div class="rb-guide-faq">
+            <article>
+              <h3>任务状态怎么判断</h3>
+              <p><code>queued</code> 和 <code>processing</code> 表示仍在排队或生成，继续轮询；<code>succeeded</code> 时读取 <code>content.video_url</code> 和 <code>usage.total_tokens</code>；<code>failed</code> 时读取 <code>error.message</code>。视频地址由上游提供，请及时下载保存。</p>
+            </article>
+            <article>
+              <h3>怎么扣费</h3>
+              <p>创建任务时先按预估用量预扣；任务成功后按上游返回的 <code>usage.total_tokens</code> 结算，多退少补；任务失败或被拒绝时退回预扣费用。最终扣费以控制台账单为准。</p>
+            </article>
+          </div>
+        </section>
+
+        <section class="rb-guide-section" id="zh-image-api">
+          <h2>图片生成与编辑</h2>
+          <p>图片生成和编辑使用专用 Base URL <code>https://aigc.aiplantform.site</code>。请使用 <code>media</code> 分组创建的 API Key，并从上方实时目录选择当前可用的图片模型；支持参数、返回格式和价格以模型详情及控制台账单为准。</p>
+
+          <div class="rb-guide-callout">
+            生成图片用 JSON 请求 <code>/v1/images/generations</code>；编辑图片用 <code>multipart/form-data</code> 请求 <code>/v1/images/edits</code>。请把示例中的 <code>CURRENT_IMAGE_MODEL</code> 替换为实时目录中的可用模型。
+          </div>
+
+          <div class="rb-guide-code-grid">
+            <div class="rb-guide-code-card rb-guide-code-card-wide">
+              <div class="rb-guide-code-head">
+                <h3>生成图片</h3>
+              </div>
+              <pre><code>curl -sS --max-time 600 -X POST "https://aigc.aiplantform.site/v1/images/generations" \
+  -H "Authorization: Bearer $RELAYBASES_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model": "CURRENT_IMAGE_MODEL",
+    "prompt": "一只橘猫坐在赛博朋克城市的霓虹灯下，电影感，细节丰富",
+    "size": "1024x1024",
+    "quality": "high",
+    "output_format": "png",
+    "n": 1
+  }' \
+  -o response.json</code></pre>
+            </div>
+
+            <div class="rb-guide-code-card rb-guide-code-card-wide">
+              <div class="rb-guide-code-head">
+                <h3>编辑图片</h3>
+              </div>
+              <pre><code>curl -sS --max-time 600 -X POST "https://aigc.aiplantform.site/v1/images/edits" \
+  -H "Authorization: Bearer $RELAYBASES_API_KEY" \
+  -F "model=CURRENT_IMAGE_MODEL" \
+  -F "image[]=@/path/to/source.png" \
+  -F "prompt=把图片里的背景改成东京夜景，保留人物长相、发型、表情和姿势" \
+  -F "size=1024x1024" \
+  -F "quality=high" \
+  -F "output_format=png" \
+  -F "n=1" \
+  -o response.json</code></pre>
+            </div>
+
+            <div class="rb-guide-code-card">
+              <div class="rb-guide-code-head">
+                <h3>多张参考图</h3>
+              </div>
+              <pre><code>curl -sS --max-time 600 -X POST "https://aigc.aiplantform.site/v1/images/edits" \
+  -H "Authorization: Bearer $RELAYBASES_API_KEY" \
+  -F "model=CURRENT_IMAGE_MODEL" \
+  -F "image[]=@/path/to/1.png" \
+  -F "image[]=@/path/to/2.png" \
+  -F "prompt=参考两张图生成同一人物的新场景，保持身份一致" \
+  -F "size=1024x1024" \
+  -F "quality=high" \
+  -F "output_format=png" \
+  -F "n=1"</code></pre>
+            </div>
+
+            <div class="rb-guide-code-card">
+              <div class="rb-guide-code-head">
+                <h3>返回处理</h3>
+              </div>
+              <pre><code># OpenAI 兼容图片响应通常位于 data 数组：
+# data[0].url             图片地址（若当前模型返回 URL）
+# data[0].b64_json        base64 图片内容（若当前模型返回内联数据）
+# data[0].revised_prompt  模型实际使用的提示词（若提供）
+
+jq -r '.data[0].url // .data[0].b64_json // empty' response.json</code></pre>
+            </div>
+          </div>
+
+          <div class="rb-guide-faq">
+            <article>
+              <h3>返回的是 URL 还是 <code>b64_json</code></h3>
+              <p>返回格式取决于当前模型和请求参数；请同时处理 <code>data[0].url</code> 与 <code>data[0].b64_json</code>。如果返回 <code>error</code> 对象，请按其中的 <code>message</code> 排查；遇到 <code>502</code>、<code>server_error</code> 等临时错误可稍后重试。</p>
+            </article>
+            <article>
+              <h3>提示模型或分组不可用</h3>
+              <p>通常是 Key 不属于 <code>media</code> 分组，或请求发送到了通用文本端点。请重新创建 media 分组 Key，并确认 URL 是 <code>https://aigc.aiplantform.site</code>。</p>
+            </article>
+            <article>
+              <h3>连接中断 / 超时（curl 56、schannel closed abruptly）</h3>
+              <p>图片接口是同步返回，<code>quality=high</code> 的请求通常要等 1–3 分钟，更大尺寸更久。等待期间如果客户端或中间代理超时，就会出现 <code>curl: (56) schannel: server closed abruptly</code> 这类连接中断。请加大超时并自动重试，例如 <code>--max-time 600 --retry 3 --retry-all-errors</code>；首次联调建议先用 <code>1024x1024</code> 跑通，再按需提高尺寸。</p>
+            </article>
+            <article>
+              <h3>Windows 下如何运行</h3>
+              <p>PowerShell 里的 <code>curl</code> 是 <code>Invoke-WebRequest</code> 的别名，请改用 <code>curl.exe</code>，并把上面的命令写成单行（去掉行尾的 <code>\</code>）。Windows 自带没有 <code>jq</code>/<code>base64</code>，可先用 <code>-o response.json</code> 保存返回，再用 PowerShell 解码：<code>powershell -Command "$j=Get-Content response.json | ConvertFrom-Json; [IO.File]::WriteAllBytes('out.png', [Convert]::FromBase64String($j.data[0].b64_json))"</code>。</p>
+            </article>
+          </div>
+        </section>
+
+        <section class="rb-guide-section" id="zh-commands">
+          <h2>常用命令</h2>
+          <p>Claude Code 和 Codex CLI 的斜杠命令会随版本变化，下面这些最常用，适合日常排查、清理上下文和控制成本。</p>
+
+          <table class="rb-guide-table">
+            <thead>
+              <tr>
+                <th>命令</th>
+                <th>用途</th>
+                <th>建议场景</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>/help</code></td>
+                <td>查看当前客户端支持的命令和快捷键。</td>
+                <td>刚安装或升级后先看一遍。</td>
+              </tr>
+              <tr>
+                <td><code>/clear</code></td>
+                <td>清空当前会话上下文。</td>
+                <td>换任务、上下文混乱、模型开始沿用旧信息时使用。</td>
+              </tr>
+              <tr>
+                <td><code>/compact</code></td>
+                <td>压缩当前上下文，保留关键进度。</td>
+                <td>长任务跑久了，但还想延续当前工作状态。</td>
+              </tr>
+              <tr>
+                <td><code>/cost</code></td>
+                <td>查看当前会话的用量或费用信息。</td>
+                <td>排查 Credits 消耗、评估一次任务成本。</td>
+              </tr>
+              <tr>
+                <td><code>/model</code></td>
+                <td>查看或切换模型。</td>
+                <td>需要在速度、成本和推理能力之间切换时使用。</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <div class="rb-guide-callout">
+            如果某个命令不存在，以当前客户端内的 <code>/help</code> 为准。不同版本的 Claude Code 和 Codex CLI 命令名称可能略有差异。
+          </div>
+        </section>
+
+        <section class="rb-guide-section" id="zh-trouble">
+          <h2>故障排查</h2>
+          <div class="rb-guide-faq">
+            <article>
+              <h3>安装失败或下载很慢</h3>
+              <p>先确认网络能够访问官方安装源，并检查代理、防火墙和 DNS。Windows 用户可在管理员终端中重试。</p>
+            </article>
+            <article>
+              <h3>命令未找到</h3>
+              <p>确认 Node.js、npm 和全局安装目录已加入 <code>PATH</code>。macOS / Linux 可检查 <code>npm config get prefix</code>，Windows 需要重新打开 PowerShell 或 VS Code。</p>
+            </article>
+            <article>
+              <h3>密钥无效或 401</h3>
+              <p>确认密钥复制完整、没有多余空格，并且未被禁用或过期。完整密钥只在创建后显示一次，丢失后需要重新创建。</p>
+            </article>
+            <article>
+              <h3>端点不匹配</h3>
+              <p>Claude Code 使用所选域名本身，例如 <code>https://www.aiplantform.site</code>；OpenAI 兼容客户端需要添加 <code>/v1</code>，例如 <code>https://www.aiplantform.site/v1</code>。美国直连地址遵循相同规则。</p>
+            </article>
+            <article>
+              <h3>长时间同步请求超时</h3>
+              <p>标准地址经过 Cloudflare，长时间同步请求可能受到代理超时限制。可将同一客户端的域名改为 <code>us.aiplantform.site</code>，并保留原协议路径和 API 密钥；该直连地址在部分网络环境中可能无法访问。</p>
+            </article>
+            <article>
+              <h3>环境变量没有生效</h3>
+              <p>临时环境变量只对当前终端有效。写入 <code>~/.zshrc</code>、<code>~/.bashrc</code> 或 Windows 用户环境变量后，需要重新打开终端和编辑器。</p>
+            </article>
+            <article>
+              <h3>无法连接 API</h3>
+              <p>先确认 Base URL 填写正确，再检查代理、防火墙和 DNS。macOS / Linux 可分别测试 <code>curl -I https://www.aiplantform.site</code> 和 <code>curl -I https://us.aiplantform.site</code>；Windows 可分别使用 <code>Test-NetConnection www.aiplantform.site -Port 443</code> 和 <code>Test-NetConnection us.aiplantform.site -Port 443</code>。</p>
+            </article>
+            <article>
+              <h3>Credits 余额或分组不对</h3>
+              <p>确认账户的 API Credits 余额充足，并确保密钥分组和模型类型一致。图像模型需要使用 media 分组和图像端点。</p>
+            </article>
+            <article>
+              <h3>图像接口不通</h3>
+              <p>图像生成不要使用通用 OpenAI 兼容端点，请使用 <code>https://aigc.aiplantform.site</code>，并确认密钥属于 <code>media</code> 分组。</p>
+            </article>
+          </div>
+
+        </section>
+
+        </div>
+      </article>
+
+      <article class="rb-guide-panel" data-lang-panel="en">
+        <aside class="rb-docs-sidebar" aria-label="Documentation navigation">
+          <nav class="rb-docs-navgroup">
+            <p>Getting started</p>
+            <a href="#en-overview">Overview</a>
+            <a href="#en-start">Credits &amp; API keys</a>
+            <a href="#en-endpoints">Choose an API endpoint</a>
+            <a href="#en-auto-routing">Automatic routing</a>
+          </nav>
+          <nav class="rb-docs-navgroup">
+            <p>Coding tools</p>
+            <a href="#en-claude">Claude Code</a>
+            <a href="#en-codex">Codex CLI</a>
+            <a href="#en-clients">Other clients</a>
+          </nav>
+          <nav class="rb-docs-navgroup">
+            <p>API</p>
+            <a href="#en-async-media-api">Image/video tasks</a>
+            <a href="#en-seedance-api">Seedance video</a>
+            <a href="#en-image-api">Image API</a>
+          </nav>
+          <nav class="rb-docs-navgroup">
+            <p>Reference</p>
+            <a href="#en-commands">Commands</a>
+            <a href="#en-trouble">Troubleshooting</a>
+          </nav>
+        </aside>
+
+        <div class="rb-guide-content">
+        <header class="rb-guide-hero" id="en-overview">
+          <span class="rb-guide-kicker">Usage guide</span>
+          <h1>Getting started</h1>
+          <p class="rb-guide-lead">智算星球 provides OpenAI-, Anthropic-, and Gemini-compatible API access. This page covers purchasing API Credits, creating API keys, and configuring clients such as Claude Code and Codex CLI.</p>
+          <div class="rb-guide-actions">
+            <a class="rb-guide-action rb-guide-action-primary" href="https://aiplantform.site/dashboard/overview" target="_blank" rel="noopener noreferrer">Open Console</a>
+            <a class="rb-guide-action" href="https://aiplantform.site/wallet" target="_blank" rel="noopener noreferrer">Buy Credits</a>
+            <a class="rb-guide-action" href="https://aiplantform.site/keys" target="_blank" rel="noopener noreferrer">API Keys</a>
+          </div>
+        </header>
+
+        <section class="rb-guide-section" id="en-start">
+          <h2>API Credits and API keys</h2>
+          <p>Start with available API Credits, then create API keys for each protocol or model group. Use separate Claude, OpenAI, Gemini, or image keys when you need a fixed route; use the <code>auto</code> group when one key should match models across multiple available groups.</p>
+
+          <div class="rb-credit-explainer" id="en-credits">
+            <span>Billing unit</span>
+            <h3>⚡ represents 智算星球 API Credits</h3>
+            <p>⚡ is the display unit for API Credits. After a top-up, Credits are added to your account and deducted as you use the APIs according to model prices, group multipliers, and actual usage. ⚡ is not USD or any other currency, electronic money, or cryptocurrency.</p>
+            <dl class="rb-credit-facts">
+              <div><dt>Balance and usage</dt><dd>Balances, model prices, and usage costs are displayed in ⚡, for example ⚡0.08.</dd></div>
+              <div><dt>What you pay</dt><dd>Orders are priced in USD. Checkout and payment records show the amount and currency charged.</dd></div>
+              <div><dt>Refunds</dt><dd>Eligible unused paid Credits may be returned to the original payment method under the Refund Policy. ⚡ itself cannot be transferred, traded, or withdrawn.</dd></div>
+            </dl>
+          </div>
+
+          <ol class="rb-guide-ol">
+            <li><b>Buy Credits.</b> Open the Credits page, review “You pay” and “You receive,” choose an amount, then complete payment.</li>
+            <li><b>Open API Keys.</b> Go to the API Keys page from the console sidebar and review existing groups.</li>
+            <li><b>Create a key.</b> Enter a name, choose a group, and set quota or expiration. The full key is shown once.</li>
+            <li><b>Use it in clients.</b> Put the key in environment variables or config files, never in public repos, screenshots, or logs.</li>
+          </ol>
+        </section>
+
+        <section class="rb-guide-section" id="en-endpoints">
+          <h2>Choose an API endpoint</h2>
+          <p>The standard and US direct endpoints use the same API keys, model names, account balance, and billing rules. Only the network path changes. Use the standard endpoint by default, then switch to the US direct endpoint when a long-running synchronous request encounters a Cloudflare proxy timeout.</p>
+
+          <table class="rb-guide-table">
+            <thead>
+              <tr>
+                <th>Endpoint</th>
+                <th>Base URL</th>
+                <th>When to use it</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><b>Standard API</b></td>
+                <td><code>https://www.aiplantform.site</code></td>
+                <td>Cloudflare-accelerated with broader network compatibility. Recommended as the default; long-running synchronous requests may be subject to proxy timeouts.</td>
+              </tr>
+              <tr>
+                <td><b>US Direct API</b></td>
+                <td><code>https://us.aiplantform.site</code></td>
+                <td>Connects directly to the US origin without Cloudflare proxy timeouts. Recommended for long-running synchronous requests; it may be unreachable from some networks.</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <div class="rb-guide-callout">
+            Protocol paths do not change: use the hostname as shown for the native Anthropic protocol, without <code>/v1</code>; append <code>/v1</code> for OpenAI-compatible clients. Image and video tasks continue to use the dedicated endpoint <code>https://aigc.aiplantform.site</code>.
+          </div>
+
+          <p class="rb-guide-note">The direct endpoint bypasses only the Cloudflare proxy. Client, origin, upstream-model, or network failures can still interrupt a request. Switch back to the standard endpoint if the direct endpoint is not reachable.</p>
+        </section>
+
+        <section class="rb-guide-section" id="en-auto-routing">
+          <h2>Automatic routing and failover</h2>
+          <p>When you create or edit an API key, select the <code>auto</code> group. 智算星球 checks the groups that the key may use, in the priority order shown in the console, and selects the first group that supports the requested model and has an available route.</p>
+
+          <ol class="rb-guide-ol">
+            <li><b>Open API Keys.</b> Create a new key or edit an existing key in the console.</li>
+            <li><b>Select auto.</b> Choose <code>auto</code> under Group.</li>
+            <li><b>Review the group order.</b> Keeping <b>Inherit global Auto order</b> is recommended so the key follows the complete platform-managed order. You can also choose and reorder candidate groups for this key.</li>
+            <li><b>Enable Cross-group retry.</b> If a route in the selected group fails, 智算星球 can continue with later groups in order.</li>
+            <li><b>Save and call the API normally.</b> Your Base URL, model names, and key usage do not change.</li>
+          </ol>
+
+          <div class="rb-guide-callout">
+            Routing behavior: if a candidate group does not support the requested model or has no available route, 智算星球 checks the next group automatically. <b>Cross-group retry</b> controls whether it also continues after an already selected route fails during the request.
+          </div>
+
+          <div class="rb-guide-callout">
+            Billing: <code>auto</code> has no separate multiplier. Each request is charged using the multiplier of the group actually selected, the model price, and actual usage. The request can still fail if no candidate group has an available route.
+          </div>
+
+          <p class="rb-guide-note">Inheritance uses the complete Auto order currently maintained by the platform. A custom order is stored for that key and remains subject to the account's current group permissions. Existing keys are not changed to <code>auto</code> automatically.</p>
+        </section>
+
+        <section class="rb-guide-section" id="en-claude">
+          <h2>Claude Code</h2>
+          <p>Claude Code uses the native Anthropic protocol, so the endpoint does not include <code>/v1</code>. Create a Claude group key for this setup.</p>
+
+          <div class="rb-guide-callout">
+            Anthropic endpoint: <code>https://www.aiplantform.site</code>. Store the key in <code>ANTHROPIC_AUTH_TOKEN</code> instead of project code.
+          </div>
+
+          <h3 class="rb-guide-subhead">Prerequisites</h3>
+          <p class="rb-guide-copy">Claude Code needs Node.js 18 or newer. If Node.js is already installed, you can skip straight to installing Claude Code.</p>
+
+          <table class="rb-guide-table">
+            <thead>
+              <tr>
+                <th>Platform</th>
+                <th>Recommended setup</th>
+                <th>Verify</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>macOS</td>
+                <td>Use <code>brew update && brew install node</code>, or install the LTS package from <code>nodejs.org</code>.</td>
+                <td><code>node --version && npm --version</code></td>
+              </tr>
+              <tr>
+                <td>Windows</td>
+                <td>Install Node.js LTS from <code>nodejs.org</code>, or use <code>choco install nodejs</code> / <code>scoop install nodejs</code>.</td>
+                <td><code>node --version; npm --version</code></td>
+              </tr>
+              <tr>
+                <td>Linux</td>
+                <td>Use NodeSource on Ubuntu / Debian, or install <code>nodejs</code> and <code>npm</code> from your package manager.</td>
+                <td><code>node --version && npm --version</code></td>
+              </tr>
+            </tbody>
+          </table>
+
+          <h3 class="rb-guide-subhead">Install Claude Code</h3>
+          <div class="rb-guide-code-grid">
+            <div class="rb-guide-code-card">
+              <div class="rb-guide-code-head">
+                <h3>macOS Native</h3>
+              </div>
+              <pre><code>brew install --cask claude-code
+
+# Or use the official install script
+curl -fsSL https://claude.ai/install.sh | bash</code></pre>
+            </div>
+            <div class="rb-guide-code-card">
+              <div class="rb-guide-code-head">
+                <h3>Windows Native</h3>
+              </div>
+              <pre><code># PowerShell
+irm https://claude.ai/install.ps1 | iex
+
+# CMD
+curl -fsSL https://claude.ai/install.cmd -o install.cmd && install.cmd</code></pre>
+            </div>
+            <div class="rb-guide-code-card">
+              <div class="rb-guide-code-head">
+                <h3>Linux Native</h3>
+              </div>
+              <pre><code>curl -fsSL https://claude.ai/install.sh | bash
+
+# Alpine Linux if ripgrep dependencies fail
+apk add libgcc libstdc++ ripgrep
+export USE_BUILTIN_RIPGREP=0</code></pre>
+            </div>
+            <div class="rb-guide-code-card">
+              <div class="rb-guide-code-head">
+                <h3>NPM fallback</h3>
+              </div>
+              <pre><code>npm install -g @anthropic-ai/claude-code
+claude --version
+claude doctor</code></pre>
+            </div>
+          </div>
+
+          <h3 class="rb-guide-subhead">Connect 智算星球</h3>
+          <div class="rb-guide-code-grid">
+            <div class="rb-guide-code-card">
+              <div class="rb-guide-code-head">
+                <h3>macOS / Linux temporary env</h3>
+              </div>
+              <pre><code>export ANTHROPIC_BASE_URL="https://www.aiplantform.site"
+export ANTHROPIC_AUTH_TOKEN="sk-relaybases-..."
+
+claude</code></pre>
+            </div>
+            <div class="rb-guide-code-card">
+              <div class="rb-guide-code-head">
+                <h3>macOS / Linux persistent env</h3>
+              </div>
+              <pre><code>echo 'export ANTHROPIC_BASE_URL="https://www.aiplantform.site"' >> ~/.zshrc
+echo 'export ANTHROPIC_AUTH_TOKEN="sk-relaybases-..."' >> ~/.zshrc
+source ~/.zshrc</code></pre>
+            </div>
+            <div class="rb-guide-code-card">
+              <div class="rb-guide-code-head">
+                <h3>Windows PowerShell</h3>
+              </div>
+              <pre><code>$env:ANTHROPIC_BASE_URL = "https://www.aiplantform.site"
+$env:ANTHROPIC_AUTH_TOKEN = "sk-relaybases-..."
+
+[System.Environment]::SetEnvironmentVariable(
+  "ANTHROPIC_BASE_URL",
+  "https://www.aiplantform.site",
+  [System.EnvironmentVariableTarget]::User
+)
+[System.Environment]::SetEnvironmentVariable(
+  "ANTHROPIC_AUTH_TOKEN",
+  "sk-relaybases-...",
+  [System.EnvironmentVariableTarget]::User
+)</code></pre>
+            </div>
+            <div class="rb-guide-code-card">
+              <div class="rb-guide-code-head">
+                <h3>~/.claude/settings.json</h3>
+              </div>
+              <pre><code>{
+  "env": {
+    "ANTHROPIC_BASE_URL": "https://www.aiplantform.site",
+    "ANTHROPIC_AUTH_TOKEN": "sk-relaybases-...",
+    "CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC": "1"
+  }
+}</code></pre>
+            </div>
+            <div class="rb-guide-code-card">
+              <div class="rb-guide-code-head">
+                <h3>VS Code extension</h3>
+              </div>
+              <pre><code># After installing Claude Code for VS Code, create:
+# macOS / Linux: ~/.claude/config.json
+# Windows: C:\Users\your-name\.claude\config.json
+
+{
+  "primaryApiKey": "any-value"
+}</code></pre>
+            </div>
+            <div class="rb-guide-code-card">
+              <div class="rb-guide-code-head">
+                <h3>Verify, start, update</h3>
+              </div>
+              <pre><code>echo $ANTHROPIC_BASE_URL
+echo $ANTHROPIC_AUTH_TOKEN
+
+cd /path/to/your/project
+claude
+
+npm install -g @anthropic-ai/claude-code</code></pre>
+            </div>
+          </div>
+        </section>
+
+        <section class="rb-guide-section" id="en-codex">
+          <h2>Codex CLI</h2>
+          <p>Codex CLI uses an OpenAI compatible protocol, so the endpoint must include <code>/v1</code>. Create an OpenAI group key and load it from an environment variable.</p>
+
+          <div class="rb-guide-callout">
+            OpenAI compatible endpoint: <code>https://www.aiplantform.site/v1</code>. If your client has a Base URL field, include the full <code>/v1</code> path.
+          </div>
+
+          <h3 class="rb-guide-subhead">Prerequisites</h3>
+          <p class="rb-guide-copy">Codex CLI needs Node.js and npm. Before installing, make sure your terminal can run <code>node</code> and <code>npm</code>.</p>
+
+          <table class="rb-guide-table">
+            <thead>
+              <tr>
+                <th>Platform</th>
+                <th>Recommended setup</th>
+                <th>Verify</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>macOS</td>
+                <td>Use <code>brew update && brew install node</code>, or install the LTS package from <code>nodejs.org</code>.</td>
+                <td><code>node --version && npm --version</code></td>
+              </tr>
+              <tr>
+                <td>Windows</td>
+                <td>Install Node.js LTS, or use <code>choco install nodejs</code> / <code>scoop install nodejs</code>.</td>
+                <td><code>node --version; npm --version</code></td>
+              </tr>
+              <tr>
+                <td>Linux</td>
+                <td>Use NodeSource, your package manager, or your team's preferred Node version manager.</td>
+                <td><code>node --version && npm --version</code></td>
+              </tr>
+            </tbody>
+          </table>
+
+          <h3 class="rb-guide-subhead">Install Codex CLI</h3>
+          <div class="rb-guide-code-grid">
+            <div class="rb-guide-code-card">
+              <div class="rb-guide-code-head">
+                <h3>Install Codex CLI</h3>
+              </div>
+              <pre><code>npm i -g @openai/codex</code></pre>
+            </div>
+            <div class="rb-guide-code-card">
+              <div class="rb-guide-code-head">
+                <h3>Verify installation</h3>
+              </div>
+              <pre><code>codex --version
+
+cd /path/to/your/project
+codex</code></pre>
+            </div>
+          </div>
+
+          <h3 class="rb-guide-subhead">Configure 智算星球</h3>
+          <div class="rb-guide-code-grid">
+            <div class="rb-guide-code-card rb-guide-code-card-wide">
+              <div class="rb-guide-code-head">
+                <h3>~/.codex/config.toml</h3>
+              </div>
+              <pre><code>model_provider = "rb"
+model = "gpt-5.5"
+model_reasoning_effort = "high"
+disable_response_storage = true
+sandbox_mode = "workspace-write"
+
+[features]
+plan_tool = true
+apply_patch_freeform = true
+view_image_tool = true
+web_search_request = true
+unified_exec = false
+streamable_shell = false
+rmcp_client = true
+
+[model_providers.rb]
+name = "rb"
+base_url = "https://www.aiplantform.site/v1"
+wire_api = "responses"
+env_key = "RELAYBASES_API_KEY"
+requires_openai_auth = true
+
+[sandbox_workspace_write]
+network_access = true</code></pre>
+            </div>
+            <div class="rb-guide-code-card">
+              <div class="rb-guide-code-head">
+                <h3>macOS / Linux env</h3>
+              </div>
+              <pre><code>export RELAYBASES_API_KEY="sk-relaybases-..."
+
+# Persist it for future terminals
+echo 'export RELAYBASES_API_KEY="sk-relaybases-..."' >> ~/.zshrc
+source ~/.zshrc</code></pre>
+            </div>
+            <div class="rb-guide-code-card">
+              <div class="rb-guide-code-head">
+                <h3>Windows PowerShell</h3>
+              </div>
+              <pre><code>[System.Environment]::SetEnvironmentVariable(
+  "RELAYBASES_API_KEY",
+  "sk-relaybases-...",
+  [System.EnvironmentVariableTarget]::User
+)</code></pre>
+            </div>
+            <div class="rb-guide-code-card">
+              <div class="rb-guide-code-head">
+                <h3>~/.codex/auth.json</h3>
+              </div>
+              <pre><code>{
+  "OPENAI_API_KEY": "sk-relaybases-..."
+}</code></pre>
+            </div>
+            <div class="rb-guide-code-card">
+              <div class="rb-guide-code-head">
+                <h3>VS Code extension</h3>
+              </div>
+              <pre><code># After installing Codex - OpenAI's coding agent,
+# confirm ~/.codex/config.toml, ~/.codex/auth.json,
+# and RELAYBASES_API_KEY are configured on this machine.
+
+codex</code></pre>
+            </div>
+            <div class="rb-guide-code-card">
+              <div class="rb-guide-code-head">
+                <h3>Start and update</h3>
+              </div>
+              <pre><code>cd /path/to/your/project
+codex
+
+npm i -g @openai/codex</code></pre>
+            </div>
+          </div>
+        </section>
+
+        <section class="rb-guide-section" id="en-live-models" data-rb-live-models="catalog"></section>
+
+        <section class="rb-guide-section" id="en-clients">
+          <h2>Other clients</h2>
+          <p>Cursor, Cline, Chatbox, Cherry Studio, Gemini CLI, Dify, N8N, and similar tools usually need only a Base URL, model name, and API key. The endpoint changes by protocol.</p>
+
+          <table class="rb-guide-table">
+            <thead>
+              <tr>
+                <th>Use case</th>
+                <th>Base URL</th>
+                <th>Key group</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Claude / native Anthropic</td>
+                <td><code>https://www.aiplantform.site</code></td>
+                <td>Claude or Anthropic related group</td>
+              </tr>
+              <tr>
+                <td>OpenAI compatible</td>
+                <td><code>https://www.aiplantform.site/v1</code></td>
+                <td>OpenAI / GPT / Codex related group</td>
+              </tr>
+              <tr>
+                <td>Gemini models / Gemini CLI</td>
+                <td>Use the Gemini or OpenAI compatible Base URL required by your client</td>
+                <td>Use an available Gemini group shown in the live model details</td>
+              </tr>
+              <tr>
+                <td>Image generation</td>
+                <td><code>https://aigc.aiplantform.site</code></td>
+                <td><code>media</code> group; use the synchronous image endpoints and check the live catalog for models and prices</td>
+              </tr>
+              <tr>
+                <td>Image and video tasks</td>
+                <td><code>https://aigc.aiplantform.site</code></td>
+                <td><code>media</code> group; use <code>/v1/video/generations</code> for sync video, <code>/v1/videos</code> for async tasks, and <code>/v1/contents/generations/tasks</code> for Seedance video</td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section class="rb-guide-section" id="en-async-media-api">
+          <h2>Image and video task API</h2>
+          <div data-rb-live-models="media"></div>
+          <p>Use an API key created in the <code>media</code> group and select a currently available model from the live catalog above. Images support synchronous generation and editing endpoints. Videos support synchronous generation and an asynchronous task workflow.</p>
+
+          <table class="rb-guide-table rb-guide-endpoint-table">
+            <thead>
+              <tr>
+                <th>Purpose</th>
+                <th>Method</th>
+                <th>Path</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Generate images synchronously</td>
+                <td><code>POST</code></td>
+                <td><code>/v1/<wbr>images/<wbr>generations</code></td>
+              </tr>
+              <tr>
+                <td>Edit images synchronously</td>
+                <td><code>POST</code></td>
+                <td><code>/v1/<wbr>images/<wbr>edits</code></td>
+              </tr>
+              <tr>
+                <td>Generate video synchronously</td>
+                <td><code>POST</code></td>
+                <td><code>/v1/<wbr>video/<wbr>generations</code></td>
+              </tr>
+              <tr>
+                <td>Create an async task</td>
+                <td><code>POST</code></td>
+                <td><code>/v1/<wbr>videos</code></td>
+              </tr>
+              <tr>
+                <td>Query an async task</td>
+                <td><code>GET</code></td>
+                <td><code>/v1/<wbr>videos/<wbr>{task_id}</code></td>
+              </tr>
+              <tr>
+                <td>Download the task result</td>
+                <td><code>GET</code></td>
+                <td><code>/v1/<wbr>videos/<wbr>{task_id}/<wbr>content</code></td>
+              </tr>
+              <tr>
+                <td>Create a Seedance video task</td>
+                <td><code>POST</code></td>
+                <td><code>/v1/<wbr>contents/<wbr>generations/<wbr>tasks</code></td>
+              </tr>
+              <tr>
+                <td>Query a Seedance video task</td>
+                <td><code>GET</code></td>
+                <td><code>/v1/<wbr>contents/<wbr>generations/<wbr>tasks/<wbr>{task_id}</code></td>
+              </tr>
+            </tbody>
+          </table>
+          <p class="rb-guide-note">All paths use the Base URL <code>https://aigc.aiplantform.site</code>. See the <a href="#en-seedance-api">Seedance video</a> section below for Seedance parameters and prices. The live catalog and console bill are authoritative.</p>
+
+
+          <h3 class="rb-guide-subhead">Synchronous image generation</h3>
+          <div class="rb-guide-code-grid">
+            <div class="rb-guide-code-card rb-guide-code-card-wide">
+              <div class="rb-guide-code-head">
+                <h3>Generate synchronously</h3>
+              </div>
+              <pre><code>curl -sS --max-time 600 -X POST "https://aigc.aiplantform.site/v1/images/generations" \
+  -H "Authorization: Bearer $RELAYBASES_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model": "CURRENT_IMAGE_MODEL",
+    "prompt": "Create a clean product poster on a white background with premium commercial photography lighting",
+    "size": "1024x1024",
+    "n": 1,
+    "images": [
+      "https://your-cdn.com/reference.jpg"
+    ]
+  }'</code></pre>
+            </div>
+
+            <div class="rb-guide-code-card rb-guide-code-card-wide">
+              <div class="rb-guide-code-head">
+                <h3>Synchronous response shape</h3>
+              </div>
+              <pre><code>{
+  "created": 1714200180,
+  "data": [
+    {
+      "url": "https://.../generated/image.jpg"
+    }
+  ]
+}</code></pre>
+            </div>
+          </div>
+
+
+          <h3 class="rb-guide-subhead">Synchronous video call</h3>
+          <div class="rb-guide-code-grid">
+            <article class="rb-guide-code-card">
+              <div class="rb-guide-code-head">
+                <h3>Generate video synchronously</h3>
+              </div>
+              <pre><code>curl -sS --max-time 600 -X POST "https://aigc.aiplantform.site/v1/video/generations" \
+  -H "Authorization: Bearer $RELAYBASES_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model": "CURRENT_MEDIA_MODEL",
+    "prompt": "A glass paper crane rotating on a tabletop, soft side light, macro shot",
+    "duration": 4,
+    "aspect_ratio": "1:1"
+  }'</code></pre>
+            </article>
+            <article class="rb-guide-code-card">
+              <div class="rb-guide-code-head">
+                <h3>Synchronous video response</h3>
+              </div>
+              <pre><code>{
+  "id": "task_xxx",
+  "task_id": "task_xxx",
+  "object": "video",
+  "model": "CURRENT_MEDIA_MODEL",
+  "status": "in_progress"
+}</code></pre>
+            </article>
+          </div>
+          <p class="rb-guide-note">After the sync video endpoint returns a task object, keep using the query endpoint to obtain the final <code>video_url</code>. The async task endpoint is useful for background queueing or batch submission; use the live model details and console bill for pricing.</p>
+
+          <h3 class="rb-guide-subhead">Create an async task</h3>
+          <div class="rb-guide-code-grid">
+            <div class="rb-guide-code-card rb-guide-code-card-wide">
+              <div class="rb-guide-code-head">
+                <h3>Async image task</h3>
+              </div>
+              <pre><code>curl -sS -X POST "https://aigc.aiplantform.site/v1/videos" \
+  -H "Authorization: Bearer $RELAYBASES_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model": "CURRENT_IMAGE_MODEL",
+    "prompt": "Create a clean product poster on a white background with premium commercial photography lighting",
+    "duration": 4,
+    "resolution": "2k",
+    "images": [
+      "https://your-cdn.com/reference.jpg"
+    ]
+  }'</code></pre>
+            </div>
+
+            <div class="rb-guide-code-card rb-guide-code-card-wide">
+              <div class="rb-guide-code-head">
+                <h3>First/last-frame video task</h3>
+              </div>
+              <pre><code>curl -sS -X POST "https://aigc.aiplantform.site/v1/videos" \
+  -H "Authorization: Bearer $RELAYBASES_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model": "CURRENT_MEDIA_MODEL",
+    "prompt": "Animate naturally from the first frame to the last frame with cinematic lighting and stable camera motion",
+    "duration": 8,
+    "aspect_ratio": "16:9",
+    "images": [
+      "https://your-cdn.com/first-frame.jpg",
+      "https://your-cdn.com/last-frame.jpg"
+    ]
+  }'</code></pre>
+            </div>
+
+            <div class="rb-guide-code-card">
+              <div class="rb-guide-code-head">
+                <h3>Reference-media video task</h3>
+              </div>
+              <pre><code>curl -sS -X POST "https://aigc.aiplantform.site/v1/videos" \
+  -H "Authorization: Bearer $RELAYBASES_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model": "CURRENT_MEDIA_MODEL",
+    "prompt": "High quality product commercial, smooth camera movement, premium visual style",
+    "duration": 6,
+    "aspect_ratio": "16:9",
+    "image_url": "https://your-cdn.com/main-reference.jpg",
+    "extra_images": ["https://your-cdn.com/ref-1.jpg"],
+    "extra_videos": ["https://your-cdn.com/ref-video.mp4"],
+    "extra_audios": ["https://your-cdn.com/ref-audio.mp3"]
+  }'</code></pre>
+            </div>
+
+            <div class="rb-guide-code-card">
+              <div class="rb-guide-code-head">
+                <h3>Video edit</h3>
+              </div>
+              <pre><code>curl -sS -X POST "https://aigc.aiplantform.site/v1/videos" \
+  -H "Authorization: Bearer $RELAYBASES_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model": "CURRENT_MEDIA_MODEL",
+    "prompt": "Make the reference video brighter and more cinematic while preserving the subject motion",
+    "duration": 10,
+    "aspect_ratio": "16:9",
+    "video_url": "https://your-cdn.com/reference-video.mp4",
+    "Ingredients_images": [
+      "https://your-cdn.com/product.jpg"
+    ]
+  }'</code></pre>
+            </div>
+          </div>
+
+          <h3 class="rb-guide-subhead">Poll and read the result</h3>
+          <div class="rb-guide-code-grid">
+            <div class="rb-guide-code-card rb-guide-code-card-wide">
+              <div class="rb-guide-code-head">
+                <h3>Poll task status</h3>
+              </div>
+              <pre><code>curl -sS "https://aigc.aiplantform.site/v1/videos/TASK_ID" \
+  -H "Authorization: Bearer $RELAYBASES_API_KEY"</code></pre>
+            </div>
+
+            <div class="rb-guide-code-card rb-guide-code-card-wide">
+              <div class="rb-guide-code-head">
+                <h3>Common response fields</h3>
+              </div>
+              <pre><code>{
+  "id": "task_385412",
+  "task_id": "task_385412",
+  "object": "video",
+  "model": "CURRENT_MEDIA_MODEL",
+  "status": "completed",
+  "task_status": "completed",
+  "progress": 100,
+  "image_url": null,
+  "video_url": "https://.../generated/video.mp4",
+  "url": "https://.../generated/video.mp4",
+  "result_urls": ["https://.../generated/video.mp4"]
+}</code></pre>
+            </div>
+
+            <div class="rb-guide-code-card rb-guide-code-card-wide">
+              <div class="rb-guide-code-head">
+                <h3>Download task video</h3>
+              </div>
+              <pre><code>curl -sS -L "https://aigc.aiplantform.site/v1/videos/TASK_ID/content" \
+  -H "Authorization: Bearer $RELAYBASES_API_KEY" \
+  -o generated-video.mp4</code></pre>
+              <p class="rb-guide-note">Read the content only after the task reaches <code>completed</code>.</p>
+            </div>
+          </div>
+
+          <div class="rb-guide-faq">
+            <article>
+              <h3>The task does not immediately return media</h3>
+              <p>That is expected. <code>/v1/videos</code> is an async task API. A successful create request returns a <code>task_id</code>; keep polling while the status is <code>queued</code>, <code>processing</code>, or <code>in_progress</code>. When it is <code>completed</code>, read <code>video_url</code>, <code>image_url</code>, <code>url</code>, or <code>result_urls</code>.</p>
+            </article>
+            <article>
+              <h3>When should I use sync or async?</h3>
+              <p>Use <code>/v1/images/generations</code> or <code>/v1/images/edits</code> for synchronous images, <code>/v1/video/generations</code> for synchronous video, and <code>/v1/videos</code> for asynchronous tasks. Select a currently available model from the live catalog above; the catalog and console bill are authoritative.</p>
+            </article>
+            <article>
+              <h3>What happens on invalid input or task failure?</h3>
+              <p>Supported media inputs, image counts, durations, aspect ratios, and resolutions vary by model; use the live model details as the source of truth. For rejected or failed tasks, use the console bill as authoritative. If a charge looks incorrect, keep the <code>task_id</code> and use the support links in the page footer to request a review.</p>
+            </article>
+            <article>
+              <h3>Model or group not available</h3>
+              <p>Confirm that the API key belongs to the <code>media</code> group and that the request URL matches the interface: sync images use <code>/v1/images/generations</code>, sync videos use <code>/v1/video/generations</code>, and async tasks use <code>/v1/videos</code>. Do not send these models to <code>/v1/chat/completions</code> or <code>/v1/responses</code>.</p>
+            </article>
+          </div>
+        </section>
+
+        <section class="rb-guide-section" id="en-seedance-api">
+          <h2>Seedance video (official task API)</h2>
+          <p>Doubao Seedance 2.0, 2.0 Fast, 2.0 Mini, and 2.5 use the official Seedance task API: submitting a task returns a task ID immediately, and you poll for the result. Use an API key created in the <code>media</code> group with the Base URL <code>https://aigc.aiplantform.site</code>.</p>
+
+          <table class="rb-guide-table rb-guide-endpoint-table">
+            <thead>
+              <tr>
+                <th>Purpose</th>
+                <th>Method</th>
+                <th>Path</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Create a task</td>
+                <td><code>POST</code></td>
+                <td><code>/v1/<wbr>contents/<wbr>generations/<wbr>tasks</code></td>
+              </tr>
+              <tr>
+                <td>Query a task</td>
+                <td><code>GET</code></td>
+                <td><code>/v1/<wbr>contents/<wbr>generations/<wbr>tasks/<wbr>{task_id}</code></td>
+              </tr>
+            </tbody>
+          </table>
+          <p class="rb-guide-note">Programs already built on the official Seedance task API only need to switch the Base URL to <code>https://aigc.aiplantform.site/v1</code> and use a 智算星球 API key.</p>
+
+          <h3 class="rb-guide-subhead">Models and specifications</h3>
+          <table class="rb-guide-table">
+            <thead>
+              <tr>
+                <th>Model</th>
+                <th>Model ID</th>
+                <th>Resolution</th>
+                <th>Duration</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Seedance 2.0</td>
+                <td><code>doubao-seedance-2-0-260128</code></td>
+                <td><code>480p</code> <code>720p</code> <code>1080p</code> <code>4k</code></td>
+                <td>4–15 seconds</td>
+              </tr>
+              <tr>
+                <td>Seedance 2.0 Fast</td>
+                <td><code>doubao-seedance-2-0-fast-260128</code></td>
+                <td><code>480p</code> <code>720p</code></td>
+                <td>4–15 seconds</td>
+              </tr>
+              <tr>
+                <td>Seedance 2.0 Mini</td>
+                <td><code>doubao-seedance-2-0-mini-260615</code></td>
+                <td><code>480p</code> <code>720p</code></td>
+                <td>4–15 seconds</td>
+              </tr>
+              <tr>
+                <td>Seedance 2.5</td>
+                <td><code>doubao-seedance-2-5-260628</code></td>
+                <td><code>480p</code> <code>720p</code> <code>1080p</code></td>
+                <td>4–30 seconds</td>
+              </tr>
+            </tbody>
+          </table>
+          <p class="rb-guide-note">Supported aspect ratios are <code>16:9</code>, <code>9:16</code>, <code>1:1</code>, <code>21:9</code>, <code>4:3</code>, and <code>3:4</code>, with <code>16:9</code> as the default. When <code>duration</code> is omitted, the default is 4 seconds.</p>
+
+          <h3 class="rb-guide-subhead">Pricing</h3>
+          <table class="rb-guide-table">
+            <thead>
+              <tr>
+                <th>Model</th>
+                <th>Resolution</th>
+                <th>Without reference video</th>
+                <th>With reference video</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Seedance 2.0</td>
+                <td><code>480p</code> <code>720p</code></td>
+                <td>⚡43.7 per 1M tokens</td>
+                <td>⚡26.6 per 1M tokens</td>
+              </tr>
+              <tr>
+                <td>Seedance 2.0</td>
+                <td><code>1080p</code></td>
+                <td>⚡48.45 per 1M tokens</td>
+                <td>⚡29.45 per 1M tokens</td>
+              </tr>
+              <tr>
+                <td>Seedance 2.0</td>
+                <td><code>4k</code></td>
+                <td>⚡24.7 per 1M tokens</td>
+                <td>⚡15.2 per 1M tokens</td>
+              </tr>
+              <tr>
+                <td>Seedance 2.0 Fast</td>
+                <td><code>480p</code> <code>720p</code></td>
+                <td>⚡35.15 per 1M tokens</td>
+                <td>⚡20.9 per 1M tokens</td>
+              </tr>
+              <tr>
+                <td>Seedance 2.0 Mini</td>
+                <td><code>480p</code> <code>720p</code></td>
+                <td>⚡21.85 per 1M tokens</td>
+                <td>⚡13.3 per 1M tokens</td>
+              </tr>
+              <tr>
+                <td>Seedance 2.5</td>
+                <td><code>480p</code> <code>720p</code></td>
+                <td>⚡66.5 per 1M tokens</td>
+                <td>⚡39.9 per 1M tokens</td>
+              </tr>
+              <tr>
+                <td>Seedance 2.5</td>
+                <td><code>1080p</code></td>
+                <td>⚡73.15 per 1M tokens</td>
+                <td>⚡43.7 per 1M tokens</td>
+              </tr>
+            </tbody>
+          </table>
+          <p class="rb-guide-note">Billing settles on the actual token usage returned upstream. When the request <code>content</code> carries a <code>video_url</code> reference video, the with-reference-video price applies. Token usage is roughly seconds × width × height × 24 ÷ 1024: about 9.6K tokens per second at 480p, 21.6K at 720p, 48.6K at 1080p, and 194.4K at 4K. For example, a 5-second 720p Seedance 2.0 video without a reference video uses about 108K tokens, or about ⚡4.72.</p>
+
+          <h3 class="rb-guide-subhead">Request parameters</h3>
+          <table class="rb-guide-table">
+            <thead>
+              <tr>
+                <th>Field</th>
+                <th>Type</th>
+                <th>Required</th>
+                <th>Description</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>model</code></td>
+                <td><code>string</code></td>
+                <td>Yes</td>
+                <td>A model ID from the table above.</td>
+              </tr>
+              <tr>
+                <td><code>content</code></td>
+                <td><code>array</code></td>
+                <td>Yes</td>
+                <td>At least one non-empty <code>text</code> item; <code>image_url</code>, <code>video_url</code>, and <code>audio_url</code> items may be added under the rules below.</td>
+              </tr>
+              <tr>
+                <td><code>resolution</code></td>
+                <td><code>string</code></td>
+                <td>Yes</td>
+                <td>A resolution the model supports, per the table above. Unsupported values are rejected without a charge.</td>
+              </tr>
+              <tr>
+                <td><code>duration</code></td>
+                <td><code>integer</code></td>
+                <td>No</td>
+                <td>Video length in seconds. Seedance 2.0, 2.0 Fast, and 2.0 Mini support 4–15 seconds; Seedance 2.5 supports 4–30 seconds. Defaults to 4 seconds when omitted.</td>
+              </tr>
+              <tr>
+                <td><code>ratio</code></td>
+                <td><code>string</code></td>
+                <td>No</td>
+                <td>Aspect ratio, <code>16:9</code> by default; supports <code>16:9</code>, <code>9:16</code>, <code>1:1</code>, <code>21:9</code>, <code>4:3</code>, and <code>3:4</code>.</td>
+              </tr>
+              <tr>
+                <td><code>seed</code></td>
+                <td><code>integer</code></td>
+                <td>No</td>
+                <td>Random seed, passed to the generation service unchanged.</td>
+              </tr>
+              <tr>
+                <td><code>generate_audio</code></td>
+                <td><code>boolean</code></td>
+                <td>No</td>
+                <td>Whether to generate audio; depends on the upstream model.</td>
+              </tr>
+              <tr>
+                <td><code>watermark</code></td>
+                <td><code>boolean</code></td>
+                <td>No</td>
+                <td>Watermark setting; depends on the upstream model.</td>
+              </tr>
+              <tr>
+                <td><code>return_last_frame</code></td>
+                <td><code>boolean</code></td>
+                <td>No</td>
+                <td>Returns the last frame when the upstream supports it.</td>
+              </tr>
+              <tr>
+                <td><code>priority</code></td>
+                <td><code>integer</code></td>
+                <td>No</td>
+                <td>Task priority, passed to the generation service unchanged.</td>
+              </tr>
+              <tr>
+                <td><code>execution_expires_after</code></td>
+                <td><code>integer</code></td>
+                <td>No</td>
+                <td>Task execution validity period; unit and range follow the upstream protocol.</td>
+              </tr>
+              <tr>
+                <td><code>tools</code></td>
+                <td><code>array</code></td>
+                <td>No</td>
+                <td>Model tool configuration, passed to the generation service unchanged.</td>
+              </tr>
+              <tr>
+                <td><code>safety_identifier</code></td>
+                <td><code>string</code></td>
+                <td>No</td>
+                <td>A safety identifier supplied by the caller.</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <h3 class="rb-guide-subhead">Reference materials</h3>
+          <table class="rb-guide-table">
+            <thead>
+              <tr>
+                <th>Type</th>
+                <th>role</th>
+                <th>Rules</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>text</code></td>
+                <td>—</td>
+                <td>Required; at least one non-empty item.</td>
+              </tr>
+              <tr>
+                <td><code>image_url</code></td>
+                <td><code>reference_image</code> <code>first_frame</code> <code>last_frame</code></td>
+                <td>A public URL or an <code>asset://…</code> material reference. At most one first frame and one last frame; with first/last frames, at most two images in total and no reference video.</td>
+              </tr>
+              <tr>
+                <td><code>video_url</code></td>
+                <td><code>reference_video</code></td>
+                <td>A public URL or an <code>asset://…</code> material reference; the with-reference-video price applies.</td>
+              </tr>
+              <tr>
+                <td><code>audio_url</code></td>
+                <td><code>reference_audio</code></td>
+                <td>A public URL or an <code>asset://…</code> material reference.</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <h3 class="rb-guide-subhead">Examples</h3>
+          <div class="rb-guide-code-grid">
+            <div class="rb-guide-code-card rb-guide-code-card-wide">
+              <div class="rb-guide-code-head">
+                <h3>Create a Seedance task</h3>
+              </div>
+              <pre><code>curl -sS -X POST "https://aigc.aiplantform.site/v1/contents/generations/tasks" \
+  -H "Authorization: Bearer $RELAYBASES_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model": "doubao-seedance-2-0-260128",
+    "content": [
+      {"type": "text", "text": "Sunset over the sea, slow push-in, cinematic lighting"},
+      {"type": "image_url", "image_url": {"url": "https://your-cdn.com/reference.jpg"}, "role": "reference_image"}
+    ],
+    "resolution": "720p",
+    "duration": 5,
+    "ratio": "16:9",
+    "generate_audio": true
+  }'</code></pre>
+            </div>
+
+            <div class="rb-guide-code-card">
+              <div class="rb-guide-code-head">
+                <h3>Create response</h3>
+              </div>
+              <pre><code>{
+  "id": "task_xxx"
+}</code></pre>
+            </div>
+
+            <div class="rb-guide-code-card">
+              <div class="rb-guide-code-head">
+                <h3>Query a task</h3>
+              </div>
+              <pre><code>curl -sS "https://aigc.aiplantform.site/v1/contents/generations/tasks/task_xxx" \
+  -H "Authorization: Bearer $RELAYBASES_API_KEY"</code></pre>
+            </div>
+
+            <div class="rb-guide-code-card rb-guide-code-card-wide">
+              <div class="rb-guide-code-head">
+                <h3>Success response</h3>
+              </div>
+              <pre><code>{
+  "id": "task_xxx",
+  "model": "doubao-seedance-2-0-260128",
+  "status": "succeeded",
+  "content": {
+    "video_url": "https://.../result.mp4"
+  },
+  "resolution": "720p",
+  "duration": 5,
+  "ratio": "16:9",
+  "usage": {
+    "completion_tokens": 108000,
+    "total_tokens": 108000
+  }
+}</code></pre>
+            </div>
+          </div>
+
+          <div class="rb-guide-faq">
+            <article>
+              <h3>How to read the task status</h3>
+              <p><code>queued</code> and <code>processing</code> mean the task is still waiting or generating, so keep polling. On <code>succeeded</code>, read <code>content.video_url</code> and <code>usage.total_tokens</code>. On <code>failed</code>, read <code>error.message</code>. The video URL comes from the upstream, so download and store it promptly.</p>
+            </article>
+            <article>
+              <h3>How billing works</h3>
+              <p>An estimated amount is reserved when the task is created. After success, the task settles on the <code>usage.total_tokens</code> returned upstream, with any difference refunded or charged. Failed or rejected tasks release the reservation. The console bill is authoritative.</p>
+            </article>
+          </div>
+        </section>
+
+        <section class="rb-guide-section" id="en-image-api">
+          <h2>Image generation and editing</h2>
+          <p>Image generation and editing use the dedicated Base URL <code>https://aigc.aiplantform.site</code>. Use an API key created in the <code>media</code> group and select a currently available image model from the live catalog above. Supported parameters, response formats, and prices are defined by the model details and console bill.</p>
+
+          <div class="rb-guide-callout">
+            Use JSON with <code>/v1/images/generations</code> for text-to-image generation. Use <code>multipart/form-data</code> with <code>/v1/images/edits</code> for image editing. Replace <code>CURRENT_IMAGE_MODEL</code> in the examples with an available model from the live catalog.
+          </div>
+
+          <div class="rb-guide-code-grid">
+            <div class="rb-guide-code-card rb-guide-code-card-wide">
+              <div class="rb-guide-code-head">
+                <h3>Generate an image</h3>
+              </div>
+              <pre><code>curl -sS --max-time 600 -X POST "https://aigc.aiplantform.site/v1/images/generations" \
+  -H "Authorization: Bearer $RELAYBASES_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model": "CURRENT_IMAGE_MODEL",
+    "prompt": "An orange cat under neon lights in a cyberpunk city, cinematic, richly detailed",
+    "size": "1024x1024",
+    "quality": "high",
+    "output_format": "png",
+    "n": 1
+  }' \
+  -o response.json</code></pre>
+            </div>
+
+            <div class="rb-guide-code-card rb-guide-code-card-wide">
+              <div class="rb-guide-code-head">
+                <h3>Edit an image</h3>
+              </div>
+              <pre><code>curl -sS --max-time 600 -X POST "https://aigc.aiplantform.site/v1/images/edits" \
+  -H "Authorization: Bearer $RELAYBASES_API_KEY" \
+  -F "model=CURRENT_IMAGE_MODEL" \
+  -F "image[]=@/path/to/source.png" \
+  -F "prompt=Change the background to Tokyo at night while preserving the person's face, hair, expression, and pose" \
+  -F "size=1024x1024" \
+  -F "quality=high" \
+  -F "output_format=png" \
+  -F "n=1" \
+  -o response.json</code></pre>
+            </div>
+
+            <div class="rb-guide-code-card">
+              <div class="rb-guide-code-head">
+                <h3>Multiple reference images</h3>
+              </div>
+              <pre><code>curl -sS --max-time 600 -X POST "https://aigc.aiplantform.site/v1/images/edits" \
+  -H "Authorization: Bearer $RELAYBASES_API_KEY" \
+  -F "model=CURRENT_IMAGE_MODEL" \
+  -F "image[]=@/path/to/1.png" \
+  -F "image[]=@/path/to/2.png" \
+  -F "prompt=Use both references to create a new scene with the same person" \
+  -F "size=1024x1024" \
+  -F "quality=high" \
+  -F "output_format=png" \
+  -F "n=1"</code></pre>
+            </div>
+
+            <div class="rb-guide-code-card">
+              <div class="rb-guide-code-head">
+                <h3>Read the response</h3>
+              </div>
+              <pre><code># OpenAI-compatible image responses commonly use the data array:
+# data[0].url             image URL when returned by the current model
+# data[0].b64_json        inline base64 image data when returned
+# data[0].revised_prompt  revised prompt when provided
+
+jq -r '.data[0].url // .data[0].b64_json // empty' response.json</code></pre>
+            </div>
+          </div>
+
+          <div class="rb-guide-faq">
+            <article>
+              <h3>Does the response use a URL or <code>b64_json</code>?</h3>
+              <p>The response format depends on the current model and request parameters; handle both <code>data[0].url</code> and <code>data[0].b64_json</code>. If you get an <code>error</code> object, follow its <code>message</code>; retry transient <code>502</code> or <code>server_error</code> responses later.</p>
+            </article>
+            <article>
+              <h3>Model or group not available</h3>
+              <p>This usually means the key is not in the <code>media</code> group, or the request was sent to a general text endpoint. Create a media-group key and confirm the URL is <code>https://aigc.aiplantform.site</code>.</p>
+            </article>
+            <article>
+              <h3>Connection dropped / timeout (curl 56, schannel closed abruptly)</h3>
+              <p>The image endpoints respond synchronously; a <code>quality=high</code> request typically takes 1–3 minutes, and larger sizes take longer. If the client or an intermediate proxy times out during the wait, you see errors like <code>curl: (56) schannel: server closed abruptly</code>. Raise the timeout and auto-retry, e.g. <code>--max-time 600 --retry 3 --retry-all-errors</code>, and start with <code>1024x1024</code> before scaling up.</p>
+            </article>
+            <article>
+              <h3>Running on Windows</h3>
+              <p>In PowerShell, <code>curl</code> is an alias for <code>Invoke-WebRequest</code> — use <code>curl.exe</code> and put the command on a single line (drop the trailing <code>\</code>). Windows has no built-in <code>jq</code>/<code>base64</code>, so save the response with <code>-o response.json</code> and decode it in PowerShell: <code>powershell -Command "$j=Get-Content response.json | ConvertFrom-Json; [IO.File]::WriteAllBytes('out.png', [Convert]::FromBase64String($j.data[0].b64_json))"</code>.</p>
+            </article>
+          </div>
+        </section>
+
+        <section class="rb-guide-section" id="en-commands">
+          <h2>Commands</h2>
+          <p>Slash commands vary by Claude Code and Codex CLI version, but these are the ones most useful for day-to-day setup, context cleanup, and cost checks.</p>
+
+          <table class="rb-guide-table">
+            <thead>
+              <tr>
+                <th>Command</th>
+                <th>What it does</th>
+                <th>When to use it</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>/help</code></td>
+                <td>Shows supported commands and shortcuts for the current client.</td>
+                <td>Run it after a fresh install or upgrade.</td>
+              </tr>
+              <tr>
+                <td><code>/clear</code></td>
+                <td>Clears the current conversation context.</td>
+                <td>Use it when switching tasks or when old context starts leaking into the answer.</td>
+              </tr>
+              <tr>
+                <td><code>/compact</code></td>
+                <td>Compresses the current context while keeping the important progress.</td>
+                <td>Useful for long coding sessions you want to continue.</td>
+              </tr>
+              <tr>
+                <td><code>/cost</code></td>
+                <td>Shows session usage or cost details when the client supports it.</td>
+                <td>Use it to estimate spend or investigate Credits usage.</td>
+              </tr>
+              <tr>
+                <td><code>/model</code></td>
+                <td>Shows or changes the active model.</td>
+                <td>Use it when switching between speed, cost, and reasoning quality.</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <div class="rb-guide-callout">
+            If a command is missing, trust the current client's <code>/help</code> output. Command names can change slightly between releases.
+          </div>
+        </section>
+
+        <section class="rb-guide-section" id="en-trouble">
+          <h2>Troubleshooting</h2>
+          <div class="rb-guide-faq">
+            <article>
+              <h3>Install fails or downloads slowly</h3>
+              <p>Check that your network can reach the official install source, then review proxy, firewall, and DNS settings. On Windows, retry from an administrator terminal.</p>
+            </article>
+            <article>
+              <h3>Command not found</h3>
+              <p>Make sure Node.js, npm, and your global npm bin directory are on <code>PATH</code>. On macOS / Linux, check <code>npm config get prefix</code>. On Windows, reopen PowerShell or VS Code after changing environment variables.</p>
+            </article>
+            <article>
+              <h3>Invalid key or 401</h3>
+              <p>Check that the key was copied completely, has no extra spaces, and is not disabled or expired. The full key is only shown once after creation.</p>
+            </article>
+            <article>
+              <h3>Wrong endpoint</h3>
+              <p>Claude Code uses the selected hostname itself, such as <code>https://www.aiplantform.site</code>. OpenAI-compatible clients append <code>/v1</code>, such as <code>https://www.aiplantform.site/v1</code>. The US direct endpoint follows the same rule.</p>
+            </article>
+            <article>
+              <h3>Long-running synchronous request times out</h3>
+              <p>The standard endpoint passes through Cloudflare, so a long-running synchronous request may be subject to a proxy timeout. Change only the hostname to <code>us.aiplantform.site</code>, keeping the same protocol path and API key. The direct endpoint may be unreachable from some networks.</p>
+            </article>
+            <article>
+              <h3>Environment variables did not apply</h3>
+              <p>Temporary environment variables only apply to the current terminal. After editing <code>~/.zshrc</code>, <code>~/.bashrc</code>, or Windows user environment variables, reopen your terminal and editor.</p>
+            </article>
+            <article>
+              <h3>Cannot connect to the API</h3>
+              <p>Check the Base URL first, then review proxy, firewall, and DNS settings. On macOS / Linux, test both <code>curl -I https://www.aiplantform.site</code> and <code>curl -I https://us.aiplantform.site</code>. On Windows, use <code>Test-NetConnection www.aiplantform.site -Port 443</code> and <code>Test-NetConnection us.aiplantform.site -Port 443</code>.</p>
+            </article>
+            <article>
+              <h3>Balance or group mismatch</h3>
+              <p>Confirm that your account has enough API Credits and that the key group matches the model. Image models need the image group and image endpoint.</p>
+            </article>
+            <article>
+              <h3>Image API does not work</h3>
+              <p>Image generation should use <code>https://aigc.aiplantform.site</code>, not the general OpenAI compatible endpoint. Also confirm that the key belongs to the <code>media</code> group.</p>
+            </article>
+          </div>
+
+        </section>
+
+        </div>
+      </article>
+  </main>
+  <footer class="rb-site-footer" data-lang-panel="zh-CN" hidden>
+    <div class="rb-site-footer__inner">
+      <div class="rb-site-footer__main">
+        <div class="rb-site-footer__identity">
+          <a class="rb-site-footer__logo" href="https://aiplantform.site/" target="_blank" rel="noopener noreferrer" aria-label="智算星球">
+            <img src="https://img.aiplantform.site/telegram-21637102cd4ae1a0.jpg" alt="智算星球" width="48" height="48" loading="lazy" decoding="async">
+          </a>
+          <div class="rb-site-footer__brand">
+            <div class="rb-site-footer__company">智算星球 Inc.</div>
+            <p class="rb-site-footer__tagline">面向开发者和团队的 API 接入层</p>
+            <p class="rb-site-footer__copyright">© 2026 智算星球 Inc. 保留所有权利。</p>
+          </div>
+        </div>
+        <nav class="rb-site-footer__links" aria-label="页脚">
+          <div class="rb-site-footer__column" data-footer-column="developers">
+            <h3>开发者</h3>
+            <a href="https://aiplantform.site/usage-doc.html" target="_blank" rel="noopener noreferrer">文档</a>
+            <a href="https://aiplantform.site/dashboard/overview" target="_blank" rel="noopener noreferrer">控制台</a>
+            <a href="https://canvas.aiplantform.site/" target="_blank" rel="noopener noreferrer">无限画布</a>
+          </div>
+          <div class="rb-site-footer__column" data-footer-column="company">
+            <h3>公司</h3>
+            <a href="https://aiplantform.site/about" target="_blank" rel="noopener noreferrer">关于</a>
+            <a href="mailto:contact@aiplantform.site">邮箱</a>
+            <a href="https://t.me/relaybases" target="_blank" rel="noopener noreferrer">Telegram</a>
+            <a href="https://x.com/智算星球" target="_blank" rel="noopener noreferrer" aria-label="智算星球 on X">X · @智算星球</a>
+          </div>
+          <div class="rb-site-footer__column" data-footer-column="legal">
+            <h3>法律</h3>
+            <a href="https://site.aiplantform.site/aup.html" target="_blank" rel="noopener noreferrer">AI 使用规范</a>
+            <a href="https://aiplantform.site/privacy-policy" target="_blank" rel="noopener noreferrer">隐私政策</a>
+            <a href="https://aiplantform.site/user-agreement" target="_blank" rel="noopener noreferrer">服务条款</a>
+            <a href="https://aiplantform.site/refund-policy" target="_blank" rel="noopener noreferrer">退款政策</a>
+          </div>
+        </nav>
+      </div>
+    </div>
+  </footer>
+  <footer class="rb-site-footer" data-lang-panel="en">
+    <div class="rb-site-footer__inner">
+      <div class="rb-site-footer__main">
+        <div class="rb-site-footer__identity">
+          <a class="rb-site-footer__logo" href="https://aiplantform.site/" target="_blank" rel="noopener noreferrer" aria-label="智算星球">
+            <img src="https://img.aiplantform.site/telegram-21637102cd4ae1a0.jpg" alt="智算星球" width="48" height="48" loading="lazy" decoding="async">
+          </a>
+          <div class="rb-site-footer__brand">
+            <div class="rb-site-footer__company">智算星球 Inc.</div>
+            <p class="rb-site-footer__tagline">API access layer for builders and teams.</p>
+            <p class="rb-site-footer__copyright">© 2026 智算星球 Inc. All rights reserved.</p>
+          </div>
+        </div>
+        <nav class="rb-site-footer__links" aria-label="Footer">
+          <div class="rb-site-footer__column" data-footer-column="developers">
+            <h3>Developers</h3>
+            <a href="https://aiplantform.site/usage-doc.html" target="_blank" rel="noopener noreferrer">Docs</a>
+            <a href="https://aiplantform.site/dashboard/overview" target="_blank" rel="noopener noreferrer">Console</a>
+            <a href="https://canvas.aiplantform.site/" target="_blank" rel="noopener noreferrer">Infinite Canvas</a>
+          </div>
+          <div class="rb-site-footer__column" data-footer-column="company">
+            <h3>Company</h3>
+            <a href="https://aiplantform.site/about" target="_blank" rel="noopener noreferrer">About</a>
+            <a href="mailto:contact@aiplantform.site">Email</a>
+            <a href="https://t.me/relaybases" target="_blank" rel="noopener noreferrer">Telegram</a>
+            <a href="https://x.com/智算星球" target="_blank" rel="noopener noreferrer" aria-label="智算星球 on X">X · @智算星球</a>
+          </div>
+          <div class="rb-site-footer__column" data-footer-column="legal">
+            <h3>Legal</h3>
+            <a href="https://site.aiplantform.site/aup.html" target="_blank" rel="noopener noreferrer">AI Use Policy</a>
+            <a href="https://aiplantform.site/privacy-policy" target="_blank" rel="noopener noreferrer">Privacy</a>
+            <a href="https://aiplantform.site/user-agreement" target="_blank" rel="noopener noreferrer">Terms</a>
+            <a href="https://aiplantform.site/refund-policy" target="_blank" rel="noopener noreferrer">Refund Policy</a>
+          </div>
+        </nav>
+      </div>
+    </div>
+  </footer>
+</section>
+
+<script src="assets/vendor/highlight.min.js"></script>
+<script src="assets/vendor/powershell.min.js"></script>
+<script>
+  (() => {
+    const root =
+      document.currentScript &&
+      document.currentScript.previousElementSibling &&
+      document.currentScript.previousElementSibling.matches(".rb-guide")
+        ? document.currentScript.previousElementSibling
+        : document.querySelector(".rb-guide");
+    if (!root) return;
+
+    const titles = {
+      en: "智算星球 Usage Guide",
+      zh: "智算星球 使用教程",
+    };
+    const messages = {
+      en: { "nav.section": "Docs" },
+      zh: { "nav.section": "文档" },
+    };
+
+    const copyLabels = {
+      en: { idle: "Copy", done: "Copied" },
+      "zh-CN": { idle: "复制", done: "已复制" },
+      "zh-TW": { idle: "複製", done: "已複製" },
+      fr: { idle: "Copier", done: "Copié" },
+      ja: { idle: "コピー", done: "コピーしました" },
+      ru: { idle: "Копировать", done: "Скопировано" },
+      vi: { idle: "Sao chép", done: "Đã sao chép" },
+    };
+
+    const currentLang = () => window.智算星球DocumentPreferences.normalizeLang(root.dataset.lang) || "en";
+
+    const updateCopyButtons = (lang) => {
+      const labels = copyLabels[lang] || copyLabels.en;
+      root.querySelectorAll(".rb-guide-copy-btn").forEach((button) => {
+        if (!button.classList.contains("is-copied")) {
+          button.setAttribute("aria-label", labels.idle);
+        }
+      });
+    };
+
+    // Build locale panels from the checked-in source before copy buttons and
+    // syntax highlighting add runtime-only nodes and attributes.
+    window.智算星球DocumentPreferences.mount({
+      root,
+      messages,
+      titles,
+      onApply: ({ lang }) => updateCopyButtons(lang),
+    });
+
+    const COPY_ICON =
+      '<svg class="rb-ico-copy" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5.6" y="5.6" width="8.4" height="8.4" rx="1.6"/><path d="M3.8 10.4H2.9A1.4 1.4 0 0 1 1.5 9V2.9A1.4 1.4 0 0 1 2.9 1.5H9a1.4 1.4 0 0 1 1.4 1.4v.9"/></svg>' +
+      '<svg class="rb-ico-check" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13 4.5 6.4 11.2 3 7.9"/></svg>';
+
+    root.querySelectorAll(".rb-guide-code-card").forEach((card) => {
+      if (card.querySelector(".rb-guide-copy-btn")) return;
+      const pre = card.querySelector("pre");
+      const head = card.querySelector(".rb-guide-code-head");
+      if (!pre || !head) return;
+      const button = document.createElement("button");
+      button.type = "button";
+      button.className = "rb-guide-copy-btn";
+      button.innerHTML = COPY_ICON;
+      button.setAttribute("aria-label", (copyLabels[currentLang()] || copyLabels.en).idle);
+      head.appendChild(button);
+      button.addEventListener("click", async () => {
+        const labels = copyLabels[currentLang()] || copyLabels.en;
+        try {
+          await navigator.clipboard.writeText(pre.textContent || "");
+          button.classList.add("is-copied");
+          button.setAttribute("aria-label", labels.done);
+          setTimeout(() => {
+            button.classList.remove("is-copied");
+            button.setAttribute("aria-label", labels.idle);
+          }, 1400);
+        } catch (_) {}
+      });
+    });
+
+    // Syntax highlighting — GitHub light/dark themes via highlight.js
+    if (window.hljs) {
+      const guessLang = (codeText) => {
+        const t = (codeText || "").trim();
+        if (/^[{[]/.test(t)) return "json";
+        if (/\$env:|Invoke-WebRequest|\[System\.Environment\]|(^|\s)irm\s|(^|\s)iex(\s|$)/m.test(t)) return "powershell";
+        if (/^(model_provider|model|model_reasoning_effort|disable_response_storage|sandbox_mode|base_url|wire_api|env_key|requires_openai_auth|network_access|name|plan_tool|apply_patch_freeform)\s*=|^\[[a-z0-9_.]+\]\s*$/m.test(t)) return "ini";
+        return "bash";
+      };
+      root.querySelectorAll("pre code").forEach((code) => {
+        if (code.dataset.hl) return;
+        code.classList.add("language-" + guessLang(code.textContent));
+        try { window.hljs.highlightElement(code); } catch (_) {}
+        code.dataset.hl = "1";
+      });
+    }
+
+  })();
+</script>
+<script src="https://site.aiplantform.site/assets/relaybases-live-models.js?v=20260929-1"></script>
+<script>
+  (() => {
+    const links = new Map();
+    document.querySelectorAll('.rb-docs-sidebar a[href^="#"]').forEach((a) => {
+      links.set((a.getAttribute("href") || "").slice(1), a);
+    });
+    if (!links.size) return;
+    const targets = Array.from(
+      document.querySelectorAll(".rb-guide-section[id], .rb-guide-hero[id]")
+    );
+    if (!targets.length) return;
+    let current = null;
+    const setActive = (id) => {
+      if (id === current) return;
+      current = id;
+      document.querySelectorAll(".rb-docs-sidebar a.is-active").forEach((a) => a.classList.remove("is-active"));
+      const a = links.get(id);
+      if (a) {
+        a.classList.add("is-active");
+        try { a.scrollIntoView({ block: "nearest", inline: "nearest" }); } catch (_) {}
+      }
+    };
+    const io = new IntersectionObserver((entries) => {
+      const vis = entries.filter((e) => e.isIntersecting)
+        .sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top);
+      if (vis.length) setActive(vis[0].target.id);
+    }, { rootMargin: "-14% 0px -72% 0px", threshold: 0 });
+    targets.forEach((sec) => io.observe(sec));
+  })();
+</script>
+<script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/v4bc70e2c01a94c73b74392e4234840661791215815920" integrity="sha512-L0ha0OXavK/8okipN9F8BtP84dg9DUhPERbBXzwI6dgTA55d2+yweo3pn5CSFYs45/r8md2+xvUPtTdvTNRfjA==" data-cf-beacon='{"version":"2024.11.0","token":"41131394bc4f40149149c6a4b11948c4","r":1,"spa":2}' crossorigin="anonymous"></script>
+<script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a476ae6cfe4a27e8',t:'MTc5MTQ3ODYxMQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
