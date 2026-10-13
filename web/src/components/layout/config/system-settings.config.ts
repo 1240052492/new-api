@@ -26,6 +26,7 @@ import {
   Shield,
   ShieldAlert,
   Wrench,
+  KeySquare,
 } from 'lucide-react'
 
 import { getAuthSectionNavItems } from '@/features/system-settings/auth/section-registry.tsx'
@@ -36,6 +37,7 @@ import { getOperationsSectionNavItems } from '@/features/system-settings/operati
 import { getPolicySectionNavItems } from '@/features/system-settings/request-policies/section-registry'
 import { getSecuritySectionNavItems } from '@/features/system-settings/security/section-registry.tsx'
 import { getSiteSectionNavItems } from '@/features/system-settings/site/section-registry.tsx'
+import { getOAuthSectionNavItems } from '@/features/system-settings/oauth/section-registry.tsx'
 
 import type { NavGroup, SidebarView } from '../types'
 
@@ -61,6 +63,11 @@ function getSystemSettingsNavGroups(t: TFunction): NavGroup[] {
           title: t('Authentication'),
           icon: Shield,
           items: getAuthSectionNavItems(t),
+        },
+        {
+          title: t('OAuth Applications'),
+          icon: KeySquare,
+          items: getOAuthSectionNavItems(t),
         },
         {
           title: t('Billing & Payment'),

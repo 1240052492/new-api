@@ -391,6 +391,10 @@ func migrateDB() error {
 	if err := InitializeExternalIdentityClaims(); err != nil {
 		return err
 	}
+	// Initialize OAuth applications (infinite-canvas)
+	if err := InitializeOAuthInfiniteCanvas(DB); err != nil {
+		common.SysError(common.LogText("failed to initialize OAuth infinite-canvas: %s", err.Error()))
+	}
 	if common.UsingMainDatabase(common.DatabaseTypeSQLite) {
 		if err := ensureSubscriptionPlanTableSQLite(); err != nil {
 			return err
