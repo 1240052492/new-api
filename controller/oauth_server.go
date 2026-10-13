@@ -3,6 +3,7 @@ package controller
 import (
 	"net/http"
 	"net/url"
+	"strconv"
 
 	"github.com/QuantumNous/new-api/common"
 	"github.com/QuantumNous/new-api/middleware"
@@ -223,8 +224,8 @@ func CreateOAuthApplication(c *gin.Context) {
 	}
 
 	// Generate client ID and secret
-	clientID := "client_" + common.GenerateRandomString(32)
-	clientSecret := common.GenerateRandomString(64)
+	clientID := "client_" + common.GetRandomString(32)
+	clientSecret := common.GetRandomString(64)
 
 	// Create application
 	app := &model.OAuthApplication{
@@ -271,15 +272,13 @@ func GetOAuthApplications(c *gin.Context) {
 	offset := 0
 	limit := 10
 	if p := c.Query("offset"); p != "" {
-		_, err := common.ParseInt(p)
-		if err == nil {
-			offset, _ = common.ParseInt(p)
+		if o, err := strconv.Atoi(p); err == nil {
+			offset = o
 		}
 	}
 	if p := c.Query("limit"); p != "" {
-		_, err := common.ParseInt(p)
-		if err == nil {
-			limit, _ = common.ParseInt(p)
+		if l, err := strconv.Atoi(p); err == nil {
+			limit = l
 		}
 	}
 
@@ -330,7 +329,7 @@ func DeleteOAuthApplication(c *gin.Context) {
 	}
 
 	id := c.Param("id")
-	appID, err := common.ParseInt(id)
+	appID, err := strconv.Atoi(id)
 	if err != nil {
 		common.ApiErrorT(c, "Invalid application ID")
 		return
