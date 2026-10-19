@@ -42,6 +42,9 @@ func GetStatus(c *gin.Context) {
 
 	cs := console_setting.GetConsoleSetting()
 	passkeySetting := system_setting.PasskeySettingsSnapshot()
+	// Resolve before taking the OptionMap read lock: the lazy legacy-config
+	// migration inside GetThirdPartyApps may acquire the write lock.
+	thirdPartyApps := model.GetThirdPartyApps()
 	common.OptionMapRWMutex.RLock()
 	defer common.OptionMapRWMutex.RUnlock()
 
@@ -108,6 +111,7 @@ func GetStatus(c *gin.Context) {
 		"HeaderNavModules":    common.OptionMap["HeaderNavModules"],
 		"SidebarModulesAdmin": common.OptionMap["SidebarModulesAdmin"],
 		"InfiniteCanvasURL":   common.OptionMap["InfiniteCanvasURL"],
+		"ThirdPartyApps":      thirdPartyApps,
 
 		"oidc_enabled":                system_setting.GetOIDCSettings().Enabled,
 		"oidc_client_id":              system_setting.GetOIDCSettings().ClientId,

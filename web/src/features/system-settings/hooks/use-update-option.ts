@@ -31,6 +31,7 @@ const STATUS_RELATED_KEYS = new Set([
   'HeaderNavModules',
   'SidebarModulesAdmin',
   'InfiniteCanvasURL',
+  'ThirdPartyApps',
   'Notice',
   'LogConsumeEnabled',
   'log_setting.user_export_enabled',

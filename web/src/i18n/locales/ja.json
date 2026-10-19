@@ -7276,6 +7276,23 @@
     "Show in top navigation": "トップナビに表示",
     "Show the Infinite Canvas entry in the top navigation.": "トップナビに無限キャンバスのエントリを表示します。",
     "Show in sidebar": "サイドバーに表示",
-    "Show the Infinite Canvas entry in the sidebar.": "サイドバーに無限キャンバスのエントリを表示します。"
+    "Show the Infinite Canvas entry in the sidebar.": "サイドバーに無限キャンバスのエントリを表示します。",
+    "Third-Party Apps": "サードパーティアプリ",
+    "External systems shown in the top navigation and/or sidebar. Each entry carries its own display switches; use OAuth login to let users sign in through this platform.": "トップナビおよび/またはサイドバーに表示される外部システムです。各エントリには表示スイッチが付属し、OAuthログインで本プラットフォーム経由の認証が可能です。",
+    "No third-party apps configured yet.": "サードパーティアプリはまだ設定されていません。",
+    "App name": "アプリ名",
+    "e.g. Infinite Canvas": "例：Infinite Canvas",
+    "Shown as the navigation title for this entry.": "このエントリのナビゲーションタイトルとして表示されます。",
+    "Application URL": "アプリケーションURL",
+    "Target address opened when users click the entry.": "ユーザーがこのエントリをクリックしたときに開くアドレスです。",
+    "Show this entry in the top navigation.": "トップナビにこのエントリを表示します。",
+    "Show this entry in the sidebar.": "サイドバーにこのエントリを表示します。",
+    "OAuth login": "OAuthログイン",
+    "Create OAuth login": "OAuthログインを作成",
+    "Callback URL": "コールバックURL",
+    "Add app": "アプリを追加",
+    "App name is required": "アプリ名は必須です",
+    "Enter a valid URL": "有効なURLを入力してください",
+    "OAuth login created. Save the app list to persist the binding.": "OAuthログインを作成しました。バインディングを保存するにはアプリリストを保存してください。"
   }
 }

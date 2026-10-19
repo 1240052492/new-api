@@ -45,12 +45,18 @@ afterEach(() => {
   useAuthStore.getState().auth.reset()
 })
 
-function sidebarFor(admin?: object, user?: object, canConfigure = true) {
+function sidebarFor(
+  admin?: object,
+  user?: object,
+  canConfigure = true,
+  extraStatus?: Record<string, unknown>
+) {
   const client = new QueryClient({
     defaultOptions: { queries: { retry: false } },
   })
   client.setQueryData(['status'], {
     SidebarModulesAdmin: admin ? JSON.stringify(admin) : '',
+    ...extraStatus,
   })
   useAuthStore.getState().auth.setUser({
     id: 1,
@@ -120,9 +126,28 @@ describe('security sidebar visibility', () => {
   })
 })
 
-describe('Infinite Canvas sidebar entry', () => {
-  it('appears above Playground and can be hidden by either sidebar setting', () => {
-    const { result } = sidebarFor()
+describe('third-party app sidebar entries', () => {
+  it('renders enabled entries above Playground and honors per-app switches', () => {
+    const { result } = sidebarFor(undefined, undefined, true, {
+      ThirdPartyApps: [
+        {
+          id: 'infinite-canvas',
+          name: 'Infinite Canvas',
+          url: 'http://localhost:5173/',
+          show_in_top_nav: true,
+          show_in_sidebar: true,
+          enabled: true,
+        },
+        {
+          id: 'app-b',
+          name: 'App B',
+          url: 'https://app-b.example.com/',
+          show_in_top_nav: false,
+          show_in_sidebar: false,
+          enabled: true,
+        },
+      ],
+    })
     const chatItems = result.current.find((group) => group.id === 'chat')?.items
     expect(chatItems?.[0]).toMatchObject({
       title: 'Infinite Canvas',
@@ -130,24 +155,19 @@ describe('Infinite Canvas sidebar entry', () => {
       external: true,
     })
     expect(chatItems?.[1].title).toBe('Playground')
-
-    const adminHidden = sidebarFor({
-      chat: { enabled: true, infiniteCanvas: false },
-    })
     expect(
-      adminHidden.result.current
-        .find((group) => group.id === 'chat')
-        ?.items.some((item) => item.title === 'Infinite Canvas')
+      chatItems?.some((item) => item.title === 'App B')
     ).toBe(false)
+  })
 
-    const userHidden = sidebarFor(undefined, {
-      chat: { enabled: true, infiniteCanvas: false },
+  it('falls back to the legacy single entry when no list is published', () => {
+    const { result } = sidebarFor()
+    const chatItems = result.current.find((group) => group.id === 'chat')?.items
+    expect(chatItems?.[0]).toMatchObject({
+      title: 'Infinite Canvas',
+      url: 'http://localhost:5173/',
+      external: true,
     })
-    expect(
-      userHidden.result.current
-        .find((group) => group.id === 'chat')
-        ?.items.some((item) => item.title === 'Infinite Canvas')
-    ).toBe(false)
   })
 })
 

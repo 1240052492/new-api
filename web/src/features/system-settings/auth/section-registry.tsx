@@ -21,7 +21,6 @@ import { createSectionRegistry } from '../utils/section-registry'
 import { BasicAuthSection } from './basic-auth-section'
 import { BotProtectionSection } from './bot-protection-section'
 import { CustomOAuthSection } from './custom-oauth/custom-oauth-section'
-import { OAuthConfigSection } from './oauth-config-section'
 import { OAuthSection } from './oauth-section'
 import { PasskeySection } from './passkey-section'
 
@@ -122,11 +121,6 @@ const AUTH_SECTIONS = [
     build: (settings: AuthSettings) => (
       <CustomOAuthSection serverAddress={settings.ServerAddress} />
     ),
-  },
-  {
-    id: 'oauth-config',
-    titleKey: 'Third-Party App Access',
-    build: () => <OAuthConfigSection />,
   },
 ] as const
 

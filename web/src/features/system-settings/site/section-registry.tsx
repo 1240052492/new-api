@@ -17,16 +17,15 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 For commercial licensing, please contact support@quantumnous.com
 */
 import { SystemInfoSection } from '../general/system-info-section'
+import { OAuthConfigSection } from '../auth/oauth-config-section'
 import {
   parseHeaderNavModules,
   parseSidebarModulesAdmin,
-  serializeHeaderNavModules,
-  serializeSidebarModulesAdmin,
 } from '../maintenance/config'
 import { HeaderNavigationSection } from '../maintenance/header-navigation-section'
 import { NoticeSection } from '../maintenance/notice-section'
 import { SidebarModulesSection } from '../maintenance/sidebar-modules-section'
-import { InfiniteCanvasSection } from './infinite-canvas-section'
+import { ThirdPartyAppsSection } from './third-party-apps-section'
 import type { SiteSettings } from '../types'
 import { createSectionRegistry } from '../utils/section-registry'
 
@@ -63,23 +62,14 @@ const SITE_SECTIONS = [
     ),
   },
   {
-    id: 'infinite-canvas',
-    titleKey: 'Infinite Canvas',
-    build: (settings: SiteSettings) => {
-      const headerNavConfig = parseHeaderNavModules(settings.HeaderNavModules)
-      const sidebarConfig = parseSidebarModulesAdmin(
-        settings.SidebarModulesAdmin
-      )
-      return (
-        <InfiniteCanvasSection
-          defaultValue={settings.InfiniteCanvasURL}
-          headerNavConfig={headerNavConfig}
-          headerNavSerialized={serializeHeaderNavModules(headerNavConfig)}
-          sidebarConfig={sidebarConfig}
-          sidebarSerialized={serializeSidebarModulesAdmin(sidebarConfig)}
-        />
-      )
-    },
+    id: 'third-party-apps',
+    titleKey: 'Third-Party Apps',
+    build: (settings: SiteSettings) => (
+      <>
+        <ThirdPartyAppsSection defaultValue={settings.ThirdPartyApps} />
+        <OAuthConfigSection />
+      </>
+    ),
   },
   {
     id: 'header-navigation',

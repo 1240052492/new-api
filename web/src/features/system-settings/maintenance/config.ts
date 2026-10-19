@@ -24,7 +24,6 @@ export type HeaderNavAccessConfig = {
 export type HeaderNavModulesConfig = {
   home: boolean
   console: boolean
-  infiniteCanvas: boolean
   pricing: HeaderNavAccessConfig
   rankings: HeaderNavAccessConfig
   docs: boolean
@@ -42,7 +41,6 @@ export type SidebarModulesAdminConfig = Record<string, SidebarSectionConfig>
 export const HEADER_NAV_DEFAULT: HeaderNavModulesConfig = {
   home: true,
   console: true,
-  infiniteCanvas: true,
   pricing: {
     enabled: true,
     requireAuth: false,
@@ -58,7 +56,6 @@ export const HEADER_NAV_DEFAULT: HeaderNavModulesConfig = {
 export const SIDEBAR_MODULES_DEFAULT: SidebarModulesAdminConfig = {
   chat: {
     enabled: true,
-    infiniteCanvas: true,
     playground: true,
     chat: true,
   },

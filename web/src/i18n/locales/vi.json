@@ -7276,6 +7276,23 @@
     "Show in top navigation": "Hiển thị ở điều hướng trên",
     "Show the Infinite Canvas entry in the top navigation.": "Hiển thị mục Infinite Canvas ở điều hướng trên.",
     "Show in sidebar": "Hiển thị ở thanh bên",
-    "Show the Infinite Canvas entry in the sidebar.": "Hiển thị mục Infinite Canvas ở thanh bên."
+    "Show the Infinite Canvas entry in the sidebar.": "Hiển thị mục Infinite Canvas ở thanh bên.",
+    "Third-Party Apps": "Ứng dụng bên thứ ba",
+    "External systems shown in the top navigation and/or sidebar. Each entry carries its own display switches; use OAuth login to let users sign in through this platform.": "Các hệ thống bên ngoài hiển thị ở điều hướng trên và/hoặc thanh bên. Mỗi mục có công tắc hiển thị riêng; dùng đăng nhập OAuth để người dùng đăng nhập qua nền tảng này.",
+    "No third-party apps configured yet.": "Chưa cấu hình ứng dụng bên thứ ba nào.",
+    "App name": "Tên ứng dụng",
+    "e.g. Infinite Canvas": "vd. Infinite Canvas",
+    "Shown as the navigation title for this entry.": "Hiển thị làm tiêu đề điều hướng cho mục này.",
+    "Application URL": "URL ứng dụng",
+    "Target address opened when users click the entry.": "Địa chỉ đích được mở khi người dùng nhấp vào mục.",
+    "Show this entry in the top navigation.": "Hiển thị mục này ở điều hướng trên.",
+    "Show this entry in the sidebar.": "Hiển thị mục này ở thanh bên.",
+    "OAuth login": "Đăng nhập OAuth",
+    "Create OAuth login": "Tạo đăng nhập OAuth",
+    "Callback URL": "URL callback",
+    "Add app": "Thêm ứng dụng",
+    "App name is required": "Tên ứng dụng là bắt buộc",
+    "Enter a valid URL": "Nhập URL hợp lệ",
+    "OAuth login created. Save the app list to persist the binding.": "Đã tạo đăng nhập OAuth. Hãy lưu danh sách ứng dụng để giữ liên kết."
   }
 }

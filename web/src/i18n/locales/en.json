@@ -7276,6 +7276,23 @@
     "Show in top navigation": "Show in top navigation",
     "Show the Infinite Canvas entry in the top navigation.": "Show the Infinite Canvas entry in the top navigation.",
     "Show in sidebar": "Show in sidebar",
-    "Show the Infinite Canvas entry in the sidebar.": "Show the Infinite Canvas entry in the sidebar."
+    "Show the Infinite Canvas entry in the sidebar.": "Show the Infinite Canvas entry in the sidebar.",
+    "Third-Party Apps": "Third-Party Apps",
+    "External systems shown in the top navigation and/or sidebar. Each entry carries its own display switches; use OAuth login to let users sign in through this platform.": "External systems shown in the top navigation and/or sidebar. Each entry carries its own display switches; use OAuth login to let users sign in through this platform.",
+    "No third-party apps configured yet.": "No third-party apps configured yet.",
+    "App name": "App name",
+    "e.g. Infinite Canvas": "e.g. Infinite Canvas",
+    "Shown as the navigation title for this entry.": "Shown as the navigation title for this entry.",
+    "Application URL": "Application URL",
+    "Target address opened when users click the entry.": "Target address opened when users click the entry.",
+    "Show this entry in the top navigation.": "Show this entry in the top navigation.",
+    "Show this entry in the sidebar.": "Show this entry in the sidebar.",
+    "OAuth login": "OAuth login",
+    "Create OAuth login": "Create OAuth login",
+    "Callback URL": "Callback URL",
+    "Add app": "Add app",
+    "App name is required": "App name is required",
+    "Enter a valid URL": "Enter a valid URL",
+    "OAuth login created. Save the app list to persist the binding.": "OAuth login created. Save the app list to persist the binding."
   }
 }

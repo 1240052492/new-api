@@ -43,6 +43,8 @@ import { useTranslation } from 'react-i18next'
 import type { SidebarData } from '@/components/layout/types'
 import { useStatus } from '@/hooks/use-status'
 import { ROLE } from '@/lib/roles'
+import { parseThirdPartyApps } from '@/lib/third-party-apps'
+import type { NavItem } from '@/components/layout/types'
 
 /**
  * Root navigation groups for the application sidebar.
@@ -53,11 +55,37 @@ import { ROLE } from '@/lib/roles'
 export function useSidebarData(): SidebarData {
   const { t } = useTranslation()
   const { status } = useStatus()
-  const infiniteCanvasURL =
-    typeof status?.InfiniteCanvasURL === 'string' &&
-    status.InfiniteCanvasURL.trim()
-      ? status.InfiniteCanvasURL.trim()
-      : 'http://localhost:5173/'
+
+  // Unified third-party app entries (migrated from the legacy Infinite
+  // Canvas configuration). Falls back to the legacy single-entry behavior
+  // when the backend has not published the list yet.
+  const thirdPartyApps = parseThirdPartyApps(
+    (status as Record<string, unknown> | null)?.ThirdPartyApps
+  )
+
+  const thirdPartyItems: NavItem[] =
+    thirdPartyApps.length > 0
+      ? thirdPartyApps
+          .filter((app) => app.enabled && app.show_in_sidebar)
+          .map((app) => ({
+            title: app.name ? t(app.name) : t('Infinite Canvas'),
+            url: app.url,
+            icon: Maximize2,
+            external: true,
+          }))
+      : [
+          {
+            title: t('Infinite Canvas'),
+            url:
+              typeof status?.InfiniteCanvasURL === 'string' &&
+              status.InfiniteCanvasURL.trim()
+                ? status.InfiniteCanvasURL.trim()
+                : 'http://localhost:5173/',
+            icon: Maximize2,
+            external: true,
+            configUrls: ['/infinite-canvas'],
+          },
+        ]
 
   return {
     navGroups: [
@@ -65,13 +93,7 @@ export function useSidebarData(): SidebarData {
         id: 'chat',
         title: t('Chat'),
         items: [
-          {
-            title: t('Infinite Canvas'),
-            url: infiniteCanvasURL,
-            icon: Maximize2,
-            external: true,
-            configUrls: ['/infinite-canvas'],
-          },
+          ...thirdPartyItems,
           {
             title: t('Playground'),
             url: '/playground',

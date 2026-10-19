@@ -7276,6 +7276,23 @@
     "Show in top navigation": "在顶部导航显示",
     "Show the Infinite Canvas entry in the top navigation.": "在顶部导航中显示无限画布入口。",
     "Show in sidebar": "在侧边栏显示",
-    "Show the Infinite Canvas entry in the sidebar.": "在侧边栏中显示无限画布入口。"
+    "Show the Infinite Canvas entry in the sidebar.": "在侧边栏中显示无限画布入口。",
+    "Third-Party Apps": "第三方应用",
+    "External systems shown in the top navigation and/or sidebar. Each entry carries its own display switches; use OAuth login to let users sign in through this platform.": "展示在顶部导航和/或侧边栏的外部系统。每个条目自带展示开关；可通过 OAuth 登录让用户经本平台授权登录。",
+    "No third-party apps configured yet.": "尚未配置第三方应用。",
+    "App name": "应用名称",
+    "e.g. Infinite Canvas": "例如：无限画布",
+    "Shown as the navigation title for this entry.": "作为该条目在导航中显示的标题。",
+    "Application URL": "应用地址",
+    "Target address opened when users click the entry.": "用户点击该条目时打开的目标地址。",
+    "Show this entry in the top navigation.": "在顶部导航中显示该条目。",
+    "Show this entry in the sidebar.": "在侧边栏中显示该条目。",
+    "OAuth login": "OAuth 登录",
+    "Create OAuth login": "创建 OAuth 登录",
+    "Callback URL": "回调地址",
+    "Add app": "添加应用",
+    "App name is required": "请填写应用名称",
+    "Enter a valid URL": "请输入有效的 URL",
+    "OAuth login created. Save the app list to persist the binding.": "OAuth 登录已创建。请保存应用列表以持久化绑定。"
   }
 }

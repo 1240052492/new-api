@@ -7276,6 +7276,23 @@
     "Show in top navigation": "Показывать в верхней навигации",
     "Show the Infinite Canvas entry in the top navigation.": "Показывать пункт Infinite Canvas в верхней навигации.",
     "Show in sidebar": "Показывать в боковой панели",
-    "Show the Infinite Canvas entry in the sidebar.": "Показывать пункт Infinite Canvas в боковой панели."
+    "Show the Infinite Canvas entry in the sidebar.": "Показывать пункт Infinite Canvas в боковой панели.",
+    "Third-Party Apps": "Сторонние приложения",
+    "External systems shown in the top navigation and/or sidebar. Each entry carries its own display switches; use OAuth login to let users sign in through this platform.": "Внешние системы, отображаемые в верхней навигации и/или боковой панели. У каждой записи свои переключатели отображения; OAuth-вход позволяет пользователям авторизоваться через эту платформу.",
+    "No third-party apps configured yet.": "Сторонние приложения ещё не настроены.",
+    "App name": "Название приложения",
+    "e.g. Infinite Canvas": "напр. Infinite Canvas",
+    "Shown as the navigation title for this entry.": "Отображается как заголовок навигации для этой записи.",
+    "Application URL": "URL приложения",
+    "Target address opened when users click the entry.": "Адрес, открываемый при нажатии на запись.",
+    "Show this entry in the top navigation.": "Показывать эту запись в верхней навигации.",
+    "Show this entry in the sidebar.": "Показывать эту запись в боковой панели.",
+    "OAuth login": "OAuth-вход",
+    "Create OAuth login": "Создать OAuth-вход",
+    "Callback URL": "Callback URL",
+    "Add app": "Добавить приложение",
+    "App name is required": "Укажите название приложения",
+    "Enter a valid URL": "Введите корректный URL",
+    "OAuth login created. Save the app list to persist the binding.": "OAuth-вход создан. Сохраните список приложений, чтобы сохранить привязку."
   }
 }

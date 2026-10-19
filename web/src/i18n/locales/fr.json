@@ -7276,6 +7276,23 @@
     "Show in top navigation": "Afficher dans la navigation supérieure",
     "Show the Infinite Canvas entry in the top navigation.": "Afficher l'entrée Infinite Canvas dans la navigation supérieure.",
     "Show in sidebar": "Afficher dans la barre latérale",
-    "Show the Infinite Canvas entry in the sidebar.": "Afficher l'entrée Infinite Canvas dans la barre latérale."
+    "Show the Infinite Canvas entry in the sidebar.": "Afficher l'entrée Infinite Canvas dans la barre latérale.",
+    "Third-Party Apps": "Applications tierces",
+    "External systems shown in the top navigation and/or sidebar. Each entry carries its own display switches; use OAuth login to let users sign in through this platform.": "Systèmes externes affichés dans la navigation supérieure et/ou la barre latérale. Chaque entrée possède ses propres commutateurs d'affichage ; utilisez la connexion OAuth pour permettre aux utilisateurs de se connecter via cette plateforme.",
+    "No third-party apps configured yet.": "Aucune application tierce configurée pour le moment.",
+    "App name": "Nom de l'application",
+    "e.g. Infinite Canvas": "ex. Infinite Canvas",
+    "Shown as the navigation title for this entry.": "Affiché comme titre de navigation pour cette entrée.",
+    "Application URL": "URL de l'application",
+    "Target address opened when users click the entry.": "Adresse ouverte lorsque les utilisateurs cliquent sur l'entrée.",
+    "Show this entry in the top navigation.": "Afficher cette entrée dans la navigation supérieure.",
+    "Show this entry in the sidebar.": "Afficher cette entrée dans la barre latérale.",
+    "OAuth login": "Connexion OAuth",
+    "Create OAuth login": "Créer une connexion OAuth",
+    "Callback URL": "URL de rappel",
+    "Add app": "Ajouter une application",
+    "App name is required": "Le nom de l'application est requis",
+    "Enter a valid URL": "Saisissez une URL valide",
+    "OAuth login created. Save the app list to persist the binding.": "Connexion OAuth créée. Enregistrez la liste des applications pour conserver la liaison."
   }
 }

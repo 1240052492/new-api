@@ -21,6 +21,7 @@ import { useTranslation } from 'react-i18next'
 
 import { useStatus } from '@/hooks/use-status'
 import { parseHeaderNavModulesFromStatus } from '@/lib/nav-modules'
+import { parseThirdPartyApps } from '@/lib/third-party-apps'
 import { useAuthStore } from '@/stores/auth-store'
 
 export type TopNavLink = {
@@ -57,11 +58,13 @@ export function useTopNavLinks(): TopNavLink[] {
 
   // Documentation link (may be external)
   const docsLink: string | undefined = status?.docs_link as string | undefined
-  const infiniteCanvasURL =
-    typeof status?.InfiniteCanvasURL === 'string' &&
-    status.InfiniteCanvasURL.trim()
-      ? status.InfiniteCanvasURL.trim()
-      : 'http://localhost:5173/'
+
+  // Unified third-party app entries (migrated from the legacy Infinite
+  // Canvas configuration). Falls back to the legacy single-entry behavior
+  // when the backend has not published the list yet.
+  const thirdPartyApps = parseThirdPartyApps(
+    (status as Record<string, unknown> | null)?.ThirdPartyApps
+  )
 
   const isAuthed = !!auth?.user
 
@@ -77,7 +80,22 @@ export function useTopNavLinks(): TopNavLink[] {
     links.push({ title: t('Console'), href: '/dashboard' })
   }
 
-  if (modules?.infiniteCanvas !== false) {
+  if (thirdPartyApps.length > 0) {
+    for (const app of thirdPartyApps) {
+      if (app.enabled && app.show_in_top_nav) {
+        links.push({
+          title: app.name ? t(app.name) : t('Infinite Canvas'),
+          href: app.url,
+          external: true,
+        })
+      }
+    }
+  } else if (modules?.infiniteCanvas !== false) {
+    const infiniteCanvasURL =
+      typeof status?.InfiniteCanvasURL === 'string' &&
+      status.InfiniteCanvasURL.trim()
+        ? status.InfiniteCanvasURL.trim()
+        : 'http://localhost:5173/'
     links.push({
       title: t('Infinite Canvas'),
       href: infiniteCanvasURL,

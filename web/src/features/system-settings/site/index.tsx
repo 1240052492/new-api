@@ -38,7 +38,7 @@ const defaultSiteSettings: SiteSettings = {
   'legal.privacy_policy': '',
   HeaderNavModules: '',
   SidebarModulesAdmin: '',
-  InfiniteCanvasURL: 'http://localhost:5173/',
+  ThirdPartyApps: '[]',
 }
 
 export function SiteSettings() {
