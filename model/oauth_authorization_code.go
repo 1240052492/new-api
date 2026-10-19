@@ -16,14 +16,16 @@ const (
 
 // OAuthAuthorizationCode represents an authorization code used in OAuth 2.0 Authorization Code Flow
 type OAuthAuthorizationCode struct {
-	Code         string    `json:"code" gorm:"type:varchar(128);primaryKey"`
-	ClientID     string    `json:"client_id" gorm:"type:varchar(64);not null;index:idx_client_expires"`
-	UserID       int       `json:"user_id" gorm:"not null;index"`
-	RedirectURI  string    `json:"redirect_uri" gorm:"type:varchar(512);not null"`
-	Scope        string    `json:"scope" gorm:"type:varchar(255)"`
-	ExpiresAt    time.Time `json:"expires_at" gorm:"not null;index:idx_client_expires"`
-	CreatedAt    time.Time `json:"created_at"`
-	ConsumedAt   *time.Time `json:"-"` // Tracks when the code was consumed
+	Code                string     `json:"code" gorm:"type:varchar(128);primaryKey"`
+	ClientID            string     `json:"client_id" gorm:"type:varchar(64);not null;index:idx_client_expires"`
+	UserID              int        `json:"user_id" gorm:"not null;index"`
+	RedirectURI         string     `json:"redirect_uri" gorm:"type:varchar(512);not null"`
+	Scope               string     `json:"scope" gorm:"type:varchar(255)"`
+	CodeChallenge       string     `json:"-" gorm:"type:varchar(128)"`
+	CodeChallengeMethod string     `json:"-" gorm:"type:varchar(16)"`
+	ExpiresAt           time.Time  `json:"expires_at" gorm:"not null;index:idx_client_expires"`
+	CreatedAt           time.Time  `json:"created_at"`
+	ConsumedAt          *time.Time `json:"-"` // Tracks when the code was consumed
 }
 
 func (OAuthAuthorizationCode) TableName() string {

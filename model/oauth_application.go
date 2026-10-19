@@ -18,19 +18,19 @@ const (
 
 // OAuthApplication represents an OAuth 2.0 application registered in the system
 type OAuthApplication struct {
-	ID             int       `json:"id" gorm:"primaryKey"`
-	Name           string    `json:"name" gorm:"type:varchar(100);not null"`
-	ClientID       string    `json:"client_id" gorm:"type:varchar(64);uniqueIndex;not null"`
-	ClientSecret   string    `json:"-" gorm:"type:varchar(128);not null"` // bcrypt hash
-	RedirectURIs   string    `json:"redirect_uris" gorm:"type:text;not null"` // JSON array
-	Scopes         string    `json:"scopes" gorm:"type:varchar(255)"`
-	AutoApprove    bool      `json:"auto_approve" gorm:"default:false"`
-	OwnerUserID    int       `json:"owner_user_id" gorm:"index;not null"`
-	Status         int       `json:"status" gorm:"default:1"` // 1: active, 0: inactive
-	Description    string    `json:"description" gorm:"type:text"`
-	CreatedAt      time.Time `json:"created_at"`
-	UpdatedAt      time.Time `json:"updated_at"`
-	DeletedAt      *time.Time `json:"-" gorm:"index"`
+	ID           int        `json:"id" gorm:"primaryKey"`
+	Name         string     `json:"name" gorm:"type:varchar(100);not null"`
+	ClientID     string     `json:"client_id" gorm:"type:varchar(64);uniqueIndex;not null"`
+	ClientSecret string     `json:"-" gorm:"type:varchar(128);not null"`     // bcrypt hash
+	RedirectURIs string     `json:"redirect_uris" gorm:"type:text;not null"` // JSON array
+	Scopes       string     `json:"scopes" gorm:"type:varchar(255)"`
+	AutoApprove  bool       `json:"auto_approve" gorm:"default:false"`
+	OwnerUserID  int        `json:"owner_user_id" gorm:"index;not null"`
+	Status       int        `json:"status" gorm:"default:1"` // 1: active, 0: inactive
+	Description  string     `json:"description" gorm:"type:text"`
+	CreatedAt    time.Time  `json:"created_at"`
+	UpdatedAt    time.Time  `json:"updated_at"`
+	DeletedAt    *time.Time `json:"-" gorm:"index"`
 }
 
 func (OAuthApplication) TableName() string {
@@ -38,10 +38,10 @@ func (OAuthApplication) TableName() string {
 }
 
 var (
-	ErrOAuthApplicationNotFound   = errors.New("oauth application not found")
-	ErrOAuthApplicationDuplicate  = errors.New("oauth application with this client_id already exists")
-	ErrInvalidRedirectURI         = errors.New("redirect uri not allowed")
-	ErrInvalidClientSecret        = errors.New("invalid client secret")
+	ErrOAuthApplicationNotFound  = errors.New("oauth application not found")
+	ErrOAuthApplicationDuplicate = errors.New("oauth application with this client_id already exists")
+	ErrInvalidRedirectURI        = errors.New("redirect uri not allowed")
+	ErrInvalidClientSecret       = errors.New("invalid client secret")
 )
 
 // CreateOAuthApplication creates a new OAuth application
@@ -65,8 +65,8 @@ func CreateOAuthApplication(app *OAuthApplication, plainSecret string) error {
 	if err := DB.Create(app).Error; err != nil {
 		// Check if it's a unique constraint violation
 		if err.Error() == "UNIQUE constraint failed: oauth_applications.client_id" ||
-		   err.Error() == "Error 1062: Duplicate entry" ||
-		   err.Error() == "duplicate key value violates unique constraint" {
+			err.Error() == "Error 1062: Duplicate entry" ||
+			err.Error() == "duplicate key value violates unique constraint" {
 			return ErrOAuthApplicationDuplicate
 		}
 		return err
@@ -78,7 +78,7 @@ func CreateOAuthApplication(app *OAuthApplication, plainSecret string) error {
 // GetOAuthApplicationByClientID retrieves an application by its client_id
 func GetOAuthApplicationByClientID(clientID string) (*OAuthApplication, error) {
 	var app OAuthApplication
-	err := DB.Where("client_id = ? AND status = ?", clientID, OAuthApplicationStatusActive).
+	err := DB.Where("client_id = ? AND status = ? AND deleted_at IS NULL", clientID, OAuthApplicationStatusActive).
 		First(&app).Error
 
 	if err != nil {
@@ -94,7 +94,7 @@ func GetOAuthApplicationByClientID(clientID string) (*OAuthApplication, error) {
 // GetOAuthApplicationByID retrieves an application by its ID
 func GetOAuthApplicationByID(id int) (*OAuthApplication, error) {
 	var app OAuthApplication
-	err := DB.Where("id = ? AND status = ?", id, OAuthApplicationStatusActive).
+	err := DB.Where("id = ? AND status = ? AND deleted_at IS NULL", id, OAuthApplicationStatusActive).
 		First(&app).Error
 
 	if err != nil {
@@ -166,7 +166,16 @@ func UpdateOAuthApplication(app *OAuthApplication) error {
 
 // DeleteOAuthApplication soft-deletes an application
 func DeleteOAuthApplication(id int) error {
-	return DB.Model(&OAuthApplication{}).Where("id = ?", id).Update("deleted_at", time.Now()).Error
+	result := DB.Model(&OAuthApplication{}).
+		Where("id = ? AND deleted_at IS NULL", id).
+		Update("deleted_at", time.Now())
+	if result.Error != nil {
+		return result.Error
+	}
+	if result.RowsAffected == 0 {
+		return ErrOAuthApplicationNotFound
+	}
+	return nil
 }
 
 // ListOAuthApplications lists applications for a user
@@ -174,7 +183,7 @@ func ListOAuthApplications(userID int, offset, limit int) ([]OAuthApplication, i
 	var apps []OAuthApplication
 	var total int64
 
-	query := DB.Where("owner_user_id = ?", userID)
+	query := DB.Where("owner_user_id = ? AND deleted_at IS NULL", userID)
 
 	if err := query.Model(&OAuthApplication{}).Count(&total).Error; err != nil {
 		return nil, 0, err
@@ -185,4 +194,26 @@ func ListOAuthApplications(userID int, offset, limit int) ([]OAuthApplication, i
 	}
 
 	return apps, total, nil
+}
+
+// FindActiveOAuthApplicationByRedirectURI returns the most recently created
+// active application whose redirect URI list contains redirectURI exactly.
+// It lets public PKCE clients discover the current client_id at runtime, so a
+// replacement application created in the console takes effect without
+// rebuilding the client.
+func FindActiveOAuthApplicationByRedirectURI(redirectURI string) (*OAuthApplication, error) {
+	var apps []OAuthApplication
+	if err := DB.Where("status = ? AND deleted_at IS NULL", OAuthApplicationStatusActive).
+		Order("id DESC").
+		Find(&apps).Error; err != nil {
+		return nil, err
+	}
+
+	for i := range apps {
+		if apps[i].IsRedirectURIAllowed(redirectURI) {
+			return &apps[i], nil
+		}
+	}
+
+	return nil, ErrOAuthApplicationNotFound
 }

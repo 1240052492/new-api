@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"net/url"
 	"strconv"
+	"strings"
 
 	"github.com/QuantumNous/new-api/common"
 	"github.com/QuantumNous/new-api/middleware"
@@ -14,11 +15,14 @@ import (
 
 // OAuthAuthorizeRequest represents the OAuth authorization request
 type OAuthAuthorizeRequest struct {
-	ClientID     string `form:"client_id" binding:"required"`
-	RedirectURI  string `form:"redirect_uri" binding:"required"`
-	ResponseType string `form:"response_type" binding:"required"`
-	Scope        string `form:"scope"`
-	State        string `form:"state" binding:"required"`
+	ClientID            string `form:"client_id" binding:"required"`
+	RedirectURI         string `form:"redirect_uri" binding:"required"`
+	ResponseType        string `form:"response_type" binding:"required"`
+	ResponseMode        string `form:"response_mode"`
+	Scope               string `form:"scope"`
+	State               string `form:"state" binding:"required"`
+	CodeChallenge       string `form:"code_challenge"`
+	CodeChallengeMethod string `form:"code_challenge_method"`
 }
 
 // OAuthAuthorize handles GET /oauth/authorize
@@ -33,9 +37,8 @@ func OAuthAuthorize(c *gin.Context) {
 		return
 	}
 
-	// Validate response_type
-	if req.ResponseType != "code" {
-		redirectWithError(c, req.RedirectURI, req.State, "unsupported_response_type", "Only 'code' response type is supported")
+	if req.ResponseMode != "" && req.ResponseMode != "json" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid_request", "error_description": "Unsupported response_mode"})
 		return
 	}
 
@@ -45,7 +48,7 @@ func OAuthAuthorize(c *gin.Context) {
 	// Validate client_id
 	app, err := model.GetOAuthApplicationByClientID(req.ClientID)
 	if err != nil {
-		redirectWithError(c, req.RedirectURI, req.State, "invalid_client", "Client not found or inactive")
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid_client", "error_description": "Client not found or inactive"})
 		return
 	}
 
@@ -55,6 +58,14 @@ func OAuthAuthorize(c *gin.Context) {
 			"error":             "invalid_request",
 			"error_description": err.Error(),
 		})
+		return
+	}
+	if req.ResponseType != "code" {
+		writeOAuthAuthorizeError(c, req, "unsupported_response_type", "Only 'code' response type is supported")
+		return
+	}
+	if (req.CodeChallenge == "") != (req.CodeChallengeMethod == "") || (req.CodeChallenge != "" && req.CodeChallengeMethod != "S256") {
+		writeOAuthAuthorizeError(c, req, "invalid_request", "A valid S256 code_challenge is required")
 		return
 	}
 
@@ -79,29 +90,88 @@ func OAuthAuthorize(c *gin.Context) {
 	}
 
 	// Generate authorization code
-	code, err := oauthService.GenerateAuthorizationCode(req.ClientID, identity.UserID, req.RedirectURI, req.Scope)
+	code, err := oauthService.GenerateAuthorizationCode(req.ClientID, identity.UserID, req.RedirectURI, req.Scope, req.CodeChallenge, req.CodeChallengeMethod)
 	if err != nil {
 		redirectWithError(c, req.RedirectURI, req.State, "server_error", "Failed to generate authorization code")
 		return
 	}
 
-	// Redirect back to client with authorization code
-	redirectParams := url.Values{
-		"code":  {code},
-		"state": {req.State},
+	if req.ResponseMode == "json" {
+		c.JSON(http.StatusOK, gin.H{
+			"code":         code,
+			"state":        req.State,
+			"redirect_uri": req.RedirectURI,
+		})
+		return
 	}
 
-	redirectURL := req.RedirectURI + "?" + redirectParams.Encode()
-	c.Redirect(http.StatusFound, redirectURL)
+	// Redirect back to the validated client URI with the authorization code.
+	redirectURL, err := url.Parse(req.RedirectURI)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid_request", "error_description": "Invalid redirect_uri"})
+		return
+	}
+	redirectParams := redirectURL.Query()
+	redirectParams.Set("code", code)
+	redirectParams.Set("state", req.State)
+	redirectURL.RawQuery = redirectParams.Encode()
+	c.Redirect(http.StatusFound, redirectURL.String())
+}
+
+func writeOAuthAuthorizeError(c *gin.Context, req OAuthAuthorizeRequest, errorCode, errorDescription string) {
+	if req.ResponseMode == "json" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": errorCode, "error_description": errorDescription})
+		return
+	}
+	redirectWithError(c, req.RedirectURI, req.State, errorCode, errorDescription)
+}
+
+// GetOAuthClientConfig handles GET /api/oauth/client-config
+// Public discovery endpoint for PKCE public clients (Infinite Canvas): given a
+// redirect_uri, it returns the client_id of the most recently created active
+// application registered for it. client_id is not secret for PKCE clients, and
+// no credentials are returned, so applications can be rotated from the console
+// without rebuilding or reconfiguring the client.
+func GetOAuthClientConfig(c *gin.Context) {
+	redirectURI := c.Query("redirect_uri")
+	if redirectURI == "" {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error":             "invalid_request",
+			"error_description": "redirect_uri is required",
+		})
+		return
+	}
+
+	app, err := model.FindActiveOAuthApplicationByRedirectURI(redirectURI)
+	if err != nil {
+		c.JSON(http.StatusNotFound, gin.H{
+			"error":             "invalid_client",
+			"error_description": "No active application is registered for this redirect_uri",
+		})
+		return
+	}
+
+	var scopes []string
+	if app.Scopes != "" {
+		_ = common.UnmarshalJsonStr(app.Scopes, &scopes)
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"client_id":              app.ClientID,
+		"scope":                  strings.Join(scopes, " "),
+		"authorization_endpoint": "/oauth/authorize",
+		"token_endpoint":         "/api/oauth/token",
+	})
 }
 
 // OAuthTokenRequest represents the OAuth token exchange request
 type OAuthTokenRequest struct {
 	GrantType    string `form:"grant_type" binding:"required"`
-	Code         string `form:"code" binding:"required_if=GrantType authorization_code"`
+	Code         string `form:"code" binding:"required"`
 	ClientID     string `form:"client_id" binding:"required"`
-	ClientSecret string `form:"client_secret" binding:"required"`
+	ClientSecret string `form:"client_secret"`
 	RedirectURI  string `form:"redirect_uri" binding:"required"`
+	CodeVerifier string `form:"code_verifier"`
 }
 
 // OAuthTokenResponse represents the OAuth token exchange response
@@ -138,27 +208,8 @@ func OAuthToken(c *gin.Context) {
 	// Get OAuth service
 	oauthService := service.NewOAuthService()
 
-	// Validate client credentials
-	app, err := oauthService.ValidateClientCredentials(req.ClientID, req.ClientSecret)
-	if err != nil {
-		c.JSON(http.StatusUnauthorized, gin.H{
-			"error":             "invalid_client",
-			"error_description": err.Error(),
-		})
-		return
-	}
-
-	// Validate redirect_uri
-	if err := oauthService.ValidateRedirectURI(app, req.RedirectURI); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"error":             "invalid_request",
-			"error_description": err.Error(),
-		})
-		return
-	}
-
 	// Exchange authorization code for access token
-	accessToken, err := oauthService.ExchangeAuthorizationCodeForToken(req.Code, req.ClientID, req.RedirectURI)
+	accessToken, err := oauthService.ExchangeAuthorizationCodeForToken(req.Code, req.ClientID, req.RedirectURI, req.ClientSecret, req.CodeVerifier)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error":             "invalid_grant",
@@ -249,14 +300,14 @@ func CreateOAuthApplication(c *gin.Context) {
 
 	// Return the created application with client secret
 	c.JSON(http.StatusCreated, gin.H{
-		"id":              app.ID,
-		"name":            app.Name,
-		"client_id":       app.ClientID,
-		"client_secret":   clientSecret, // Only shown once on creation
-		"redirect_uris":   req.RedirectURIs,
-		"scopes":          app.Scopes,
-		"auto_approve":    app.AutoApprove,
-		"created_at":      app.CreatedAt,
+		"id":            app.ID,
+		"name":          app.Name,
+		"client_id":     app.ClientID,
+		"client_secret": clientSecret, // Only shown once on creation
+		"redirect_uris": req.RedirectURIs,
+		"scopes":        app.Scopes,
+		"auto_approve":  app.AutoApprove,
+		"created_at":    app.CreatedAt,
 	})
 }
 
@@ -301,15 +352,15 @@ func GetOAuthApplications(c *gin.Context) {
 	for _, app := range apps {
 		uris, _ := app.GetRedirectURIs()
 		response = append(response, gin.H{
-			"id":           app.ID,
-			"name":         app.Name,
-			"client_id":    app.ClientID,
+			"id":            app.ID,
+			"name":          app.Name,
+			"client_id":     app.ClientID,
 			"redirect_uris": uris,
-			"scopes":       app.Scopes,
-			"auto_approve": app.AutoApprove,
-			"description":  app.Description,
-			"created_at":   app.CreatedAt,
-			"updated_at":   app.UpdatedAt,
+			"scopes":        app.Scopes,
+			"auto_approve":  app.AutoApprove,
+			"description":   app.Description,
+			"created_at":    app.CreatedAt,
+			"updated_at":    app.UpdatedAt,
 		})
 	}
 

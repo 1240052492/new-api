@@ -25,6 +25,7 @@ import {
   FlaskConical,
   Key,
   LayoutDashboard,
+  Maximize2,
   ListTodo,
   MessageSquare,
   PlugZap,
@@ -40,6 +41,7 @@ import {
 import { useTranslation } from 'react-i18next'
 
 import type { SidebarData } from '@/components/layout/types'
+import { useStatus } from '@/hooks/use-status'
 import { ROLE } from '@/lib/roles'
 
 /**
@@ -50,6 +52,12 @@ import { ROLE } from '@/lib/roles'
  */
 export function useSidebarData(): SidebarData {
   const { t } = useTranslation()
+  const { status } = useStatus()
+  const infiniteCanvasURL =
+    typeof status?.InfiniteCanvasURL === 'string' &&
+    status.InfiniteCanvasURL.trim()
+      ? status.InfiniteCanvasURL.trim()
+      : 'http://localhost:5173/'
 
   return {
     navGroups: [
@@ -57,6 +65,13 @@ export function useSidebarData(): SidebarData {
         id: 'chat',
         title: t('Chat'),
         items: [
+          {
+            title: t('Infinite Canvas'),
+            url: infiniteCanvasURL,
+            icon: Maximize2,
+            external: true,
+            configUrls: ['/infinite-canvas'],
+          },
           {
             title: t('Playground'),
             url: '/playground',

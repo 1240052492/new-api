@@ -4,6 +4,8 @@ import (
 	"go/ast"
 	"go/parser"
 	"go/token"
+	"net/http"
+	"net/http/httptest"
 	"path/filepath"
 	"strconv"
 	"strings"
@@ -50,6 +52,7 @@ var accessTokenExemptRoutes = []string{
 	"GET /api/oauth/wechat",
 	"GET /api/oauth/telegram/login",
 	"GET /api/oauth/telegram/bind/:flow_token",
+	"POST /api/oauth/token",
 
 	// Browser session cookie endpoints.
 	"POST /api/user/auth/refresh",
@@ -140,6 +143,25 @@ func TestAccessTokenRouteRulesCoverEveryDashboardRoute(t *testing.T) {
 		require.True(t, ok, key)
 		assert.Equal(t, "scope", rule.Kind(), key)
 		assert.Equal(t, service.AccessTokenScopeOf(permission), rule.Scope(), key)
+	}
+}
+
+func TestOAuthApplicationRoutesDoNotRedirectWithoutTrailingSlash(t *testing.T) {
+	engine := newAccessTokenScopeTestEngine(t)
+
+	for _, route := range []struct {
+		method string
+		path   string
+	}{
+		{http.MethodGet, "/api/admin/oauth/applications"},
+		{http.MethodPost, "/api/admin/oauth/applications"},
+	} {
+		recorder := httptest.NewRecorder()
+		request := httptest.NewRequest(route.method, route.path, nil)
+		engine.ServeHTTP(recorder, request)
+
+		assert.Equal(t, http.StatusUnauthorized, recorder.Code, route.method+" "+route.path)
+		assert.Empty(t, recorder.Header().Get("Location"), route.method+" "+route.path)
 	}
 }
 

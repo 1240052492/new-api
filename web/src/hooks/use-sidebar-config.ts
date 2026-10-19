@@ -39,6 +39,7 @@ type SidebarModulesUserConfig = SidebarModulesAdminConfig | null
 const DEFAULT_SIDEBAR_MODULES: SidebarModulesAdminConfig = {
   chat: {
     enabled: true,
+    infiniteCanvas: true,
     playground: true,
     chat: true,
   },
@@ -97,6 +98,7 @@ const mergeWithDefaultSidebarModules = (
  * Mapping from URL to configuration keys
  */
 const URL_TO_CONFIG_MAP: Record<string, { section: string; module: string }> = {
+  '/infinite-canvas': { section: 'chat', module: 'infiniteCanvas' },
   '/playground': { section: 'chat', module: 'playground' },
   '/dashboard': { section: 'console', module: 'detail' },
   '/dashboard/overview': { section: 'console', module: 'detail' },

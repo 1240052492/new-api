@@ -120,6 +120,37 @@ describe('security sidebar visibility', () => {
   })
 })
 
+describe('Infinite Canvas sidebar entry', () => {
+  it('appears above Playground and can be hidden by either sidebar setting', () => {
+    const { result } = sidebarFor()
+    const chatItems = result.current.find((group) => group.id === 'chat')?.items
+    expect(chatItems?.[0]).toMatchObject({
+      title: 'Infinite Canvas',
+      url: 'http://localhost:5173/',
+      external: true,
+    })
+    expect(chatItems?.[1].title).toBe('Playground')
+
+    const adminHidden = sidebarFor({
+      chat: { enabled: true, infiniteCanvas: false },
+    })
+    expect(
+      adminHidden.result.current
+        .find((group) => group.id === 'chat')
+        ?.items.some((item) => item.title === 'Infinite Canvas')
+    ).toBe(false)
+
+    const userHidden = sidebarFor(undefined, {
+      chat: { enabled: true, infiniteCanvas: false },
+    })
+    expect(
+      userHidden.result.current
+        .find((group) => group.id === 'chat')
+        ?.items.some((item) => item.title === 'Infinite Canvas')
+    ).toBe(false)
+  })
+})
+
 describe('audit log sidebar entry', () => {
   it('admin settings default Audit Logs to visible and preserve its independent toggle when saved', () => {
     const config = parseSidebarModulesAdmin(

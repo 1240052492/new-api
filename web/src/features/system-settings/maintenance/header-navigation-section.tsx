@@ -51,6 +51,7 @@ import {
 const headerNavSchema = z.object({
   home: z.boolean(),
   console: z.boolean(),
+  infiniteCanvas: z.boolean(),
   pricingEnabled: z.boolean(),
   pricingRequireAuth: z.boolean(),
   rankingsEnabled: z.boolean(),
@@ -73,6 +74,10 @@ const toFormValues = (config: HeaderNavModulesConfig): HeaderNavFormValues => ({
     config.console === undefined
       ? HEADER_NAV_DEFAULT.console
       : Boolean(config.console),
+  infiniteCanvas:
+    config.infiniteCanvas === undefined
+      ? HEADER_NAV_DEFAULT.infiniteCanvas
+      : Boolean(config.infiniteCanvas),
   pricingEnabled:
     config.pricing?.enabled === undefined
       ? HEADER_NAV_DEFAULT.pricing.enabled
@@ -119,6 +124,7 @@ export function HeaderNavigationSection({
       ...config,
       home: values.home,
       console: values.console,
+      infiniteCanvas: values.infiniteCanvas,
       docs: values.docs,
       about: values.about,
       pricing: {
@@ -162,6 +168,11 @@ export function HeaderNavigationSection({
       key: 'console',
       title: t('Console'),
       description: t('User dashboard and quota controls.'),
+    },
+    {
+      key: 'infiniteCanvas',
+      title: t('Infinite Canvas'),
+      description: t('Open the Infinite Canvas application.'),
     },
     {
       key: 'docs',

@@ -57,6 +57,11 @@ export function useTopNavLinks(): TopNavLink[] {
 
   // Documentation link (may be external)
   const docsLink: string | undefined = status?.docs_link as string | undefined
+  const infiniteCanvasURL =
+    typeof status?.InfiniteCanvasURL === 'string' &&
+    status.InfiniteCanvasURL.trim()
+      ? status.InfiniteCanvasURL.trim()
+      : 'http://localhost:5173/'
 
   const isAuthed = !!auth?.user
 
@@ -70,6 +75,14 @@ export function useTopNavLinks(): TopNavLink[] {
   // Console -> /dashboard (new console path)
   if (modules?.console !== false) {
     links.push({ title: t('Console'), href: '/dashboard' })
+  }
+
+  if (modules?.infiniteCanvas !== false) {
+    links.push({
+      title: t('Infinite Canvas'),
+      href: infiniteCanvasURL,
+      external: true,
+    })
   }
 
   // Pricing

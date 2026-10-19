@@ -49,7 +49,8 @@ func SetApiRouter(router *gin.Engine) {
 		// OAuth Server endpoints (OAuth 2.0 Authorization Code Flow for external apps)
 		// These must come before other OAuth routes to avoid conflicts
 		apiRouter.GET("/oauth/authorize", middleware.UserAuth(), controller.OAuthAuthorize)
-		apiRouter.POST("/oauth/token", middleware.CriticalRateLimit(), middleware.DisableCache(), controller.OAuthToken)
+		apiRouter.POST("/oauth/token", middleware.CORS(), middleware.CriticalRateLimit(), middleware.DisableCache(), controller.OAuthToken)
+		apiRouter.GET("/oauth/client-config", middleware.CORS(), middleware.CriticalRateLimit(), middleware.DisableCache(), controller.GetOAuthClientConfig)
 
 		// OAuth Client routes - specific routes must come before :provider wildcard
 		apiRouter.POST("/oauth/state", middleware.CriticalRateLimit(), middleware.DisableCache(), middleware.TryUserAuth(), anonymousRequestBodyLimit, controller.GenerateOAuthCode)
@@ -195,6 +196,11 @@ func SetApiRouter(router *gin.Engine) {
 		oauthAdminRoute := apiRouter.Group("/admin/oauth/applications")
 		oauthAdminRoute.Use(middleware.UserAuth())
 		{
+			// Register the exact no-slash paths used by the frontend. Gin's
+			// automatic slash redirect can drop the Authorization header in a
+			// browser, turning an authenticated request into a 401.
+			oauthAdminRoute.POST("", controller.CreateOAuthApplication)
+			oauthAdminRoute.GET("", controller.GetOAuthApplications)
 			oauthAdminRoute.POST("/", controller.CreateOAuthApplication)
 			oauthAdminRoute.GET("/", controller.GetOAuthApplications)
 			oauthAdminRoute.DELETE("/:id", controller.DeleteOAuthApplication)

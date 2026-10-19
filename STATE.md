@@ -46,10 +46,15 @@ Official first deployment completed on HNY; production is running behind HTTPS. 
 - Added `docs/operations/hny-application-configuration.md` with the operator configuration order and security boundary.
 - Recorded the first upstream candidate: one Sub2API channel at `https://code.shoestravel.xin`; model availability is pending authenticated `/v1/models` discovery.
 - Read-only HNY preflight completed: Ubuntu 24.04, 8 vCPU, 7.8 GiB RAM, 48 GiB root filesystem with 41 GiB free, Docker 29.8.2, Compose v5.6.0, no running containers.
+- Deployed `1240052492/Infinite-Canvas-comfiy` HEAD `67f49e4b9a0ac090bad1f5bd62ae385f8fb5394e` on HNY at `/opt/infinite-canvas`, isolated from New API on `127.0.0.1:3002` under `infinite-canvas.service`.
+- Configured `aigc.aiplantform.site` through BaoTa Nginx with HTTP-to-HTTPS redirect and a dedicated Let's Encrypt certificate; external HTTPS returned HTTP 200 and `/api/app-info` returned the application metadata.
+- Installed Linux `gpt-image-2-skill@0.7.6` on HNY and configured `GPT_IMAGE_2_SKILL_BIN`; `/api/codex/status` reports the helper installed. Image generation still requires a server-side Codex access token or `OPENAI_API_KEY` (neither is currently present).
 - Existing HNY services include Nginx on port 80, Redis bound to localhost, and BaoTa-related services/ports. UFW is active; 80/443 are allowed, along with additional existing ports.
 - Public DNS now resolves both `aiplantform.site` and `test.aiplantform.site` to `177.3.37.113` through public resolvers. Root HTTP currently redirects to `www.aiplantform.site`; `test` HTTP returns a default Nginx page and HTTPS is not reachable.
 
 ## Next Step
+
+Infinite Canvas navigation is now available in the chat sidebar and top navigation. The destination defaults to `http://localhost:5173/` for local development and is configurable from System Settings -> Site & Branding -> Infinite Canvas. Status API wiring and sidebar visibility tests are complete; production deployment still requires rebuilding/restarting the serving New API frontend artifact.
 
 Create and test the first Sub2API channel, select only models returned by the authenticated upstream, then configure model mappings, pricing/groups, API keys, and one redacted functional request. Prepare the isolated `test.aiplantform.site` Compose project only after production configuration is validated.
 
@@ -58,10 +63,32 @@ Local development is available at `http://127.0.0.1:5174/` with the Go backend a
 ## Loop and Verification Status
 
 - Planning loops: 0; deployment loops: 2 (initial sed failure, then corrected remote Bash script).
-- Verification: `docker compose config -q` passed; public HTTPS status endpoints returned HTTP 200 and `v1.0.0-rc.41`; HTTP returned 301 to HTTPS; New API container healthy; certificate SAN and dates verified.
+- Verification: `docker compose config -q` passed; public HTTPS status endpoints returned HTTP 200 and `v1.0.0-rc.41`; HTTP returned 301 to HTTPS; New API container healthy; certificate SAN and dates verified. Infinite Canvas systemd service is active, local `/api/app-info` returned HTTP 200, public `https://aigc.aiplantform.site/` returned HTTP 200, HTTP returned 301, and the subdomain certificate SAN/date was verified. Frontend Infinite Canvas regression test passed (14 tests), focused lint passed, and `bun run build` passed; full typecheck remains blocked by pre-existing OAuth/system-settings errors.
+- Infinite Canvas verification: `/api/codex/status` returned `image2_helper_installed: true` and the absolute helper path; helper diagnostics reported `access_token_missing` and no OpenAI API key.
 - Security verification: external `Test-NetConnection 177.3.37.113 -Port 3000` now fails; HNY listens only on `127.0.0.1:3000`; both public HTTPS status endpoints return HTTP 200 and `v1.0.0-rc.41`; New API is healthy.
 - Last commit: unchanged; repository contains untracked planning/state/operations documentation only. Local development runtime verification: `/api/status` HTTP 200 and frontend HTTP 200 on 2026-10-09.
 
 ## Next-Session Instruction
 
-请读取 `AGENTS.md` 和 `STATE.md`，加载当前任务，从上次中断的地方继续。
+## Current OAuth and Infinite Canvas Repair (2026-10-19)
+
+- Phase: implementation complete; acceptance blocked pending existing full-suite failures and real MySQL/PostgreSQL verification.
+- Scope: local New API and Infinite Canvas OAuth integration only. No deployment, production change, credential write, or service restart was performed.
+- Branches: New API `feat/oauth-server-impl`; Canvas `codex/infinite-canvas-oauth-flow`. Existing dirty user changes were preserved.
+- Completed: OAuth soft-delete filtering and repeat-delete handling; authenticated New API `/oauth/authorize` frontend bridge; Canvas authorization code + PKCE S256; removed browser client secret from active Canvas config and local `.env.local`; corrected token endpoint to `/api/oauth/token`.
+- Focused tests: New API OAuth controller regression passed; New API OAuth bridge frontend tests passed (2); Canvas OAuth client tests passed (2). New API frontend build passed; Canvas Vite build passed.
+- Outstanding verification: Canvas full test suite fails because an existing test assumes browser `localStorage`; Canvas typecheck reports missing Vitest declarations and unrelated layout errors. New API full typecheck/build-check and repo-wide lint fail on current worktree errors. Combined New API controller/model/service tests exceeded the 10-minute run without completing and were stopped; no pass is claimed. Disposable MySQL 8.4.11 and PostgreSQL 16.15 migration tests passed; containers were removed after verification.
+- Runtime: local New API was rebuilt/restarted on port 3002 and serves the bridge. Follow-up inspection found the token endpoint's actual POST response lacked CORS headers although OPTIONS returned them. `middleware.CORS()` is now attached to `POST /api/oauth/token`; the binary was rebuilt/restarted and a test POST from Origin `http://localhost:5173` returned CORS headers. Browser end-to-end completion after this fix is still pending. The deleted default OAuth row was restored in the test SQLite database for runtime verification.
+- Evidence and changed-file inventory: `.loop/evidence/oauth-infinite-canvas-repair.md`.
+- Loop count: 3 modify/test cycles; stop further implementation retries under `.loop/config.json`.
+- Next step: run one clean browser flow after the token endpoint CORS fix. Keep the local rebuilt process only; do not deploy to production. The callback idempotency guard is a follow-up implementation change after the original 3-loop record and needs review. See `HANDOVER-INFINITE-CANVAS-OAUTH-2026-10-19.md` for current findings and prompt source URLs.
+- Last commit: unchanged.
+
+## Runtime OAuth Client Discovery (2026-10-19 evening)
+
+- Added public `GET /api/oauth/client-config?redirect_uri=...` (CORS + critical rate limit): returns the client_id of the newest active OAuth application whose redirect URI list contains the given redirect_uri exactly; 404 when unmatched; no secrets returned. Implementation: `controller.GetOAuthClientConfig`, `model.FindActiveOAuthApplicationByRedirectURI`; route in `router/api-router.go`.
+- Infinite Canvas `web/src/services/oauth.ts` now resolves client_id at runtime via this endpoint (fallback to `VITE_OAUTH_CLIENT_ID`); creating a replacement application in the console takes effect on the next Canvas page load without editing `.env.local` or restarting Vite.
+- Verification: focused controller test `TestOAuthClientConfigResolvesNewestActiveApplicationByRedirectURI` passed (note: GORM skips zero-value `Status` on insert due to column default); Canvas `oauth-client.test.ts` 4/4 passed; Canvas `bun run build` passed; live endpoint returned the active client_id, 404 for unknown redirect, and CORS header for Origin `http://localhost:5173`. Binary backup: `new-api.exe.pre-clientconfig-20261019`.
+- Next step: one clean browser OAuth round trip on `localhost:5173` against the newly created application.
+
+Next session must begin with: `请读取 AGENTS.md 和 STATE.md，加载当前任务，从上次中断的地方继续。`

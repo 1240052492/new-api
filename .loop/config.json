@@ -1,0 +1,6 @@
+{
+  "max_loops": 3,
+  "task_branch_prefix": "codex/",
+  "require_tests": true,
+  "require_lint": true
+}

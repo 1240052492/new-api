@@ -26,6 +26,7 @@ import {
 import { HeaderNavigationSection } from '../maintenance/header-navigation-section'
 import { NoticeSection } from '../maintenance/notice-section'
 import { SidebarModulesSection } from '../maintenance/sidebar-modules-section'
+import { InfiniteCanvasSection } from './infinite-canvas-section'
 import type { SiteSettings } from '../types'
 import { createSectionRegistry } from '../utils/section-registry'
 
@@ -59,6 +60,13 @@ const SITE_SECTIONS = [
     titleKey: 'System Notice',
     build: (settings: SiteSettings) => (
       <NoticeSection defaultValue={settings.Notice ?? ''} />
+    ),
+  },
+  {
+    id: 'infinite-canvas',
+    titleKey: 'Infinite Canvas',
+    build: (settings: SiteSettings) => (
+      <InfiniteCanvasSection defaultValue={settings.InfiniteCanvasURL} />
     ),
   },
   {

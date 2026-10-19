@@ -23,17 +23,17 @@ func InitializeOAuthInfiniteCanvas(db *gorm.DB) error {
 
 	// 创建 infinite-canvas OAuth 应用
 	app := &OAuthApplication{
-		Name:           "Infinite Canvas",
-		ClientID:       "infinite-canvas-client",
-		ClientSecret:   "$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcg7b3XeKeUxWdeS86E36gZvWFm", // bcrypt 示例值
-		RedirectURIs:   `["http://localhost:5173/oauth/callback","http://127.0.0.1:5173/oauth/callback"]`,
-		Scopes:         `["user:read"]`,
-		AutoApprove:    true,
-		OwnerUserID:    1, // 系统管理员
-		Status:         OAuthApplicationStatusActive,
-		Description:    "Infinite Canvas Drawing Application - Automatically initialized",
-		CreatedAt:      time.Now(),
-		UpdatedAt:      time.Now(),
+		Name:         "Infinite Canvas",
+		ClientID:     "infinite-canvas-client",
+		ClientSecret: "$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcg7b3XeKeUxWdeS86E36gZvWFm", // bcrypt 示例值
+		RedirectURIs: `["http://localhost:5173/oauth/callback","http://127.0.0.1:5173/oauth/callback"]`,
+		Scopes:       `["user:read"]`,
+		AutoApprove:  true,
+		OwnerUserID:  1, // 系统管理员
+		Status:       OAuthApplicationStatusActive,
+		Description:  "Infinite Canvas Drawing Application - Automatically initialized",
+		CreatedAt:    time.Now(),
+		UpdatedAt:    time.Now(),
 	}
 
 	if err := db.Create(app).Error; err != nil {
@@ -47,7 +47,7 @@ func InitializeOAuthInfiniteCanvas(db *gorm.DB) error {
 // 用于配置页面
 func GetOAuthApplicationForDisplay(clientID string) (map[string]interface{}, error) {
 	var app OAuthApplication
-	if err := DB.Where("client_id = ? AND status = ?", clientID, OAuthApplicationStatusActive).First(&app).Error; err != nil {
+	if err := DB.Where("client_id = ? AND status = ? AND deleted_at IS NULL", clientID, OAuthApplicationStatusActive).First(&app).Error; err != nil {
 		return nil, err
 	}
 
@@ -58,12 +58,12 @@ func GetOAuthApplicationForDisplay(clientID string) (map[string]interface{}, err
 	}
 
 	return map[string]interface{}{
-		"id":             app.ID,
-		"name":           app.Name,
-		"client_id":      app.ClientID,
-		"redirect_uris":  uris,
-		"scopes":         scopes,
-		"auto_approve":   app.AutoApprove,
-		"description":    app.Description,
+		"id":            app.ID,
+		"name":          app.Name,
+		"client_id":     app.ClientID,
+		"redirect_uris": uris,
+		"scopes":        scopes,
+		"auto_approve":  app.AutoApprove,
+		"description":   app.Description,
 	}, nil
 }

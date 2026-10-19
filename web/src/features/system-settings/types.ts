@@ -154,6 +154,7 @@ export type SiteSettings = {
   'legal.privacy_policy': string
   HeaderNavModules: string
   SidebarModulesAdmin: string
+  InfiniteCanvasURL: string
 }
 
 export type AuthSettings = {
