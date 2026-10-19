@@ -21,6 +21,8 @@ import { OAuthConfigSection } from '../auth/oauth-config-section'
 import {
   parseHeaderNavModules,
   parseSidebarModulesAdmin,
+  serializeHeaderNavModules,
+  serializeSidebarModulesAdmin,
 } from '../maintenance/config'
 import { HeaderNavigationSection } from '../maintenance/header-navigation-section'
 import { NoticeSection } from '../maintenance/notice-section'
