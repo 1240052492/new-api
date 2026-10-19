@@ -207,6 +207,8 @@ export function parseSidebarModulesAdmin(
       Object.entries(raw as Record<string, unknown>).forEach(
         ([moduleKey, moduleValue]) => {
           if (moduleKey === 'enabled') return
+          // Legacy key superseded by the unified Third-Party Apps settings.
+          if (moduleKey === 'infiniteCanvas') return
           sectionConfig[moduleKey] = toBoolean(
             moduleValue,
             defaultSection[moduleKey] ?? true
