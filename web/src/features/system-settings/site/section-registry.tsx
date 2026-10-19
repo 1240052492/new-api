@@ -65,9 +65,21 @@ const SITE_SECTIONS = [
   {
     id: 'infinite-canvas',
     titleKey: 'Infinite Canvas',
-    build: (settings: SiteSettings) => (
-      <InfiniteCanvasSection defaultValue={settings.InfiniteCanvasURL} />
-    ),
+    build: (settings: SiteSettings) => {
+      const headerNavConfig = parseHeaderNavModules(settings.HeaderNavModules)
+      const sidebarConfig = parseSidebarModulesAdmin(
+        settings.SidebarModulesAdmin
+      )
+      return (
+        <InfiniteCanvasSection
+          defaultValue={settings.InfiniteCanvasURL}
+          headerNavConfig={headerNavConfig}
+          headerNavSerialized={serializeHeaderNavModules(headerNavConfig)}
+          sidebarConfig={sidebarConfig}
+          sidebarSerialized={serializeSidebarModulesAdmin(sidebarConfig)}
+        />
+      )
+    },
   },
   {
     id: 'header-navigation',

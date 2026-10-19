@@ -7267,6 +7267,15 @@
     "Zhipu": "Zhipu",
     "Zhipu GLM": "Zhipu GLM",
     "Zhipu V4": "Zhipu V4",
-    "Zoom": "Zoom"
+    "Zoom": "Zoom",
+    "Third-Party App Access": "Доступ сторонних приложений",
+    "OAuth endpoints": "Конечные точки OAuth",
+    "Third-party apps log in through this authorization endpoint:": "Сторонние приложения входят через этот эндпоинт авторизации:",
+    "Token endpoint for the authorization code exchange:": "Эндпоинт токена для обмена кода авторизации:",
+    "Register the third-party app itself as the callback URL (for example, the Infinite Canvas callback is /oauth/callback on the Canvas origin). The callback must match exactly, character for character.": "В качестве URL переадресации укажите собственный callback стороннего приложения (например, callback Infinite Canvas — /oauth/callback в домене Canvas). Callback должен совпадать посимвольно.",
+    "Show in top navigation": "Показывать в верхней навигации",
+    "Show the Infinite Canvas entry in the top navigation.": "Показывать пункт Infinite Canvas в верхней навигации.",
+    "Show in sidebar": "Показывать в боковой панели",
+    "Show the Infinite Canvas entry in the sidebar.": "Показывать пункт Infinite Canvas в боковой панели."
   }
 }

@@ -7267,6 +7267,15 @@
     "Zhipu": "智譜",
     "Zhipu GLM": "智譜GLM",
     "Zhipu V4": "智譜 V4",
-    "Zoom": "縮放"
+    "Zoom": "縮放",
+    "Third-Party App Access": "第三方應用接入",
+    "OAuth endpoints": "OAuth 端點",
+    "Third-party apps log in through this authorization endpoint:": "第三方系統透過此授權端點登入：",
+    "Token endpoint for the authorization code exchange:": "用於授權碼交換的權杖端點：",
+    "Register the third-party app itself as the callback URL (for example, the Infinite Canvas callback is /oauth/callback on the Canvas origin). The callback must match exactly, character for character.": "回呼 URL 請填寫第三方系統自身的回呼位址（例如無限畫布的回呼為其網域下的 /oauth/callback）。回呼必須逐字元完全一致。",
+    "Show in top navigation": "在頂部導航顯示",
+    "Show the Infinite Canvas entry in the top navigation.": "在頂部導航中顯示無限畫布入口。",
+    "Show in sidebar": "在側邊欄顯示",
+    "Show the Infinite Canvas entry in the sidebar.": "在側邊欄中顯示無限畫布入口。"
   }
 }

@@ -125,7 +125,7 @@ const AUTH_SECTIONS = [
   },
   {
     id: 'oauth-config',
-    titleKey: 'OAuth Config',
+    titleKey: 'Third-Party App Access',
     build: () => <OAuthConfigSection />,
   },
 ] as const

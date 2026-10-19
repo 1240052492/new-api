@@ -7267,6 +7267,15 @@
     "Zhipu": "Zhipu",
     "Zhipu GLM": "Zhipu GLM",
     "Zhipu V4": "Zhipu V4",
-    "Zoom": "Zoom"
+    "Zoom": "Zoom",
+    "Third-Party App Access": "Truy cập ứng dụng bên thứ ba",
+    "OAuth endpoints": "Điểm cuối OAuth",
+    "Third-party apps log in through this authorization endpoint:": "Các ứng dụng bên thứ ba đăng nhập qua điểm cuối ủy quyền này:",
+    "Token endpoint for the authorization code exchange:": "Điểm cuối token để đổi mã ủy quyền:",
+    "Register the third-party app itself as the callback URL (for example, the Infinite Canvas callback is /oauth/callback on the Canvas origin). The callback must match exactly, character for character.": "Hãy đăng ký chính callback của ứng dụng bên thứ ba làm URL chuyển hướng (ví dụ: callback của Infinite Canvas là /oauth/callback trên miền Canvas). Callback phải khớp chính xác từng ký tự.",
+    "Show in top navigation": "Hiển thị ở điều hướng trên",
+    "Show the Infinite Canvas entry in the top navigation.": "Hiển thị mục Infinite Canvas ở điều hướng trên.",
+    "Show in sidebar": "Hiển thị ở thanh bên",
+    "Show the Infinite Canvas entry in the sidebar.": "Hiển thị mục Infinite Canvas ở thanh bên."
   }
 }

@@ -151,23 +151,42 @@ export function OAuthConfigSection() {
     return 'http://localhost:3002'
   }
 
-  const callbackUrlFormat = `${getServerUrl()}/oauth/callback`
-
   return (
-    <SettingsSection title="OAuth Applications">
+    <SettingsSection title={t('Third-Party App Access')}>
       <div className="space-y-6">
-        {/* Redirect URI Format Information */}
+        {/* Endpoint Information */}
         <Alert>
-          <AlertTitle>OAuth Callback URL Format</AlertTitle>
+          <AlertTitle>{t('OAuth endpoints')}</AlertTitle>
           <AlertDescription>
             <div className="mt-2 space-y-2">
-              <p>When registering your OAuth application, use this callback URL format:</p>
+              <p>
+                {t(
+                  'Third-party apps log in through this authorization endpoint:'
+                )}
+              </p>
               <div className="flex items-center gap-2 rounded bg-muted p-2">
-                <code className="flex-1 text-sm">{callbackUrlFormat}</code>
-                <CopyButton value={callbackUrlFormat} variant="ghost" size="sm" />
+                <code className="flex-1 text-sm">{`${getServerUrl()}/oauth/authorize`}</code>
+                <CopyButton
+                  value={`${getServerUrl()}/oauth/authorize`}
+                  variant="ghost"
+                  size="sm"
+                />
+              </div>
+              <p>
+                {t('Token endpoint for the authorization code exchange:')}
+              </p>
+              <div className="flex items-center gap-2 rounded bg-muted p-2">
+                <code className="flex-1 text-sm">{`${getServerUrl()}/api/oauth/token`}</code>
+                <CopyButton
+                  value={`${getServerUrl()}/api/oauth/token`}
+                  variant="ghost"
+                  size="sm"
+                />
               </div>
               <p className="text-xs text-muted-foreground">
-                This is the URL where users will be redirected after authorization.
+                {t(
+                  'Register the third-party app itself as the callback URL (for example, the Infinite Canvas callback is /oauth/callback on the Canvas origin). The callback must match exactly, character for character.'
+                )}
               </p>
             </div>
           </AlertDescription>
