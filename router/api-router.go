@@ -49,11 +49,15 @@ func SetApiRouter(router *gin.Engine) {
 		// OAuth Server endpoints (OAuth 2.0 Authorization Code Flow for external apps)
 		// These must come before other OAuth routes to avoid conflicts
 		apiRouter.GET("/oauth/authorize", middleware.UserAuth(), controller.OAuthAuthorize)
-		apiRouter.POST("/oauth/token", middleware.CORS(), middleware.CriticalRateLimit(), middleware.DisableCache(), controller.OAuthToken)
-		apiRouter.GET("/oauth/client-config", middleware.CORS(), middleware.CriticalRateLimit(), middleware.DisableCache(), controller.GetOAuthClientConfig)
+		apiRouter.POST("/oauth/token", middleware.CORS(), middleware.OAuthPublicRateLimit(), middleware.DisableCache(), controller.OAuthToken)
+		apiRouter.GET("/oauth/client-config", middleware.CORS(), middleware.OAuthPublicRateLimit(), middleware.DisableCache(), controller.GetOAuthClientConfig)
+		// Workbench creation guide frequency control for the Canvas app,
+		// authenticated with the OAuth access token (not dashboard sessions).
+		apiRouter.GET("/creation-guide/status", middleware.CORS(), middleware.DisableCache(), controller.GetCreationGuideStatus)
+		apiRouter.POST("/creation-guide/ack", middleware.CORS(), middleware.OAuthPublicRateLimit(), middleware.DisableCache(), controller.AckCreationGuide)
 
 		// OAuth Client routes - specific routes must come before :provider wildcard
-		apiRouter.POST("/oauth/state", middleware.CriticalRateLimit(), middleware.DisableCache(), middleware.TryUserAuth(), anonymousRequestBodyLimit, controller.GenerateOAuthCode)
+		apiRouter.POST("/oauth/state", middleware.OAuthPublicRateLimit(), middleware.DisableCache(), middleware.TryUserAuth(), anonymousRequestBodyLimit, controller.GenerateOAuthCode)
 		apiRouter.POST("/oauth/email/bind/start", middleware.UserAuth(), middleware.CriticalRateLimit(), middleware.UserCriticalRateLimit("account-security"), middleware.EmailVerificationRateLimit(), middleware.DisableCache(), controller.EmailBindStart)
 		apiRouter.POST("/oauth/email/bind/resend", middleware.UserAuth(), middleware.CriticalRateLimit(), middleware.UserCriticalRateLimit("account-security"), middleware.EmailVerificationRateLimit(), middleware.DisableCache(), controller.EmailBindResend)
 		apiRouter.POST("/oauth/email/bind", middleware.UserAuth(), middleware.CriticalRateLimit(), middleware.UserCriticalRateLimit("account-security"), middleware.DisableCache(), controller.EmailBind)
@@ -80,8 +84,18 @@ func SetApiRouter(router *gin.Engine) {
 
 		userRoute := apiRouter.Group("/user")
 		{
-			userRoute.POST("/auth/refresh", middleware.SessionCookieOriginGuard(), middleware.CriticalRateLimit(), middleware.DisableCache(), controller.RefreshAuth)
-			userRoute.POST("/auth/logout", middleware.SessionCookieOriginGuard(), middleware.CriticalRateLimit(), middleware.DisableCache(), controller.AuthLogout)
+			// Cookie-based session probe for the companion app's silent SSO. It
+			// must live under /api/user/auth because that is the path the refresh
+			// cookie is scoped to; anywhere else the cookie is not sent and the
+			// probe can only ever answer "anonymous". Read-only, so it is not
+			// charged against the critical limiter that the refresh/token routes
+			// share (a load-time probe would starve them: see the 429 regression).
+			userRoute.GET("/auth/session-status", middleware.CORSForOAuthClients(), middleware.DisableCache(), controller.ProbeAuthSession)
+			// Session renewal is routine page-load traffic and gets its own
+			// bucket; keeping it on the critical bucket let a few refreshes
+			// exhaust the login quota.
+			userRoute.POST("/auth/refresh", middleware.SessionCookieOriginGuard(), middleware.SessionRefreshRateLimit(), middleware.DisableCache(), controller.RefreshAuth)
+			userRoute.POST("/auth/logout", middleware.SessionCookieOriginGuard(), middleware.SessionRefreshRateLimit(), middleware.DisableCache(), controller.AuthLogout)
 			userRoute.POST("/register", middleware.CriticalRateLimit(), anonymousRequestBodyLimit, middleware.TurnstileCheck(), controller.Register)
 			userRoute.GET("/login/encryption-key", middleware.DisableCache(), controller.GetPasswordEncryptionKey)
 			userRoute.POST("/login", middleware.CriticalRateLimit(), middleware.DisableCache(), anonymousRequestBodyLimit, middleware.TurnstileCheck(), controller.Login)

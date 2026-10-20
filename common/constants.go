@@ -231,6 +231,22 @@ var (
 	CriticalRateLimitNum            = 20
 	CriticalRateLimitDuration int64 = 20 * 60
 
+	// OAuthPublicRateLimit guards the OAuth endpoints a public client calls
+	// routinely: client discovery, authorization-code exchange and code
+	// issuance. They are idempotent and cheap, so they get their own bucket.
+	// Sharing the critical bucket made a couple of page loads exhaust the
+	// login/registration quota (spurious 429 on sign-in).
+	OAuthPublicRateLimitEnable   bool
+	OAuthPublicRateLimitNum      = 120
+	OAuthPublicRateLimitDuration int64 = 20 * 60
+
+	// SessionRefreshRateLimit guards cookie-based session renewal. A dashboard
+	// page load renews its session, so this traffic is routine and must not
+	// consume the budget reserved for credential-submitting requests.
+	SessionRefreshRateLimitEnable   bool
+	SessionRefreshRateLimitNum      = 60
+	SessionRefreshRateLimitDuration int64 = 20 * 60
+
 	UploadRateLimitNum            = 10
 	UploadRateLimitDuration int64 = 60
 

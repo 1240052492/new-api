@@ -194,6 +194,30 @@ func CriticalRateLimit() func(c *gin.Context) {
 	return defNext
 }
 
+// OAuthPublicRateLimit guards OAuth endpoints that a public client (such as
+// the Infinite Canvas SPA) calls as part of a normal sign-in: client
+// discovery, authorization-code issuance and code exchange. They are
+// idempotent and inexpensive, but they fire several times per page load, so
+// charging them against the critical bucket starved login/registration and
+// surfaced as spurious 429s. They get their own, larger bucket keyed by IP.
+func OAuthPublicRateLimit() func(c *gin.Context) {
+	if common.OAuthPublicRateLimitEnable {
+		return rateLimitFactory(common.OAuthPublicRateLimitNum, common.OAuthPublicRateLimitDuration, "OC")
+	}
+	return defNext
+}
+
+// SessionRefreshRateLimit guards cookie-based session renewal and logout.
+// Every dashboard page load renews its session, so this traffic is routine;
+// it must not consume the budget reserved for credential-submitting
+// requests (login, registration, payment).
+func SessionRefreshRateLimit() func(c *gin.Context) {
+	if common.SessionRefreshRateLimitEnable {
+		return rateLimitFactory(common.SessionRefreshRateLimitNum, common.SessionRefreshRateLimitDuration, "SR")
+	}
+	return defNext
+}
+
 func UserCriticalRateLimit(scope string) func(c *gin.Context) {
 	if !common.CriticalRateLimitEnable {
 		return defNext

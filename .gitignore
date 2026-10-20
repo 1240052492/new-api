@@ -73,3 +73,6 @@ new-api~
 .cursor/
 .claude.json
 AGENTS.md.local
+
+# Local browser E2E scratch scripts (verification only, not shipped)
+.tmp-e2e/

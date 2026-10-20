@@ -1,6 +1,7 @@
 package service
 
 import (
+	"crypto/subtle"
 	"errors"
 	"fmt"
 	"net/http"
@@ -291,6 +292,38 @@ func RefreshLoginSession(rawRefreshToken, expectedSID, ip, userAgent string) (*A
 		return nil, nil, err
 	}
 	return bundle, currentUser, nil
+}
+
+// ProbeRefreshCookieSession reports whether rawRefreshToken names a live
+// dashboard session, without touching it. A probe cannot be built on
+// RefreshLoginSession: that consumes one rotation of the presented secret and
+// is charged against the critical rate limiter, so calling it on every page
+// load would rotate credentials and starve the budget it shares with the
+// token exchange.
+//
+// Nothing here writes. An expired, revoked, rotated-away or
+// disabled-account cookie simply reads as "no session", and the caller must
+// treat a false answer as "ask the visitor to sign in", never as an error.
+func ProbeRefreshCookieSession(rawRefreshToken string) bool {
+	sid, secret, ok := splitRefreshToken(rawRefreshToken)
+	if !ok {
+		return false
+	}
+	session, err := model.GetUserSessionCached(sid)
+	if err != nil || session.Status != model.UserSessionStatusActive ||
+		session.RevokedAt != 0 || session.ExpiresAt <= time.Now().Unix() {
+		return false
+	}
+	// The cookie carries the secret itself, so a matching hash is what proves
+	// the presenter holds this session rather than a guessed SID.
+	if subtle.ConstantTimeCompare([]byte(session.RefreshHash), []byte(hashRefreshSecret(secret))) != 1 {
+		return false
+	}
+	user, err := model.GetUserCache(session.UserID)
+	if err != nil {
+		return false
+	}
+	return user.Status == common.UserStatusEnabled && user.AuthVersion == session.UserAuthVersion
 }
 
 func RevokeByRefreshToken(rawRefreshToken, expectedSID, reason string) error {

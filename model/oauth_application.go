@@ -196,6 +196,28 @@ func ListOAuthApplications(userID int, offset, limit int) ([]OAuthApplication, i
 	return apps, total, nil
 }
 
+// ListActiveOAuthApplicationRedirectURIs returns every redirect URI declared by
+// an active application. It exists for origin checks: an application's
+// redirect URIs are the only origins the console has agreed to hand an
+// authorization code to, so they are also the origins allowed to ask whether
+// the visitor is signed in.
+func ListActiveOAuthApplicationRedirectURIs() ([]string, error) {
+	var apps []OAuthApplication
+	if err := DB.Where("status = ? AND deleted_at IS NULL", OAuthApplicationStatusActive).
+		Find(&apps).Error; err != nil {
+		return nil, err
+	}
+	uris := make([]string, 0, len(apps))
+	for i := range apps {
+		appURIs, err := apps[i].GetRedirectURIs()
+		if err != nil {
+			continue
+		}
+		uris = append(uris, appURIs...)
+	}
+	return uris, nil
+}
+
 // FindActiveOAuthApplicationByRedirectURI returns the most recently created
 // active application whose redirect URI list contains redirectURI exactly.
 // It lets public PKCE clients discover the current client_id at runtime, so a

@@ -94,6 +94,25 @@ func AuthLogout(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"success": true, "message": ""})
 }
 
+// ProbeAuthSession handles GET /api/user/auth/session-status.
+//
+// It answers the single question a companion app (Infinite Canvas) asks before
+// offering silent SSO: does this browser still hold a live console login
+// session? The path matters. The refresh cookie is scoped to /api/user/auth
+// (see service.WriteRefreshCookie), so this is the only prefix a cross-origin
+// caller can be authenticated by that cookie at all; a probe mounted anywhere
+// else sees an anonymous request and answers false forever.
+//
+// The status is always 200 so the client branches without error handling, and
+// the body is one boolean: it never reveals which account the session belongs
+// to, because any origin allowed by CORSForOAuthClients may read it.
+func ProbeAuthSession(c *gin.Context) {
+	setAuthNoStore(c)
+	rawRefreshToken, err := c.Cookie(service.RefreshCookieName)
+	authenticated := err == nil && service.ProbeRefreshCookieSession(rawRefreshToken)
+	c.JSON(http.StatusOK, gin.H{"authenticated": authenticated})
+}
+
 func GetLoginSessions(c *gin.Context) {
 	identity, ok := requireBrowserSession(c)
 	if !ok {

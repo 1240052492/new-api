@@ -68,6 +68,50 @@ Local development is available at `http://127.0.0.1:5174/` with the Go backend a
 - Security verification: external `Test-NetConnection 177.3.37.113 -Port 3000` now fails; HNY listens only on `127.0.0.1:3000`; both public HTTPS status endpoints return HTTP 200 and `v1.0.0-rc.41`; New API is healthy.
 - Last commit: unchanged; repository contains untracked planning/state/operations documentation only. Local development runtime verification: `/api/status` HTTP 200 and frontend HTTP 200 on 2026-10-09.
 
+## Guest-Mode Canvas Access (2026-10-21)
+
+- HNY production accepted by the user: `aiplantform.site` (New API v1.0.0-rc.41 Compose stack) and `aigc.aiplantform.site` (Infinite Canvas, commit `67f49e4b`) verified OK.
+- Requirement: guests may browse Canvas pages (home/image/video/canvas/prompts/assets) and third-party apps, but internal features require login. Wallet/Key buttons stay visible for guests and link to the New API console.
+- Implementation (Canvas `codex/infinite-canvas-oauth-flow`, minimal diff on the tested OAuth PKCE flow; no New API backend change):
+  - `web/src/router.tsx`: removed the global `AuthGuard` wrapper; all routes render for guests. Deleted `components/auth-guard.tsx`.
+  - New `web/src/services/auth-gate.ts`: `isAuthenticated()` + `ensureAuthenticated(navigate?)` — saves the current path to sessionStorage `auth_redirect` (already read by `pages/oauth-callback.tsx`) and starts the OAuth authorization redirect.
+  - Login gates at the service choke points: `image.ts` (`requestGeneration`, `requestEdit`, `requestImageQuestion`), `video.ts` (`createVideoGenerationTask`, also covers `requestVideoGeneration`), `audio.ts` (`requestAudioGeneration`). Model listing/config dialog stay ungated for guest key setup.
+  - `user-status-actions.tsx`: guest-only LogIn icon button (hidden when authenticated); Wallet/Key buttons unchanged.
+  - i18n: added `topNav.login` and `apiErrors.loginRequired` in zh-CN and en-US.
+- Verification: `bun test src/__tests__/auth-gate.test.ts` 3/3 passed (new); `oauth-client.test.ts` 4/4 passed (regression); `bun run build` passed. Local New API :3002 and Canvas :5173 running for manual browser verification.
+- Known behavior: OAuth token stays in memory only, so a page refresh returns the visitor to guest state; the next internal action silently re-runs OAuth (New API session makes it a no-prompt round trip).
+
+## Account-Aware Guide Dialog and Admin Visibility (2026-10-21)
+
+- Confirmed decisions with the user: OAuth JWT carries `role` (plan A, no userinfo endpoint); `TOP_NAV_HIDDEN` becomes a non-admin suppress list; config tabs local-proxy/prompt-sources are admin-only; guide dialog frequency control is server-side per account.
+- New API (`feat/oauth-server-impl`):
+  - `service/oauth_service.go`: `OAuthTokenClaims.Role` (int, omitempty) filled from the user record at issuance. Role is a snapshot for the 1-hour token TTL; accepted for UI-level decisions.
+  - `relaykit/dto/user_settings.go`: new `creation_guide_acks` map (platform -> unix seconds) inside the user setting JSON; no schema migration.
+  - New `controller/creation_guide.go`: `GET /api/creation-guide/status` and `POST /api/creation-guide/ack`, authenticated by the OAuth Bearer token (`GetTokenInfo`); platform whitelist `image|video`; `reminder_days` (constant 7) is returned to the client so future tuning needs no frontend release. Routes registered in `router/api-router.go` with CORS; ack uses CriticalRateLimit, status relies on the global API limiter.
+  - Tests `controller/creation_guide_test.go`: role claim carried in token; 401 for missing/tampered tokens; ack persistence per account; other accounts unaffected. Both pass. Full `go test ./controller -run OAuth` still fails only on the documented pre-existing Windows TempDir/SQLite cleanup issue (0 assertion failures).
+  - Local binary rebuilt and restarted on port 3002 (`--port 3002`); previous binary preserved as `new-api.exe.pre-guide-20261021`. `/api/status` 200; guide status endpoint returns 401 without token.
+- Canvas (`codex/infinite-canvas-oauth-flow`):
+  - `stores/use-auth-store.ts` + `types/auth.ts`: role decoded from the JWT payload (presentation-level only), `isAdmin()` = role >= 10.
+  - `user-status-actions.tsx`: `TOP_NAV_HIDDEN` suppresses entries only for non-admins; administrators see the full top bar.
+  - `app-config-modal.tsx`: local-proxy and prompt-sources tabs render only for admins; non-admin `initialTab` pointing at them falls back to channels.
+  - `creation-guide-modal.tsx` rewritten: admins never see it; guests see it on every entry and get a secondary "登录" button next to the primary "我已了解，开始创作" (final decision supersedes the earlier "登录后开始创作" single button); logged-in users consult the server status (first entry always shows, acked within `reminder_days` suppresses) and ack on explicit confirmation; local 7-day record kept as fallback when the server is unreachable. Closing without confirming does not ack.
+  - i18n: added `guide.login` (zh/en), removed unused `guide.remind7d`, `guide.later`, `guide.loginCta`.
+  - Tests: new `auth-store-role.test.ts` (3), `auth-gate.test.ts` (3), `oauth-client.test.ts` regression (4) all pass; `bun run build` passes.
+- Not deployed to HNY production; backend changes live on the fork branch and require a release cycle.
+
+## Silent-SSO Session Probe Cookie Scope Fix (2026-10-21)
+
+- Reported symptom: a user already logged in to the New API console still saw the login button in the Canvas creation guide, even after a hard refresh.
+- Root cause (proved in a real browser): the refresh cookie `new_api_refresh` is written with `Path=/api/user/auth`, `HttpOnly`, `SameSite=Strict`, and only `controller/auth_session.go` ever reads it. The old probe `GET /api/oauth/session-status` authenticated through `middleware.TryUserAuth`, which looks solely at the `Authorization` header, so the browser never sent the cookie and the endpoint answered `authenticated:false` for every visitor. Silent SSO therefore never started and Canvas always rendered guest UI. The CORS-with-credentials work was necessary but never sufficient.
+- Fix, backend:
+  - `service.ProbeRefreshCookieSession`: read-only validation (active, unexpired, constant-time `RefreshHash` compare, account enabled, matching `AuthVersion`). It must not reuse `RefreshLoginSession`, which rotates the presented secret and consumes the critical rate limit.
+  - `controller.ProbeAuthSession` + `GET /api/user/auth/session-status`, registered inside `userRoute` so the cookie is actually in scope. Always 200, body is a single boolean, never the account.
+  - `middleware.CORSForOAuthClients` replaces `CORSWithCredentials`: reflects `Origin` only for the request's own origin, `SESSION_COOKIE_TRUSTED_URL` entries, or the origin of an active OAuth application's redirect URI (`model.ListActiveOAuthApplicationRedirectURIs`). `GET /api/oauth/session-status` and `controller.GetOAuthSessionStatus` are removed.
+- Fix, Canvas: `web/src/services/auth-gate.ts` `checkPlatformSession()` now calls `/api/user/auth/session-status`.
+- Tests: `controller/session_status_test.go` rewritten (anonymous, live cookie, forged secret, malformed value, rotated-away vs rotated-to, revoked session, trusted-vs-untrusted origin reflection) - all pass; `go test ./middleware` passes. Pre-existing failures confirmed on a clean HEAD worktree and not caused here: `service` `TestObserveChannelAffinityUsageCacheByRelayFormat_*` and the network-dependent controller OAuth/GitHub/Telegram cases.
+- Browser acceptance (Playwright + local Chrome, `.tmp-e2e/verify-session-fix.js`, screenshots `logs/e2e-fix-guest.png`, `logs/e2e-fix-loggedin.png`, `logs/e2e-fix-loggedin-reload.png`): guest probe `false` -> dialog `[登 录, 我已了解，开始创作]`; console-session visitor probe `true` -> client-config -> console refresh -> authorize bridge -> `/api/oauth/token` -> back on `/image` with `role: 1` and a dialog of `[我已了解，开始创作]` only, unchanged after a full reload.
+- Deployment note: this relies on the console and Canvas sharing a registrable domain (e.g. `www.` and `canvas.` under `aiplantform.site`) because the cookie is `SameSite=Strict`; a genuinely cross-site Canvas would need `SameSite=None; Secure` and an entry in `SESSION_COOKIE_TRUSTED_URL`.
+
 ## Next-Session Instruction
 
 ## Current OAuth and Infinite Canvas Repair (2026-10-19)
@@ -90,5 +134,19 @@ Local development is available at `http://127.0.0.1:5174/` with the Go backend a
 - Infinite Canvas `web/src/services/oauth.ts` now resolves client_id at runtime via this endpoint (fallback to `VITE_OAUTH_CLIENT_ID`); creating a replacement application in the console takes effect on the next Canvas page load without editing `.env.local` or restarting Vite.
 - Verification: focused controller test `TestOAuthClientConfigResolvesNewestActiveApplicationByRedirectURI` passed (note: GORM skips zero-value `Status` on insert due to column default); Canvas `oauth-client.test.ts` 4/4 passed; Canvas `bun run build` passed; live endpoint returned the active client_id, 404 for unknown redirect, and CORS header for Origin `http://localhost:5173`. Binary backup: `new-api.exe.pre-clientconfig-20261019`.
 - Next step: one clean browser OAuth round trip on `localhost:5173` against the newly created application.
+
+## Rate-limit Bucket Split for OAuth Sign-in (2026-10-21)
+
+- Symptom: `Request failed with status code 429` on sign-in, reproducible in a real browser. Logs showed `GET /api/oauth/client-config -> 429` followed by four `POST /api/user/auth/refresh -> 429` and finally `POST /api/user/login -> 429`.
+- Root cause: `client-config`, `oauth/token`, `oauth/state`, `user/auth/refresh` and `user/auth/logout` all shared `CriticalRateLimit` (default 20 requests / 20 min, key = `"CT" + client IP`, in-process memory when Redis is off). One page load costs 4-6 of those: discovery + a session refresh per dashboard bootstrap + code issuance + code exchange. Two or three reloads exhausted the bucket, and because login sits in the same bucket, it returned 429 before the user ever submitted credentials.
+- Fix (purpose-based buckets instead of a bigger shared one):
+  - `middleware.OAuthPublicRateLimit()` (`"OC"`, default 120/20min, env `OAUTH_PUBLIC_RATE_LIMIT*`) now guards `oauth/client-config`, `oauth/token`, `oauth/state` and `creation-guide/ack`. All are idempotent, token-validated and cheap.
+  - `middleware.SessionRefreshRateLimit()` (`"SR"`, default 60/20min, env `SESSION_REFRESH_RATE_LIMIT*`) now guards `user/auth/refresh` and `user/auth/logout`, which fire on routine page loads.
+  - `CriticalRateLimit` (`"CT"`, 20/20min) is left to credential-submitting and money-moving routes only: login, register, 2FA, passkey, password reset, payments.
+- Canvas: `web/src/services/oauth.ts` persists the discovered `client_id` in sessionStorage (6h TTL, `canvas.oauth.client_id`), so reloads stop re-requesting discovery; `resetResolvedClientId()` clears it for tests.
+- Verification (curl, same IP): 30x `client-config` -> all 200, then 3x login -> all 200; 30x `refresh` without cookie -> all 401 (not 429), then login -> 200; 40x `token` with a bogus code -> all 400 (not 429).
+- Browser E2E re-run (`verify-session-fix.js`, `verify-admin.js`): logged-in user gets `authenticated:true`, the whole chain is 200, modal buttons `["", "我已了解，开始创作"]` both initially and after full reload; admin sees no modal and keeps GitHub/version/local-proxy/prompt-sources. No 429 anywhere.
+- Tests: `TestSessionProbe*`, `TestCreationGuide*`, `TestOAuthAccessTokenCarriesUserRole` pass; `go vet` clean; `go build` clean; Canvas 11/11 relevant tests and `bun run build` pass. The 7 failures in `src/__tests__/oauth-integration.test.ts` are pre-existing and unrelated: that file still imports the removed `../config/oauth` / `../services/oauth-service` paths and calls `localStorage`, which does not exist under bun test.
+- Note: these limiter counters are per process. Without Redis, a restart clears them; with multiple replicas each instance counts independently.
 
 Next session must begin with: `请读取 AGENTS.md 和 STATE.md，加载当前任务，从上次中断的地方继续。`

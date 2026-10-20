@@ -159,6 +159,7 @@ type OAuthTokenClaims struct {
 	UserID    int    `json:"user_id"`
 	Username  string `json:"username"`
 	Email     string `json:"email"`
+	Role      int    `json:"role,omitempty"`
 	ClientID  string `json:"client_id"`
 	Scope     string `json:"scope"`
 	TokenType string `json:"token_type"`
@@ -181,6 +182,7 @@ func (os *OAuthService) GenerateAccessToken(userID int, clientID, scope string) 
 		UserID:    user.Id,
 		Username:  user.Username,
 		Email:     user.Email,
+		Role:      user.Role,
 		ClientID:  clientID,
 		Scope:     scope,
 		TokenType: "oauth_access_token",
