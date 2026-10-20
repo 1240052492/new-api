@@ -63,3 +63,13 @@ go.work.sum
 # Local binary rollback backups
 new-api.exe.*
 new-api.exe~*
+new-api~
+*.exe
+
+# AI agent local working directories
+.workbuddy/
+.claude/
+.codex/
+.cursor/
+.claude.json
+AGENTS.md.local
