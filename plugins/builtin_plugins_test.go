@@ -2,6 +2,7 @@ package plugins
 
 import (
 	"io/fs"
+	"slices"
 	"strings"
 	"testing"
 
@@ -11,7 +12,11 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-var expectedKeys = []string{"alibaba", "doubao", "google", "hailuo", "jimeng", "kling", "sora", "sunoapi", "vertex-ai", "vidu", "xai"}
+var expectedKeys = []string{"alibaba", "doubao", "google", "hailuo", "jimeng", "kling", "sora", "sunoapi", "toapi", "vertex-ai", "vidu", "xai"}
+
+// toapi serves only the synchronous OpenAI Images protocol from an async
+// upstream, so the openai_responses contract tests do not apply to it.
+var responsesProtocolKeys = []string{"alibaba", "doubao", "google", "hailuo", "jimeng", "kling", "sora", "sunoapi", "vertex-ai", "vidu", "xai"}
 
 func TestBuiltInVendorPluginsDeclareNativeRoutesAndLegacyChannelTypes(t *testing.T) {
 	generation := jsplugin.DefaultRegistry.Generation()
@@ -113,6 +118,10 @@ func TestBuiltInTaskPluginResponsesAndUsageContracts(t *testing.T) {
 					break
 				}
 			}
+			if !slices.Contains(responsesProtocolKeys, key) {
+				require.False(t, foundResponses, "image-only plugin must not claim openai_responses")
+				return
+			}
 			require.True(t, foundResponses, "openai_responses claim must be present")
 			assert.Equal(t, []string{"stream", "sync", "background"}, responsesClaim.Supports)
 			for _, model := range plugin.Meta.Models {
@@ -138,7 +147,7 @@ func TestBuiltInTaskPluginResponsesAndUsageContracts(t *testing.T) {
 
 func TestBuiltInResponsesDecodersEchoChannelMappedAlias(t *testing.T) {
 	bodyOverrides := map[string]map[string]any{}
-	for _, key := range expectedKeys {
+	for _, key := range responsesProtocolKeys {
 		t.Run(key, func(t *testing.T) {
 			source, sourceErr := Source(key)
 			require.NoError(t, sourceErr)
