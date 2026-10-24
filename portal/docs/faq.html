@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>常见问题 — 智算星球文档</title>
+  <link rel="stylesheet" href="../assets/css/style.css?v=1.0.2" />
+</head>
+<body data-page="docs" data-root="../">
+  <header class="site-header" id="site-header"></header>
+
+  <div class="wrap docs-shell">
+    <aside class="docs-side">
+      <h4>入门</h4>
+      <a href="index.html">文档中心</a>
+      <a href="quickstart.html">快速开始</a>
+      <h4>参考</h4>
+      <a href="api-reference.html">接口文档</a>
+      <a href="integrations.html">客户端接入</a>
+      <a class="active" href="faq.html">常见问题</a>
+      <h4>相关</h4>
+      <a href="../pricing.html">定价说明</a>
+      <a href="/console" data-console>进入控制台</a>
+    </aside>
+
+    <main class="docs-main">
+      <nav class="crumb"><a href="index.html">文档中心</a> / 常见问题</nav>
+      <h1>常见问题</h1>
+      <p class="lead">产品定位、计费、兼容性、数据与团队服务等高频问题。</p>
+
+      <h2>产品与能力</h2>
+      <div class="faq">
+        <details open>
+          <summary>智算星球是什么？和官方 API 有什么区别？</summary>
+          <p>智算星球是独立的多模型 API 聚合网关，不是 OpenAI、Anthropic 或其他模型厂商的官方订阅。你可以在平台创建 API Key，把常用模型接入已经在用的开发工具，一个账户管理全部调用。</p>
+        </details>
+        <details>
+          <summary>目前支持哪些模型和能力？</summary>
+          <p>支持 GPT、Claude、Gemini、DeepSeek、Qwen、Kimi 等模型系列，同时支持图像生成、视频合成、音频与向量嵌入模型。可用模型、价格与具体能力以<a href="/console" data-console>控制台</a>实时展示为准。</p>
+        </details>
+        <details>
+          <summary>可以接入哪些客户端和开发工具？</summary>
+          <p>任何支持 OpenAI API 或自定义 Base URL 的软件和框架均可接入，包括 Claude Code、Codex、Cursor、Cherry Studio、LobeChat、LangChain、Dify 等。详见<a href="integrations.html">客户端接入</a>。</p>
+        </details>
+      </div>
+
+      <h2>计费与账户</h2>
+      <div class="faq">
+        <details>
+          <summary>如何计费？可以先试用再充值吗？</summary>
+          <p>按 Token 用量计费，注册后即可使用赠送额度完成接入与小规模测试；正式使用时在控制台在线充值，余额实时扣减。规则详见<a href="../pricing.html">定价说明</a>。</p>
+        </details>
+        <details>
+          <summary>失败请求会计费吗？</summary>
+          <p>因上游或平台原因导致的失败请求不计费；已成功转发但因客户端原因中断的请求，按实际产生的 Token 用量结算。</p>
+        </details>
+        <details>
+          <summary>如何控制消费上限？</summary>
+          <p>可为每个 API 令牌单独设置额度上限与过期时间；账户余额低于阈值时可在控制台开启预警提醒。</p>
+        </details>
+        <details>
+          <summary>需要发票、对公转账或团队接入怎么办？</summary>
+          <p>企业用户可支持对公转账、合同签订、发票与采购材料。请通过页脚邮箱联系商务，或在控制台提交工单说明需求。</p>
+        </details>
+      </div>
+
+      <h2>数据与安全</h2>
+      <div class="faq">
+        <details>
+          <summary>我的请求数据会被用于训练吗？</summary>
+          <p>不会。平台不使用你的请求数据训练、微调或蒸馏模型。数据仅在完成请求、保障服务与必要排障所需的范围内临时处理，详见<a href="../privacy.html">隐私政策</a>。</p>
+        </details>
+        <details>
+          <summary>API Key 泄露了怎么办？</summary>
+          <p>请立即到控制台「令牌」页面删除或重置该令牌，并检查用量日志确认异常消费；如需协助请联系客服。</p>
+        </details>
+        <details>
+          <summary>接口报 401 / 429 应该如何排查？</summary>
+          <p>401 通常是密钥错误、过期或被删除，请重新创建令牌；429 通常是触发限流或余额不足，请按 <code class="inline-code">Retry-After</code> 重试并确认余额。更多状态码见<a href="api-reference.html">接口文档</a>。</p>
+        </details>
+      </div>
+    </main>
+  </div>
+
+  <footer class="site-footer" id="site-footer"></footer>
+  <script src="../assets/js/site-config.js"></script>
+  <script src="../assets/js/main.js?v=1.0.2"></script>
+</body>
+</html>

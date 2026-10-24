@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>文档中心 — 智算星球</title>
+  <meta name="description" content="智算星球文档中心：快速开始、接口文档、客户端接入指南与常见问题。" />
+  <link rel="stylesheet" href="../assets/css/style.css?v=1.0.2" />
+</head>
+<body data-page="docs" data-root="../">
+  <header class="site-header" id="site-header"></header>
+
+  <section class="hero" style="padding: 64px 0 56px;">
+    <div class="wrap" style="text-align:center;">
+      <div class="hero-badge"><span class="dot"></span>文档持续更新</div>
+      <h1 style="font-size: clamp(30px, 4vw, 44px); max-width: none;">文档中心</h1>
+      <p class="sub" style="margin-inline:auto;">
+        从获取 API Key 到调用第一个模型，从通用 SDK 到主流客户端接入，这里提供全部所需资料。
+      </p>
+    </div>
+  </section>
+
+  <section class="section-tight">
+    <div class="wrap">
+      <div class="doc-cats">
+        <a class="doc-cat" href="quickstart.html">
+          <h3>🚀 快速开始</h3>
+          <p>五分钟完成第一次调用：获取密钥、选择模型、发送请求、查询异步任务。</p>
+        </a>
+        <a class="doc-cat" href="api-reference.html">
+          <h3>📘 接口文档</h3>
+          <p>Chat Completions、模型列表、图像生成等接口的完整参数说明与错误码。</p>
+        </a>
+        <a class="doc-cat" href="integrations.html">
+          <h3>🧩 客户端接入</h3>
+          <p>Claude Code、Codex、Cursor、Cherry Studio 等主流客户端的配置方法。</p>
+        </a>
+        <a class="doc-cat" href="faq.html">
+          <h3>❓ 常见问题</h3>
+          <p>计费规则、错误排查、额度管理、数据安全等高频问题的解答。</p>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <section class="section-tight">
+    <div class="wrap">
+      <div class="sec-head">
+        <span class="kicker">Base URL</span>
+        <h2>接口地址</h2>
+      </div>
+      <div class="faq">
+        <details open>
+          <summary>OpenAI 兼容入口</summary>
+          <p><code class="inline-code">https://www.aiplantform.site/v1</code> — 所有 OpenAI 兼容接口均在此地址下，配合 <code class="inline-code">Authorization: Bearer sk-xxx</code> 请求头使用。</p>
+        </details>
+        <details>
+          <summary>提示</summary>
+          <p>国内网络可直连访问，无需配置代理。接口路径、请求体与 OpenAI 官方保持一致，迁移成本几乎为零。</p>
+        </details>
+      </div>
+    </div>
+  </section>
+
+  <footer class="site-footer" id="site-footer"></footer>
+  <script src="../assets/js/site-config.js"></script>
+  <script src="../assets/js/main.js?v=1.0.2"></script>
+</body>
+</html>

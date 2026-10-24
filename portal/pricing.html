@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>定价说明 — 智算星球</title>
+  <meta name="description" content="智算星球按 Token 用量透明计费，注册赠送体验额度，充值即用，倍率公开，消费明细实时可查。" />
+  <link rel="stylesheet" href="assets/css/style.css?v=1.0.2" />
+</head>
+<body data-page="pricing">
+  <header class="site-header" id="site-header"></header>
+
+  <section class="hero" style="padding: 64px 0 56px;">
+    <div class="wrap" style="text-align:center;">
+      <div class="hero-badge"><span class="dot"></span>透明计费 · 充值即用</div>
+      <h1 style="font-size: clamp(30px, 4vw, 44px); max-width: none;">定价说明</h1>
+      <p class="sub" style="margin-inline:auto;">
+        平台按各模型的 Token 实际用量计费，无最低消费、无订阅强制。注册即赠体验额度，用多少扣多少。
+      </p>
+    </div>
+  </section>
+
+  <section class="section-tight">
+    <div class="wrap">
+      <div class="plan-cards">
+        <div class="plan">
+          <h3>免费体验</h3>
+          <div class="amount">¥0<i> 注册即得</i></div>
+          <p class="desc">新用户注册赠送体验额度</p>
+          <ul>
+            <li>全部模型能力开放测试</li>
+            <li>完整控制台与用量统计</li>
+            <li>社区与文档支持</li>
+          </ul>
+          <a class="btn btn-ghost" href="/register" data-console>免费注册</a>
+        </div>
+        <div class="plan featured">
+          <h3>按量付费</h3>
+          <div class="amount">按用量<i> 实时扣减</i></div>
+          <p class="desc">主流方式：充值余额，按 Token 计费</p>
+          <ul>
+            <li>支持在线充值，秒级到账</li>
+            <li>分组倍率公开透明</li>
+            <li>消费明细与日志实时可查</li>
+            <li>余额预警与令牌额度控制</li>
+          </ul>
+          <a class="btn btn-primary" href="/console/topup" data-console>前往充值</a>
+        </div>
+        <div class="plan">
+          <h3>企业合作</h3>
+          <div class="amount">专属<i> 商务方案</i></div>
+          <p class="desc">团队接入、对公转账与专属支持</p>
+          <ul>
+            <li>对公转账与合同签订</li>
+            <li>专属客户成功对接</li>
+            <li>发票与采购材料支持</li>
+            <li>定制模型与通道需求</li>
+          </ul>
+          <a class="btn btn-ghost" href="about.html">联系我们</a>
+        </div>
+      </div>
+
+      <div class="sec-head">
+        <span class="kicker">Billing</span>
+        <h2>计费规则</h2>
+        <p>理解三个概念，即可完全掌握平台计费方式。</p>
+      </div>
+      <div class="grid-3" style="margin-bottom: 56px;">
+        <div class="card">
+          <div class="icon">📐</div>
+          <h3>模型倍率</h3>
+          <p>每个模型按其调用成本设置倍率，实际费用 = 官方基准价 × 模型倍率 × 分组倍率。各模型倍率在控制台模型广场公开可查。</p>
+        </div>
+        <div class="card">
+          <div class="icon">👥</div>
+          <h3>用户分组</h3>
+          <p>不同用户分组对应不同分组倍率，充值越多可享越优惠的分组。分组详情可在控制台「个人设置」中查看。</p>
+        </div>
+        <div class="card">
+          <div class="icon">🧾</div>
+          <h3>用量结算</h3>
+          <p>请求完成后按输入 / 输出 Token 数实时结算并写入日志，消费明细、令牌级统计均可在控制台自助查询与导出。</p>
+        </div>
+      </div>
+
+      <div class="sec-head">
+        <span class="kicker">Examples</span>
+        <h2>常用模型价格示例</h2>
+        <p>单位：人民币 / 每百万 tokens。以下为示例价格，实际以控制台实时倍率为准。</p>
+      </div>
+      <div class="table-wrap">
+        <table class="price-table">
+          <thead>
+            <tr><th>模型</th><th>厂商</th><th>输入价格</th><th>输出价格</th><th>适用场景</th></tr>
+          </thead>
+          <tbody>
+            <tr><td class="mono">gpt-5.6</td><td>OpenAI</td><td>¥2.00</td><td>¥8.00</td><td class="dim">通用对话 · Agent 工作流</td></tr>
+            <tr><td class="mono">gpt-5.6-mini</td><td>OpenAI</td><td>¥0.40</td><td>¥1.60</td><td class="dim">高频调用 · 摘要分类</td></tr>
+            <tr><td class="mono">claude-sonnet-5</td><td>Anthropic</td><td>¥2.40</td><td>¥12.00</td><td class="dim">代码生成 · 长上下文</td></tr>
+            <tr><td class="mono">gemini-3-pro</td><td>Google</td><td>¥1.20</td><td>¥4.80</td><td class="dim">多模态 · 文档分析</td></tr>
+            <tr><td class="mono">deepseek-v4</td><td>DeepSeek</td><td>¥1.00</td><td>¥4.00</td><td class="dim">高性价比推理</td></tr>
+            <tr><td class="mono">text-embedding-5</td><td>OpenAI</td><td>¥0.10</td><td>—</td><td class="dim">语义检索 · RAG</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="notice"><a href="models.html">查看模型广场全部模型 →</a></div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap">
+      <div class="sec-head">
+        <span class="kicker">FAQ</span>
+        <h2>计费常见问题</h2>
+      </div>
+      <div class="faq">
+        <details>
+          <summary>失败请求会扣费吗？</summary>
+          <p>因上游或平台原因导致的失败请求不会计费；已成功转发但因客户端超时中断的请求，按实际产生的 Token 用量结算。</p>
+        </details>
+        <details>
+          <summary>支持哪些充值方式？</summary>
+          <p>控制台支持在线充值，到账后实时可用；企业用户可联系客服开通对公转账通道。</p>
+        </details>
+        <details>
+          <summary>余额可以退回吗？</summary>
+          <p>充值余额长期有效。如遇特殊情况需要处理退款，请联系客服协商，详见《用户协议》计费条款。</p>
+        </details>
+        <details>
+          <summary>如何控制消费上限？</summary>
+          <p>可为每个 API 令牌单独设置额度上限与过期时间；账户余额低于阈值时可在控制台开启预警提醒。</p>
+        </details>
+      </div>
+    </div>
+  </section>
+
+  <footer class="site-footer" id="site-footer"></footer>
+  <script src="assets/js/site-config.js"></script>
+  <script src="assets/js/main.js?v=1.0.2"></script>
+</body>
+</html>

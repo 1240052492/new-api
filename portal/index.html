@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>智算星球 — 一个入口，接入全球主流大模型</title>
+  <meta name="description" content="智算星球提供 OpenAI 兼容的多模型 API 网关，一个 API Key 接入 GPT、Claude、Gemini、DeepSeek 等主流模型，统一计费、高可用路由、国内直连。" />
+  <link rel="stylesheet" href="assets/css/style.css?v=1.0.2" />
+</head>
+<body data-page="home">
+  <header class="site-header" id="site-header"></header>
+
+  <!-- ============ Hero ============ -->
+  <section class="hero">
+    <div class="wrap">
+      <div class="hero-badge"><span class="dot"></span>新一代 AI 模型聚合网关 · 服务运行正常</div>
+      <h1>一个入口，<br />接入<span class="grad">全球主流大模型</span></h1>
+      <p class="sub">
+        智算星球提供 OpenAI 兼容的统一 API。一个 API Key 即可调用 GPT、Claude、Gemini、DeepSeek
+        等模型，改一行 Base URL 就能切换，统一鉴权、统一计费、故障自动切换。
+      </p>
+      <div class="hero-cta">
+        <a class="btn btn-hero btn-lg" href="/register" data-console>免费开始使用</a>
+        <a class="btn btn-hero-ghost btn-lg" href="docs/quickstart.html">查看快速开始</a>
+      </div>
+      <div class="hero-code">
+        <span>base_url</span><b>https://www.aiplantform.site/v1</b>
+        <span>api_key</span><b>sk-••••••••••••</b>
+      </div>
+      <div class="hero-stats">
+        <div class="stat"><b>200<i>+</i></b><span>可用模型数量</span></div>
+        <div class="stat"><b>99.9<i>%</i></b><span>服务可用性</span></div>
+        <div class="stat"><b>OpenAI</b><span>兼容协议</span></div>
+        <div class="stat"><b>按量</b><span>透明计费 · 充值即用</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 客户端兼容条 ============ -->
+  <section class="clients">
+    <div class="wrap">
+      <div class="row">
+        <span class="label">开箱兼容主流客户端：</span>
+        <span class="chip">Claude Code</span>
+        <span class="chip">Codex</span>
+        <span class="chip">Cursor</span>
+        <span class="chip">Cherry Studio</span>
+        <span class="chip">LobeChat</span>
+        <span class="chip">OpenAI SDK</span>
+        <span class="chip">LangChain</span>
+        <span class="chip">Dify</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 核心特性 ============ -->
+  <section class="section">
+    <div class="wrap">
+      <div class="sec-head">
+        <span class="kicker">Features</span>
+        <h2>为持续构建的团队而生</h2>
+        <p>从第一次请求到生产环境长期运行，智算星球提供完整的模型接入与运营能力。</p>
+      </div>
+      <div class="grid-3">
+        <div class="card">
+          <div class="icon">🔌</div>
+          <h3>统一 OpenAI 兼容协议</h3>
+          <p>保留现有 SDK 与调用方式，只需替换 Base URL 与 API Key，无需改动业务代码即可接入全部模型。</p>
+        </div>
+        <div class="card">
+          <div class="icon">🛡️</div>
+          <h3>高可用智能路由</h3>
+          <p>多上游通道自动故障切换与重试，单点异常不中断服务，长任务与 Agent 工作流稳定运行。</p>
+        </div>
+        <div class="card">
+          <div class="icon">💰</div>
+          <h3>透明按量计费</h3>
+          <p>按 Token 计费，倍率公开透明，用量与消费明细在控制台实时可查，支持余额预警。</p>
+        </div>
+        <div class="card">
+          <div class="icon">⚡</div>
+          <h3>国内网络低延迟直连</h3>
+          <p>无需自建代理，国内节点直连转发，显著降低首字延迟，提升对话与编码体验。</p>
+        </div>
+        <div class="card">
+          <div class="icon">🧩</div>
+          <h3>全模态模型支持</h3>
+          <p>文本对话、代码推理、图像生成、视频合成、语音识别与 Embedding，一个接口全部覆盖。</p>
+        </div>
+        <div class="card">
+          <div class="icon">🔒</div>
+          <h3>数据安全合规</h3>
+          <p>密钥加密存储，请求链路全程加密传输；请求数据不用于模型训练，日志可在控制台自助管理。</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 三步接入 ============ -->
+  <section class="section" style="background: var(--surface); border-block: 1px solid var(--line);">
+    <div class="wrap">
+      <div class="sec-head">
+        <span class="kicker">Quick Start</span>
+        <h2>三步完成接入</h2>
+        <p>沿用现有客户端与请求层，不需要任何额外工具。</p>
+      </div>
+      <div class="steps">
+        <div class="step">
+          <div class="num"></div>
+          <h3>注册并创建 API Key</h3>
+          <p>注册账号后进入控制台，在「令牌」页面创建 API Key，并选择需要的模型。</p>
+          <span class="code-chip">sk-••••••••••••</span>
+        </div>
+        <div class="step">
+          <div class="num"></div>
+          <h3>替换 Base URL</h3>
+          <p>把客户端的接口地址改为智算星球网关，填入你的 API Key 与模型名称。</p>
+          <span class="code-chip">https://www.aiplantform.site/v1</span>
+        </div>
+        <div class="step">
+          <div class="num"></div>
+          <h3>发出第一个请求</h3>
+          <p>发送一次测试请求，收到 200 响应即接入成功，控制台可立即看到用量明细。</p>
+          <span class="code-chip">200 OK · /v1/chat/completions</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 模型速览 ============ -->
+  <section class="section">
+    <div class="wrap">
+      <div class="sec-head">
+        <span class="kicker">Models</span>
+        <h2>主流模型，一站直达</h2>
+        <p>按创作任务选择模型，先确定任务类型，再进入模型广场比较价格与能力。</p>
+      </div>
+      <div class="grid-4">
+        <div class="card">
+          <div class="icon">💬</div>
+          <h3>文本对话</h3>
+          <p>GPT、Claude、Gemini、DeepSeek、Qwen 等对话与推理模型，覆盖通用到旗舰场景。</p>
+          <a href="models.html">进入文本分类 →</a>
+        </div>
+        <div class="card">
+          <div class="icon">🎨</div>
+          <h3>图像生成</h3>
+          <p>文生图、参考图编辑与商业素材生成，统一异步任务接口，支持 Webhook 回调。</p>
+          <a href="models.html">进入图像分类 →</a>
+        </div>
+        <div class="card">
+          <div class="icon">🎬</div>
+          <h3>视频合成</h3>
+          <p>文生视频与图生视频，按秒或按 Token 计费，适用于分镜验证与内容创作。</p>
+          <a href="models.html">进入视频分类 →</a>
+        </div>
+        <div class="card">
+          <div class="icon">🧠</div>
+          <h3>向量嵌入</h3>
+          <p>文本向量化模型用于语义检索、RAG 知识库与聚类分析，按用量计费。</p>
+          <a href="models.html">进入嵌入分类 →</a>
+        </div>
+      </div>
+      <div class="notice">模型与价格以控制台「模型广场」实时展示为准，此处为常用模型示例。<a href="models.html">查看完整模型列表</a></div>
+    </div>
+  </section>
+
+  <!-- ============ FAQ ============ -->
+  <section class="section" style="background: var(--surface); border-block: 1px solid var(--line);">
+    <div class="wrap">
+      <div class="sec-head">
+        <span class="kicker">FAQ</span>
+        <h2>开始之前，你可能想确认这些问题</h2>
+      </div>
+      <div class="faq">
+        <details open>
+          <summary>智算星球和官方 API、订阅服务有什么区别？</summary>
+          <p>智算星球是独立的多模型 API 聚合网关，不是任何模型厂商的官方订阅。你可以在平台创建 API Key，把常用模型接入已经在用的开发工具，一个账户、一张账单管理全部模型调用。</p>
+        </details>
+        <details>
+          <summary>支持哪些模型和能力？</summary>
+          <p>当前支持 GPT、Claude、Gemini、DeepSeek、Qwen、Kimi 等多个模型系列，同时支持图像生成、视频合成与音频模型。可用模型、价格与具体能力以控制台实时展示为准。</p>
+        </details>
+        <details>
+          <summary>如何计费？可以先试用再充值吗？</summary>
+          <p>平台按 Token 用量计费，注册后即可使用赠送额度完成接入与小规模测试；正式使用时在控制台在线充值，余额实时扣减，明细可查。</p>
+        </details>
+        <details>
+          <summary>可以接入哪些客户端和开发工具？</summary>
+          <p>任何支持 OpenAI API 或自定义 Base URL 的软件和框架均可接入，包括 Claude Code、Codex、Cursor、Cherry Studio、LobeChat、LangChain、Dify 等。接入方法见<a href="docs/integrations.html">客户端接入文档</a>。</p>
+        </details>
+        <details>
+          <summary>我的请求数据会被如何处理？</summary>
+          <p>平台不会将你的请求数据用于训练或蒸馏模型。数据仅在完成请求、保障服务与必要排障所需的范围内临时处理，详见<a href="privacy.html">隐私政策</a>。</p>
+        </details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ CTA ============ -->
+  <section class="section">
+    <div class="wrap">
+      <div class="cta-band">
+        <h2>从第一个请求开始</h2>
+        <p>创建 API Key，替换 Base URL，把智算星球接入你已经在用的开发工具。</p>
+        <a class="btn btn-hero btn-lg" href="/register" data-console>立即免费注册</a>
+      </div>
+    </div>
+  </section>
+
+  <footer class="site-footer" id="site-footer"></footer>
+  <script src="assets/js/site-config.js"></script>
+  <script src="assets/js/main.js?v=1.0.2"></script>
+</body>
+</html>

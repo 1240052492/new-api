@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>快速开始 — 智算星球文档</title>
+  <link rel="stylesheet" href="../assets/css/style.css?v=1.0.2" />
+</head>
+<body data-page="docs" data-root="../">
+  <header class="site-header" id="site-header"></header>
+
+  <div class="wrap docs-shell">
+    <aside class="docs-side">
+      <h4>入门</h4>
+      <a href="index.html">文档中心</a>
+      <a class="active" href="quickstart.html">快速开始</a>
+      <h4>参考</h4>
+      <a href="api-reference.html">接口文档</a>
+      <a href="integrations.html">客户端接入</a>
+      <a href="faq.html">常见问题</a>
+      <h4>相关</h4>
+      <a href="../pricing.html">定价说明</a>
+      <a href="/console" data-console>进入控制台</a>
+    </aside>
+
+    <main class="docs-main">
+      <nav class="crumb"><a href="index.html">文档中心</a> / 快速开始</nav>
+      <h1>快速开始</h1>
+      <p class="lead">使用智算星球调用文本、图像、视频与音频模型，五分钟完成第一次调用。</p>
+
+      <div class="callout">
+        平台提供 OpenAI 兼容接口，Base URL 为 <code class="inline-code">https://www.aiplantform.site/v1</code>。文中示例均可直接替换密钥后使用。
+      </div>
+
+      <h2>第一步：获取 API 密钥</h2>
+      <ol>
+        <li>注册并登录后，进入控制台 <a href="/console/token" data-console>「令牌」管理页面</a>；</li>
+        <li>创建一个新的 API Key，可为其设置额度上限与过期时间；</li>
+        <li>立即安全保存密钥，密钥仅在创建时完整显示一次。</li>
+      </ol>
+
+      <h2>第二步：选择模型</h2>
+      <table>
+        <thead><tr><th>类型</th><th>推荐入门模型</th><th>说明</th></tr></thead>
+        <tbody>
+          <tr><td>文本</td><td class="mono">gpt-5.6-mini</td><td>性能与成本均衡，适合通用对话与 Agent 工作流</td></tr>
+          <tr><td>图像</td><td class="mono">gpt-image-2</td><td>支持文生图与参考图编辑，按次计费</td></tr>
+          <tr><td>视频</td><td class="mono">seedance-2</td><td>支持文生视频与图生视频，按秒计费</td></tr>
+        </tbody>
+      </table>
+      <p>完整可用模型以<a href="/console" data-console>控制台模型广场</a>与<a href="../models.html">模型列表页</a>为准。</p>
+
+      <h2>第三步：发送请求</h2>
+      <h3>文本生成</h3>
+      <div class="code-block">
+        <button class="copy-btn">复制</button>
+        <pre><code>curl --request POST \
+  --url https://www.aiplantform.site/v1/chat/completions \
+  --header "Authorization: Bearer YOUR_API_KEY" \
+  --header "Content-Type: application/json" \
+  --data '{
+    "model": "gpt-5.6-mini",
+    "messages": [
+      {"role": "user", "content": "你好，请介绍一下你自己"}
+    ]
+  }'</code></pre>
+      </div>
+
+      <h3>Python（OpenAI SDK）</h3>
+      <div class="code-block">
+        <button class="copy-btn">复制</button>
+        <pre><code>from openai import OpenAI
+
+client = OpenAI(
+    api_key="YOUR_API_KEY",
+    base_url="https://www.aiplantform.site/v1",
+)
+
+resp = client.chat.completions.create(
+    model="gpt-5.6-mini",
+    messages=[{"role": "user", "content": "你好，请介绍一下你自己"}],
+)
+print(resp.choices[0].message.content)</code></pre>
+      </div>
+
+      <h3>图像生成（异步任务）</h3>
+      <div class="code-block">
+        <button class="copy-btn">复制</button>
+        <pre><code>curl --request POST \
+  --url https://www.aiplantform.site/v1/images/generations \
+  --header "Authorization: Bearer YOUR_API_KEY" \
+  --header "Content-Type: application/json" \
+  --data '{
+    "model": "gpt-image-2",
+    "prompt": "一只可爱的熊猫，电影感光线",
+    "size": "1:1",
+    "n": 1
+  }'</code></pre>
+      </div>
+
+      <h2>第四步：查询异步任务</h2>
+      <p>文本请求直接返回结果；图像与视频请求会返回任务 ID，使用对应查询接口获取结果：</p>
+      <div class="code-block">
+        <button class="copy-btn">复制</button>
+        <pre><code>curl https://www.aiplantform.site/v1/images/generations/YOUR_TASK_ID \
+  -H "Authorization: Bearer YOUR_API_KEY"</code></pre>
+      </div>
+
+      <div class="callout warn">
+        收到 <code class="inline-code">429</code> 时请读取响应头 <code class="inline-code">Retry-After</code> 并按其指示重试，不要固定高频重试。
+      </div>
+
+      <h2>下一步</h2>
+      <ul>
+        <li>查看<a href="api-reference.html">接口文档</a>，了解全部接口与参数；</li>
+        <li>在<a href="integrations.html">客户端接入</a>中配置 Claude Code、Codex、Cursor 等工具；</li>
+        <li>了解计费规则请阅读<a href="../pricing.html">定价说明</a>。</li>
+      </ul>
+    </main>
+  </div>
+
+  <footer class="site-footer" id="site-footer"></footer>
+  <script src="../assets/js/site-config.js"></script>
+  <script src="../assets/js/main.js?v=1.0.2"></script>
+</body>
+</html>

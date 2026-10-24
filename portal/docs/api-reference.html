@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>接口文档 — 智算星球文档</title>
+  <link rel="stylesheet" href="../assets/css/style.css?v=1.0.2" />
+</head>
+<body data-page="docs" data-root="../">
+  <header class="site-header" id="site-header"></header>
+
+  <div class="wrap docs-shell">
+    <aside class="docs-side">
+      <h4>入门</h4>
+      <a href="index.html">文档中心</a>
+      <a href="quickstart.html">快速开始</a>
+      <h4>参考</h4>
+      <a class="active" href="api-reference.html">接口文档</a>
+      <a href="integrations.html">客户端接入</a>
+      <a href="faq.html">常见问题</a>
+      <h4>相关</h4>
+      <a href="../pricing.html">定价说明</a>
+      <a href="/console" data-console>进入控制台</a>
+    </aside>
+
+    <main class="docs-main">
+      <nav class="crumb"><a href="index.html">文档中心</a> / 接口文档</nav>
+      <h1>接口文档</h1>
+      <p class="lead">OpenAI 兼容接口参考。所有接口均需在请求头携带 <code class="inline-code">Authorization: Bearer YOUR_API_KEY</code>。</p>
+
+      <h2>认证方式</h2>
+      <p>在控制台创建的 API Key 以 Bearer Token 方式使用：</p>
+      <div class="code-block">
+        <button class="copy-btn">复制</button>
+        <pre><code>Authorization: Bearer sk-xxxxxxxxxxxxxxxx</code></pre>
+      </div>
+      <div class="callout warn">请勿将 API Key 暴露在浏览器端代码或公开仓库中。可为每个令牌设置额度上限与过期时间以控制风险。</div>
+
+      <h2>Chat Completions — 对话补全</h2>
+      <p><code class="inline-code">POST /v1/chat/completions</code>，支持流式（<code class="inline-code">stream: true</code>）与非流式两种模式，请求体与 OpenAI 官方一致。</p>
+      <h3>请求参数（常用）</h3>
+      <table>
+        <thead><tr><th>参数</th><th>类型</th><th>必填</th><th>说明</th></tr></thead>
+        <tbody>
+          <tr><td class="mono">model</td><td>string</td><td>是</td><td>模型名称，如 gpt-5.6、claude-sonnet-5</td></tr>
+          <tr><td class="mono">messages</td><td>array</td><td>是</td><td>对话消息数组，包含 role 与 content</td></tr>
+          <tr><td class="mono">stream</td><td>boolean</td><td>否</td><td>是否流式返回，默认 false</td></tr>
+          <tr><td class="mono">temperature</td><td>number</td><td>否</td><td>采样温度，0-2，默认 1</td></tr>
+          <tr><td class="mono">max_tokens</td><td>integer</td><td>否</td><td>最大输出 Token 数</td></tr>
+        </tbody>
+      </table>
+      <h3>响应示例</h3>
+      <div class="code-block">
+        <button class="copy-btn">复制</button>
+        <pre><code>{
+  "id": "chatcmpl-xxxx",
+  "object": "chat.completion",
+  "model": "gpt-5.6-mini",
+  "choices": [
+    {
+      "index": 0,
+      "message": { "role": "assistant", "content": "你好！我是……" },
+      "finish_reason": "stop"
+    }
+  ],
+  "usage": {
+    "prompt_tokens": 12,
+    "completion_tokens": 48,
+    "total_tokens": 60
+  }
+}</code></pre>
+      </div>
+
+      <h2>List Models — 模型列表</h2>
+      <p><code class="inline-code">GET /v1/models</code>，返回当前账户可用的全部模型。</p>
+      <div class="code-block">
+        <button class="copy-btn">复制</button>
+        <pre><code>curl https://www.aiplantform.site/v1/models \
+  -H "Authorization: Bearer YOUR_API_KEY"</code></pre>
+      </div>
+
+      <h2>Images Generations — 图像生成</h2>
+      <p><code class="inline-code">POST /v1/images/generations</code>，异步任务接口。常用参数：</p>
+      <table>
+        <thead><tr><th>参数</th><th>类型</th><th>必填</th><th>说明</th></tr></thead>
+        <tbody>
+          <tr><td class="mono">model</td><td>string</td><td>是</td><td>图像模型，如 gpt-image-2</td></tr>
+          <tr><td class="mono">prompt</td><td>string</td><td>是</td><td>图像描述提示词</td></tr>
+          <tr><td class="mono">size</td><td>string</td><td>否</td><td>画面比例，如 1:1、16:9</td></tr>
+          <tr><td class="mono">n</td><td>integer</td><td>否</td><td>生成数量，默认 1</td></tr>
+        </tbody>
+      </table>
+      <p>提交后返回任务 ID，通过 <code class="inline-code">GET /v1/images/generations/{task_id}</code> 查询状态与结果。视频模型使用 <code class="inline-code">/v1/videos/generations</code>，参数与查询方式类似。</p>
+
+      <h2>错误码</h2>
+      <table>
+        <thead><tr><th>状态码</th><th>含义</th><th>处理建议</th></tr></thead>
+        <tbody>
+          <tr><td class="mono">400</td><td>请求参数错误</td><td>检查请求体格式与参数取值</td></tr>
+          <tr><td class="mono">401</td><td>认证失败</td><td>检查 API Key 是否正确、是否已过期</td></tr>
+          <tr><td class="mono">403</td><td>无权访问</td><td>确认账户分组是否允许使用该模型</td></tr>
+          <tr><td class="mono">429</td><td>请求过于频繁 / 余额不足</td><td>按 Retry-After 重试；确认余额与令牌额度</td></tr>
+          <tr><td class="mono">500</td><td>服务内部错误</td><td>稍后重试；持续失败请联系客服</td></tr>
+        </tbody>
+      </table>
+
+      <div class="callout">
+        需要更多帮助？请前往<a href="faq.html">常见问题</a>，或通过控制台提交工单。
+      </div>
+    </main>
+  </div>
+
+  <footer class="site-footer" id="site-footer"></footer>
+  <script src="../assets/js/site-config.js"></script>
+  <script src="../assets/js/main.js?v=1.0.2"></script>
+</body>
+</html>

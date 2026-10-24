@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>客户端接入 — 智算星球文档</title>
+  <link rel="stylesheet" href="../assets/css/style.css?v=1.0.2" />
+</head>
+<body data-page="docs" data-root="../">
+  <header class="site-header" id="site-header"></header>
+
+  <div class="wrap docs-shell">
+    <aside class="docs-side">
+      <h4>入门</h4>
+      <a href="index.html">文档中心</a>
+      <a href="quickstart.html">快速开始</a>
+      <h4>参考</h4>
+      <a href="api-reference.html">接口文档</a>
+      <a class="active" href="integrations.html">客户端接入</a>
+      <a href="faq.html">常见问题</a>
+      <h4>相关</h4>
+      <a href="../pricing.html">定价说明</a>
+      <a href="/console" data-console>进入控制台</a>
+    </aside>
+
+    <main class="docs-main">
+      <nav class="crumb"><a href="index.html">文档中心</a> / 客户端接入</nav>
+      <h1>客户端接入</h1>
+      <p class="lead">任何支持 OpenAI API 或自定义 Base URL 的客户端均可接入智算星球。以下为主流工具的配置方法。</p>
+
+      <h2>通用配置</h2>
+      <table>
+        <thead><tr><th>配置项</th><th>值</th></tr></thead>
+        <tbody>
+          <tr><td>Base URL（OpenAI 兼容）</td><td class="mono">https://www.aiplantform.site/v1</td></tr>
+          <tr><td>API Key</td><td class="mono">控制台「令牌」页创建，形如 sk-xxx</td></tr>
+        </tbody>
+      </table>
+
+      <h2>Claude Code</h2>
+      <p>Claude Code 使用 Anthropic 协议，通过环境变量替换接入地址与密钥：</p>
+      <div class="code-block">
+        <button class="copy-btn">复制</button>
+        <pre><code>export ANTHROPIC_BASE_URL=https://www.aiplantform.site
+export ANTHROPIC_AUTH_TOKEN=sk-你的智算星球令牌
+export ANTHROPIC_MODEL=claude-sonnet-5
+
+# Windows PowerShell
+$env:ANTHROPIC_BASE_URL = "https://www.aiplantform.site"
+$env:ANTHROPIC_AUTH_TOKEN = "sk-你的智算星球令牌"</code></pre>
+      </div>
+      <p>配置后启动 <code class="inline-code">claude</code> 即可正常使用，用量将计入你的智算星球账户。</p>
+
+      <h2>Codex CLI</h2>
+      <p>编辑 <code class="inline-code">~/.codex/config.toml</code>（Windows 为 <code class="inline-code">%USERPROFILE%\.codex\config.toml</code>）：</p>
+      <div class="code-block">
+        <button class="copy-btn">复制</button>
+        <pre><code>model = "gpt-5.6"
+model_provider = "zhisuan"
+
+[model_providers.zhisuan]
+name = "智算星球"
+base_url = "https://www.aiplantform.site/v1"
+env_key = "ZHISUAN_API_KEY"</code></pre>
+      </div>
+      <p>并在环境变量中设置 <code class="inline-code">ZHISUAN_API_KEY=sk-你的令牌</code>。</p>
+
+      <h2>Cursor</h2>
+      <ol>
+        <li>打开 <code class="inline-code">Settings → Models → OpenAI API Key</code>；</li>
+        <li>填入你的智算星球 API Key，勾选 Override Base URL；</li>
+        <li>Base URL 填 <code class="inline-code">https://www.aiplantform.site/v1</code>，保存后校验密钥；</li>
+        <li>在模型列表中添加你需要的模型名称（如 gpt-5.6）。</li>
+      </ol>
+
+      <h2>Cherry Studio / LobeChat 等 GUI 客户端</h2>
+      <ol>
+        <li>在「设置 → 模型服务」中新增自定义服务商（OpenAI 兼容类型）；</li>
+        <li>API 地址填 <code class="inline-code">https://www.aiplantform.site/v1</code>，密钥填你的 sk-令牌；</li>
+        <li>手动添加模型名称后即可对话。</li>
+      </ol>
+
+      <h2>OpenAI SDK（Python / Node.js）</h2>
+      <div class="grid-2">
+        <div class="code-block">
+          <button class="copy-btn">复制</button>
+          <pre><code>from openai import OpenAI
+
+client = OpenAI(
+    api_key="sk-你的令牌",
+    base_url="https://www.aiplantform.site/v1",
+)</code></pre>
+        </div>
+        <div class="code-block">
+          <button class="copy-btn">复制</button>
+          <pre><code>import OpenAI from "openai";
+
+const client = new OpenAI({
+  apiKey: "sk-你的令牌",
+  baseURL: "https://www.aiplantform.site/v1",
+});</code></pre>
+        </div>
+      </div>
+
+      <div class="callout">
+        其他工具（LangChain、Dify、n8n、沉浸式翻译等）凡支持自定义 OpenAI 兼容地址的，均按「Base URL + API Key」方式接入即可。遇到问题请查阅<a href="faq.html">常见问题</a>或提交工单。
+      </div>
+    </main>
+  </div>
+
+  <footer class="site-footer" id="site-footer"></footer>
+  <script src="../assets/js/site-config.js"></script>
+  <script src="../assets/js/main.js?v=1.0.2"></script>
+</body>
+</html>

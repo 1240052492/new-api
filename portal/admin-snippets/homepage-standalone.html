@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>智算星球 — 一个入口，接入全球主流大模型</title>
+  <!-- ============================================================
+       智算星球 · 自包含版首页（零部署备用方案）
+       用途：不部署静态门户时，将本文件全部内容粘贴到
+             new-api 后台 → 系统设置 → 「首页内容」字段（支持 HTML）。
+       特点：样式与内容全部内联，无任何外部依赖；
+             登录/注册/控制台链接为相对路径，自动指向当前站点。
+       注意：正式方案请使用门户站点（index.html）+ 部署，本文件仅作过渡。
+       ============================================================ -->
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","HarmonyOS Sans SC","Microsoft YaHei",sans-serif;color:#10162f;line-height:1.7;background:#f6f7fb}
+    .hero{position:relative;overflow:hidden;color:#fff;text-align:center;padding:90px 24px 80px;
+      background:radial-gradient(1000px 460px at 80% -10%,rgba(124,58,237,.45),transparent 60%),
+        radial-gradient(800px 400px at 10% 110%,rgba(34,211,238,.22),transparent 60%),
+        linear-gradient(160deg,#0b1024,#191a4d)}
+    .hero::before{content:"";position:absolute;inset:0;background-image:
+      radial-gradient(1.4px 1.4px at 15% 25%,rgba(255,255,255,.7),transparent 55%),
+      radial-gradient(1.5px 1.5px at 55% 15%,rgba(255,255,255,.6),transparent 55%),
+      radial-gradient(1.2px 1.2px at 80% 45%,rgba(255,255,255,.5),transparent 55%),
+      radial-gradient(1px 1px at 35% 75%,rgba(255,255,255,.4),transparent 55%)}
+    .hero>*{position:relative}
+    .badge{display:inline-block;font-size:13px;color:#c7d2fe;border:1px solid rgba(199,210,254,.35);border-radius:999px;padding:5px 16px;margin-bottom:24px;background:rgba(255,255,255,.06)}
+    h1{font-size:clamp(30px,5vw,52px);font-weight:800;line-height:1.25}
+    h1 span{background:linear-gradient(90deg,#a5b4fc,#e879f9,#67e8f9);-webkit-background-clip:text;background-clip:text;color:transparent}
+    .sub{margin:18px auto 0;max-width:620px;font-size:16.5px;color:rgba(226,232,255,.85)}
+    .cta{margin-top:34px;display:flex;gap:14px;justify-content:center;flex-wrap:wrap}
+    .btn{display:inline-block;padding:13px 30px;border-radius:999px;font-weight:700;font-size:15.5px;text-decoration:none}
+    .btn-light{background:#fff;color:#171a4d}
+    .btn-ghost{border:1px solid rgba(255,255,255,.35);color:#fff;background:rgba(255,255,255,.08)}
+    .code{margin:36px auto 0;display:inline-block;font-family:Consolas,monospace;font-size:13px;color:#cbd5ff;background:rgba(10,14,35,.65);border:1px solid rgba(148,163,255,.25);border-radius:12px;padding:11px 18px}
+    .code b{color:#67e8f9;font-weight:600}
+    .stats{margin-top:56px;display:grid;grid-template-columns:repeat(4,1fr);gap:16px;max-width:980px;margin-inline:auto}
+    .stat{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:14px;padding:18px}
+    .stat b{font-size:26px;display:block}
+    .stat span{font-size:13px;color:rgba(203,213,255,.75)}
+    .sec{max-width:1100px;margin:0 auto;padding:64px 24px}
+    .sec h2{text-align:center;font-size:clamp(22px,3vw,32px);margin-bottom:10px}
+    .sec .p{text-align:center;color:#5b6478;margin-bottom:40px}
+    .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+    .card{background:#fff;border:1px solid #e6e8f2;border-radius:16px;padding:26px;box-shadow:0 8px 30px rgba(23,25,60,.07)}
+    .card h3{font-size:17px;margin-bottom:8px}
+    .card p{color:#5b6478;font-size:14.5px}
+    .steps{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+    .step{background:#fff;border:1px solid #e6e8f2;border-radius:16px;padding:26px}
+    .step .n{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#4f46e5,#7c3aed);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;margin-bottom:14px}
+    .step h3{font-size:16.5px;margin-bottom:6px}
+    .step p{color:#5b6478;font-size:14px}
+    .cta-band{background:linear-gradient(150deg,#0b1024,#191a4d);border-radius:22px;color:#fff;text-align:center;padding:52px 28px}
+    .cta-band p{color:rgba(203,213,255,.8);margin:10px 0 26px}
+    .footer{text-align:center;padding:34px 24px;color:#8b93c4;font-size:13.5px;border-top:1px solid #e6e8f2}
+    .footer a{color:#5b6478;margin:0 10px;text-decoration:none}
+    @media(max-width:860px){.grid,.steps{grid-template-columns:1fr}.stats{grid-template-columns:1fr 1fr}}
+  </style>
+</head>
+<body>
+  <section class="hero">
+    <div class="badge">● 新一代 AI 模型聚合网关 · 服务运行正常</div>
+    <h1>一个入口，<br />接入<span>全球主流大模型</span></h1>
+    <p class="sub">一个 API Key 调用 GPT、Claude、Gemini、DeepSeek 等模型，改一行 Base URL 就能切换，统一鉴权、统一计费、故障自动切换。</p>
+    <div class="cta">
+      <a class="btn btn-light" href="/register">免费开始使用</a>
+      <a class="btn btn-ghost" href="/console">进入控制台</a>
+    </div>
+    <div class="code">base_url <b>https://www.aiplantform.site/v1</b> &nbsp; api_key <b>sk-••••••••</b></div>
+    <div class="stats">
+      <div class="stat"><b>200+</b><span>可用模型数量</span></div>
+      <div class="stat"><b>99.9%</b><span>服务可用性</span></div>
+      <div class="stat"><b>OpenAI</b><span>兼容协议</span></div>
+      <div class="stat"><b>按量</b><span>透明计费 · 充值即用</span></div>
+    </div>
+  </section>
+
+  <section class="sec">
+    <h2>为持续构建的团队而生</h2>
+    <p class="p">从第一次请求到生产环境长期运行，智算星球提供完整的模型接入与运营能力。</p>
+    <div class="grid">
+      <div class="card"><h3>🔌 统一 OpenAI 兼容协议</h3><p>保留现有 SDK 与调用方式，只需替换 Base URL 与 API Key，无需改动业务代码。</p></div>
+      <div class="card"><h3>🛡️ 高可用智能路由</h3><p>多上游通道自动故障切换与重试，Agent 工作流与长任务稳定运行。</p></div>
+      <div class="card"><h3>💰 透明按量计费</h3><p>按 Token 计费，倍率公开透明，用量与消费明细在控制台实时可查。</p></div>
+      <div class="card"><h3>⚡ 国内低延迟直连</h3><p>无需自建代理，国内节点直连转发，显著降低首字延迟。</p></div>
+      <div class="card"><h3>🧩 全模态模型支持</h3><p>文本、图像、视频、音频与 Embedding，一个接口全部覆盖。</p></div>
+      <div class="card"><h3>🔒 数据安全合规</h3><p>密钥加密存储，请求数据不用于模型训练，日志可自助管理。</p></div>
+    </div>
+  </section>
+
+  <section class="sec">
+    <h2>三步完成接入</h2>
+    <p class="p">沿用现有客户端与请求层，不需要任何额外工具。</p>
+    <div class="steps">
+      <div class="step"><div class="n">1</div><h3>注册并创建 API Key</h3><p>进入控制台「令牌」页面创建密钥，可设置额度与有效期。</p></div>
+      <div class="step"><div class="n">2</div><h3>替换 Base URL</h3><p>把客户端接口地址改为网关地址，填入你的密钥与模型名称。</p></div>
+      <div class="step"><div class="n">3</div><h3>发出第一个请求</h3><p>收到 200 响应即接入成功，控制台可立即看到用量明细。</p></div>
+    </div>
+  </section>
+
+  <section class="sec">
+    <div class="cta-band">
+      <h2 style="color:#fff;">从第一个请求开始</h2>
+      <p>创建 API Key，替换 Base URL，把智算星球接入你已经在用的开发工具。</p>
+      <a class="btn btn-light" href="/register">立即免费注册</a>
+    </div>
+  </section>
+
+  <div class="footer">
+    <a href="/register">注册</a><a href="/login">登录</a><a href="/console">控制台</a>
+    © 2025 智算星球 · 保留所有权利
+  </div>
+</body>
+</html>
