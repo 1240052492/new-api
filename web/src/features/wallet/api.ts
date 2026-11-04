@@ -39,6 +39,9 @@ import type {
   WaffoPaymentResponse,
   WaffoPancakePaymentRequest,
   WaffoPancakePaymentResponse,
+  AlipayDirectPaymentResponse,
+  WechatDirectPaymentResponse,
+  DirectGatewayQueryResponse,
 } from './types'
 
 // ============================================================================
@@ -178,6 +181,58 @@ export async function requestWaffoPancakePayment(
   const res = await api.post('/api/user/waffo-pancake/pay', request, {
     skipBusinessError: true,
   } as Record<string, unknown>)
+  return res.data
+}
+
+/**
+ * Request payment through the Alipay direct gateway (official OpenAPI)
+ */
+export async function requestAlipayPayment(
+  request: PaymentRequest
+): Promise<AlipayDirectPaymentResponse> {
+  const res = await api.post('/api/user/alipay/pay', request, {
+    skipBusinessError: true,
+  } as Record<string, unknown>)
+  return res.data
+}
+
+/**
+ * Request payment through the WeChat Pay direct gateway (official APIv3)
+ */
+export async function requestWechatPayment(
+  request: PaymentRequest & { channel?: string }
+): Promise<WechatDirectPaymentResponse> {
+  const res = await api.post('/api/user/wechatpay/pay', request, {
+    skipBusinessError: true,
+  } as Record<string, unknown>)
+  return res.data
+}
+
+/**
+ * Poll the official query API while an Alipay direct order is in flight
+ */
+export async function queryAlipayPayment(
+  tradeNo: string
+): Promise<DirectGatewayQueryResponse> {
+  const res = await api.post(
+    '/api/user/alipay/query',
+    { trade_no: tradeNo },
+    { skipBusinessError: true } as Record<string, unknown>
+  )
+  return res.data
+}
+
+/**
+ * Poll the official query API while a WeChat Pay direct order is in flight
+ */
+export async function queryWechatPayment(
+  tradeNo: string
+): Promise<DirectGatewayQueryResponse> {
+  const res = await api.post(
+    '/api/user/wechatpay/query',
+    { trade_no: tradeNo },
+    { skipBusinessError: true } as Record<string, unknown>
+  )
   return res.data
 }
 

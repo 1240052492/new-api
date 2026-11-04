@@ -108,3 +108,52 @@ func isEpayWebhookConfigured() bool {
 func isEpayWebhookEnabled() bool {
 	return isEpayTopUpEnabled()
 }
+
+// isAlipayTopUpEnabled gates the Alipay direct gateway on the explicit
+// operator switch first: credentials alone must never expose the channel,
+// because a mis-typed key would break live top-up for end users.
+func isAlipayTopUpEnabled() bool {
+	if !isPaymentComplianceConfirmed() {
+		return false
+	}
+	if !setting.AlipayEnabled {
+		return false
+	}
+	return isAlipayWebhookConfigured()
+}
+
+func isAlipayWebhookConfigured() bool {
+	return strings.TrimSpace(setting.AlipayAppID) != "" &&
+		strings.TrimSpace(setting.AlipayAppPrivateKey) != "" &&
+		strings.TrimSpace(setting.AlipayPublicKey) != ""
+}
+
+func isAlipayWebhookEnabled() bool {
+	return isAlipayTopUpEnabled()
+}
+
+// isWechatPayTopUpEnabled applies the same explicit-switch gate to the
+// WeChat Pay APIv3 direct gateway.
+func isWechatPayTopUpEnabled() bool {
+	if !isPaymentComplianceConfirmed() {
+		return false
+	}
+	if !setting.WechatPayEnabled {
+		return false
+	}
+	return isWechatPayWebhookConfigured()
+}
+
+func isWechatPayWebhookConfigured() bool {
+	return strings.TrimSpace(setting.WechatPayMchID) != "" &&
+		strings.TrimSpace(setting.WechatPayAppID) != "" &&
+		strings.TrimSpace(setting.WechatPaySerialNo) != "" &&
+		strings.TrimSpace(setting.WechatPayPrivateKey) != "" &&
+		len(strings.TrimSpace(setting.WechatPayAPIv3Key)) == 32 &&
+		strings.TrimSpace(setting.WechatPayPlatformPublicKey) != "" &&
+		strings.TrimSpace(setting.WechatPayPlatformPublicKeyID) != ""
+}
+
+func isWechatPayWebhookEnabled() bool {
+	return isWechatPayTopUpEnabled()
+}

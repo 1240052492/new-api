@@ -59,6 +59,23 @@ export type WaffoPancakePaymentResponse = ApiResponse<
     }
   | string
 >
+export type AlipayDirectPaymentResponse = ApiResponse<{
+  channel?: string
+  trade_no?: string
+}> & {
+  url?: string
+}
+export type WechatDirectPaymentResponse = ApiResponse<{
+  channel?: 'native' | 'h5'
+  trade_no?: string
+  code_url?: string
+  h5_url?: string
+}>
+export type DirectGatewayQueryResponse = ApiResponse<{
+  paid?: boolean
+  trade_status?: string
+  trade_state?: string
+}>
 
 /**
  * Creem product configuration
@@ -124,6 +141,10 @@ export interface TopupInfo {
   enable_online_topup: boolean
   /** Whether Stripe topup is enabled */
   enable_stripe_topup: boolean
+  /** Whether the Alipay direct gateway is enabled */
+  enable_alipay_topup?: boolean
+  /** Whether the WeChat Pay direct gateway is enabled */
+  enable_wechatpay_topup?: boolean
   /** Available payment methods */
   pay_methods: PaymentMethod[]
   /** Minimum topup amount for online topup */

@@ -54,6 +54,45 @@ func GetTopUpInfo(c *gin.Context) {
 		}
 	}
 
+	// 支付宝 / 微信官方直连网关：仅当管理员显式启用且凭据齐全时对用户可见。
+	enableAlipay := isAlipayTopUpEnabled()
+	if enableAlipay {
+		hasAlipay := false
+		for _, method := range payMethods {
+			if method["type"] == model.PaymentMethodAlipayDirect {
+				hasAlipay = true
+				break
+			}
+		}
+		if !hasAlipay {
+			payMethods = append(payMethods, map[string]string{
+				"name":  "支付宝",
+				"icon":  "SiAlipay",
+				"type":  model.PaymentMethodAlipayDirect,
+				"color": "#1677FF",
+			})
+		}
+	}
+
+	enableWechatPay := isWechatPayTopUpEnabled()
+	if enableWechatPay {
+		hasWechatPay := false
+		for _, method := range payMethods {
+			if method["type"] == model.PaymentMethodWxpayDirect {
+				hasWechatPay = true
+				break
+			}
+		}
+		if !hasWechatPay {
+			payMethods = append(payMethods, map[string]string{
+				"name":  "微信",
+				"icon":  "SiWechat",
+				"type":  model.PaymentMethodWxpayDirect,
+				"color": "#07C160",
+			})
+		}
+	}
+
 	// Waffo Pancake is displayed above the standard Waffo gateway.
 	enableWaffoPancake := isWaffoPancakeTopUpEnabled()
 	if enableWaffoPancake {
@@ -101,6 +140,8 @@ func GetTopUpInfo(c *gin.Context) {
 		"enable_online_topup":              isEpayTopUpEnabled(),
 		"enable_stripe_topup":              isStripeTopUpEnabled(),
 		"enable_creem_topup":               isCreemTopUpEnabled(),
+		"enable_alipay_topup":              enableAlipay,
+		"enable_wechatpay_topup":           enableWechatPay,
 		"enable_waffo_topup":               enableWaffo,
 		"enable_waffo_pancake_topup":       enableWaffoPancake,
 		"enable_redemption":                complianceConfirmed,

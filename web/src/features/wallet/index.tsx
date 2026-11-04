@@ -29,6 +29,7 @@ import { BillingHistoryDialog } from './components/dialogs/billing-history-dialo
 import { CreemConfirmDialog } from './components/dialogs/creem-confirm-dialog'
 import { PaymentConfirmDialog } from './components/dialogs/payment-confirm-dialog'
 import { TransferDialog } from './components/dialogs/transfer-dialog'
+import { WechatQrDialog } from './components/dialogs/wechat-qr-dialog'
 import { RechargeFormCard } from './components/recharge-form-card'
 import { SubscriptionPlansCard } from './components/subscription-plans-card'
 import { WalletStatsCard } from './components/wallet-stats-card'
@@ -41,6 +42,7 @@ import {
   useCreemPayment,
   useWaffoPayment,
   useWaffoPancakePayment,
+  useDirectGatewayPayment,
 } from './hooks'
 import {
   getDefaultPaymentType,
@@ -129,6 +131,13 @@ export function Wallet(props: WalletProps) {
     fetchUser()
   }, [fetchUser])
 
+  const {
+    processing: directGatewayProcessing,
+    processDirectGatewayPayment,
+    wechatQrSession,
+    closeWechatQrSession,
+  } = useDirectGatewayPayment({ onPaid: fetchUser })
+
   useEffect(() => {
     if (props.initialShowHistory) {
       setBillingDialogOpen(true)
@@ -202,6 +211,7 @@ export function Wallet(props: WalletProps) {
         regular: processPayment,
         waffo: processWaffoPayment,
         waffoPancake: processWaffoPancakePayment,
+        directGateway: processDirectGatewayPayment,
       }
     )
 
@@ -360,7 +370,12 @@ export function Wallet(props: WalletProps) {
         paymentAmount={paymentAmount}
         paymentMethod={selectedPaymentMethod}
         calculating={calculating}
-        processing={processing || waffoProcessing || pancakeProcessing}
+        processing={
+          processing ||
+          waffoProcessing ||
+          pancakeProcessing ||
+          directGatewayProcessing
+        }
         discountRate={getDiscountRate()}
         usdExchangeRate={effectiveUsdExchangeRate}
       />
@@ -384,6 +399,11 @@ export function Wallet(props: WalletProps) {
         onConfirm={handleCreemConfirm}
         product={selectedCreemProduct}
         processing={creemProcessing}
+      />
+
+      <WechatQrDialog
+        session={wechatQrSession}
+        onClose={closeWechatQrSession}
       />
     </>
   )

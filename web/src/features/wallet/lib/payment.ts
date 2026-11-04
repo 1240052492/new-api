@@ -111,10 +111,30 @@ export function isWaffoPancakePayment(paymentType: string): boolean {
   return paymentType === PAYMENT_TYPES.WAFFO_PANCAKE
 }
 
+/**
+ * Direct Chinese gateways. Distinct from the epay channel types
+ * "alipay"/"wxpay": these go through new-api's own Alipay OpenAPI /
+ * WeChat Pay APIv3 clients and need dedicated dispatch.
+ */
+export function isAlipayDirectPayment(paymentType: string): boolean {
+  return paymentType === PAYMENT_TYPES.ALIPAY_DIRECT
+}
+
+export function isWechatDirectPayment(paymentType: string): boolean {
+  return paymentType === PAYMENT_TYPES.WXPAY_DIRECT
+}
+
+export function isDirectGatewayPayment(paymentType: string): boolean {
+  return (
+    isAlipayDirectPayment(paymentType) || isWechatDirectPayment(paymentType)
+  )
+}
+
 export interface PaymentProcessors {
   regular: (topupAmount: number, paymentType: string) => Promise<boolean>
   waffo: (topupAmount: number, payMethodIndex: number) => Promise<boolean>
   waffoPancake: (topupAmount: number) => Promise<boolean>
+  directGateway: (topupAmount: number, paymentType: string) => Promise<boolean>
 }
 
 export async function dispatchSelectedPayment(
@@ -132,6 +152,10 @@ export async function dispatchSelectedPayment(
 
   if (isWaffoPancakePayment(paymentMethod.type)) {
     return processors.waffoPancake(topupAmount)
+  }
+
+  if (isDirectGatewayPayment(paymentMethod.type)) {
+    return processors.directGateway(topupAmount, paymentMethod.type)
   }
 
   return processors.regular(topupAmount, paymentMethod.type)
@@ -174,6 +198,11 @@ export function getMinTopupAmount(topupInfo: TopupInfo | null): number {
   }
 
   if (topupInfo.enable_online_topup) {
+    return topupInfo.min_topup
+  }
+
+  // Direct Chinese gateways share the general online-topup minimum.
+  if (topupInfo.enable_alipay_topup || topupInfo.enable_wechatpay_topup) {
     return topupInfo.min_topup
   }
 
