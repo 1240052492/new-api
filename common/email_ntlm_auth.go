@@ -2,6 +2,7 @@ package common
 
 import (
 	"errors"
+	"fmt"
 	"net/smtp"
 	"strings"
 
@@ -55,13 +56,16 @@ func (a *smtpAutoAuth) Next(fromServer []byte, more bool) ([]byte, error) {
 
 	switch a.mech {
 	case "LOGIN":
-		switch string(fromServer) {
-		case "Username:":
+		// Servers spell these challenges inconsistently: Coremail (yeah.net,
+		// 163.com) sends "username:" in lower case but "Password:" capitalised.
+		// Compare case-insensitively and tolerate a missing trailing colon.
+		switch strings.ToLower(strings.TrimSpace(string(fromServer))) {
+		case "username:", "username":
 			return []byte(a.username), nil
-		case "Password:":
+		case "password:", "password":
 			return []byte(a.password), nil
 		default:
-			return nil, errors.New("unknown SMTP AUTH LOGIN challenge")
+			return nil, fmt.Errorf("unknown SMTP AUTH LOGIN challenge: %q", fromServer)
 		}
 	case "NTLM":
 		return ntlmssp.NewAuthenticateMessage(fromServer, a.username, a.password, nil)

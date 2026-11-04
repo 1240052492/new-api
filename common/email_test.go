@@ -541,6 +541,29 @@ func TestSendEmailUsesNTLMForMicrosoftAccountWhenServerOnlySupportsNTLM(t *testi
 	}
 }
 
+func TestSMTPAutoAuthLoginAcceptsCoremailChallengeCase(t *testing.T) {
+	auth := &smtpAutoAuth{username: "sender@yeah.net", password: "secret", mech: "LOGIN"}
+
+	cases := []struct {
+		challenge string
+		want      string
+	}{
+		{"username:", "sender@yeah.net"},
+		{"Username:", "sender@yeah.net"},
+		{"username", "sender@yeah.net"},
+		{"Password:", "secret"},
+		{"password:", "secret"},
+	}
+	for _, tc := range cases {
+		response, err := auth.Next([]byte(tc.challenge), true)
+		require.NoError(t, err, "challenge %q", tc.challenge)
+		require.Equal(t, tc.want, string(response), "challenge %q", tc.challenge)
+	}
+
+	_, err := auth.Next([]byte("something-else"), true)
+	require.Error(t, err)
+}
+
 func TestSendEmailExplicitStartTLSRejectsUntrustedCertificateByDefault(t *testing.T) {
 	server := newFakeSMTPServer(t)
 	defer server.close()
