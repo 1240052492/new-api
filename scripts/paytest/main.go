@@ -498,12 +498,81 @@ func cmdWechatMock(args []string) {
 
 // ---------- 入口 ----------
 
+// cmdAlipayQuery 用官方「请求签名」规则（剔除 sign 与空值，保留 sign_type）
+// 直接调用支付宝真实网关的 alipay.trade.query，用于实弹验证签名是否被网关
+// 接受：签名正确时返回业务错误（如 ACQ.TRADE_NOT_EXIST），签名错误时返回
+// invalid-signature。-old-rule 可复现旧错误拼法作对照。
+func cmdAlipayQuery(args []string) {
+	fs := flag.NewFlagSet("alipay-query", flag.ExitOnError)
+	keyPath := fs.String("key", "", "应用私钥 PEM 文件")
+	appID := fs.String("app-id", "", "APPID")
+	gateway := fs.String("gateway", "https://openapi.alipay.com/gateway.do", "支付宝网关")
+	outTradeNo := fs.String("out-trade-no", "PAYTEST_NOT_EXIST_000", "查询的商户订单号（不存在的订单即可）")
+	oldRule := fs.Bool("old-rule", false, "复现旧错误规则（签名时剔除 sign_type），预期 invalid-signature")
+	_ = fs.Parse(args)
+
+	if *keyPath == "" || *appID == "" {
+		fatalf("需要 -key 与 -app-id")
+	}
+	key := loadPrivateKey(*keyPath)
+
+	bizContent, _ := json.Marshal(map[string]string{"out_trade_no": *outTradeNo})
+	params := map[string]string{
+		"app_id":      *appID,
+		"method":      "alipay.trade.query",
+		"format":      "JSON",
+		"charset":     "utf-8",
+		"sign_type":   "RSA2",
+		"timestamp":   time.Now().Format("2006-01-02 15:04:05"),
+		"version":     "1.0",
+		"biz_content": string(bizContent),
+	}
+
+	keys := make([]string, 0, len(params))
+	for k, v := range params {
+		if k == "sign" || v == "" {
+			continue
+		}
+		if *oldRule && k == "sign_type" {
+			continue
+		}
+		keys = append(keys, k)
+	}
+	sort.Strings(keys)
+	pairs := make([]string, 0, len(keys))
+	for _, k := range keys {
+		pairs = append(pairs, k+"="+params[k])
+	}
+	message := []byte(strings.Join(pairs, "&"))
+	digest := sha256.Sum256(message)
+	sig, err := rsa.SignPKCS1v15(rand.Reader, key, crypto.SHA256, digest[:])
+	if err != nil {
+		fatalf("sign: %v", err)
+	}
+	params["sign"] = base64.StdEncoding.EncodeToString(sig)
+
+	fmt.Printf("待签名串（%s）:\n  %s\n\n", map[bool]string{true: "旧规则，剔除 sign_type", false: "官方规则，保留 sign_type"}[*oldRule], message)
+
+	form := url.Values{}
+	for k, v := range params {
+		form.Set(k, v)
+	}
+	resp, err := http.PostForm(*gateway, form)
+	if err != nil {
+		fatalf("gateway: %v", err)
+	}
+	defer resp.Body.Close()
+	body, _ := io.ReadAll(io.LimitReader(resp.Body, 1<<20))
+	fmt.Printf("网关响应:\n%s\n", body)
+}
+
 func main() {
 	usage := `paytest — 支付宝/微信直连支付本地联调工具
 
 子命令:
   gen             生成测试 RSA 密钥对（paytest_private.pem / paytest_public.pem）
   alipay-notify   模拟支付宝异步通知（RSA2 签名表单）
+  alipay-query    实弹验证：用官方请求签名规则调真实网关 alipay.trade.query
   wechat-notify   模拟微信支付通知（SHA256-RSA2048 签名 + AES-256-GCM 加密）
   wechat-mock     启动微信支付 APIv3 模拟网关（Native/H5 下单、查单、关单）
 
@@ -511,6 +580,8 @@ func main() {
   go run ./scripts/paytest gen -out paytest-keys
   go run ./scripts/paytest alipay-notify -key paytest-keys/paytest_private.pem \
       -app-id 2026test0000 -out-trade-no ALIUSR1NOxxx -total 7.30
+  go run ./scripts/paytest alipay-query -key real.pem -app-id 2021xxxxxxxx \
+      -out-trade-no NOT_EXIST_000
   go run ./scripts/paytest wechat-mock -addr 127.0.0.1:9600 -key paytest-keys/paytest_private.pem
   go run ./scripts/paytest wechat-notify -key paytest-keys/paytest_private.pem \
       -apiv3key 0123456789abcdef0123456789abcdef -out-trade-no WXUSR1NOxxx -total-cents 730
@@ -524,6 +595,8 @@ func main() {
 		cmdGen(os.Args[2:])
 	case "alipay-notify":
 		cmdAlipayNotify(os.Args[2:])
+	case "alipay-query":
+		cmdAlipayQuery(os.Args[2:])
 	case "wechat-notify":
 		cmdWechatNotify(os.Args[2:])
 	case "wechat-mock":

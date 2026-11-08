@@ -10,6 +10,7 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"net/url"
+	"sort"
 	"strings"
 	"testing"
 )
@@ -245,5 +246,73 @@ func TestAlipayPagePayURLIsSigned(t *testing.T) {
 	}
 	if query.Get("sign_type") != "RSA2" {
 		t.Fatalf("unexpected sign_type %q", query.Get("sign_type"))
+	}
+}
+
+// TestAlipayRequestSignMatchesOfficialRule pins the official REQUEST signing
+// rule (剔除 sign 与空值，保留 sign_type) from the Alipay support knowledge
+// base: https://opensupport.alipay.com/support/knowledge/20060/201602088641
+// It verifies our signature against the exact string the gateway rebuilds,
+// and asserts the wrong rule (excluding sign_type) would have failed —
+// guarding against regression.
+func TestAlipayRequestSignMatchesOfficialRule(t *testing.T) {
+	key, _ := generateTestKeyPair(t)
+	privatePEM, publicBase64 := encodeTestKeyPair(t, key)
+
+	client, err := NewAlipayClient("2021007133684329", privatePEM, publicBase64, "https://openapi.alipay.com/gateway.do", "https://example.com/api/user/alipay/notify", "https://example.com/usage")
+	if err != nil {
+		t.Fatalf("failed to build client: %v", err)
+	}
+	payURL, err := client.PagePayURL("ALIUSR1NOabc123456", "1.00", "Top-up 1")
+	if err != nil {
+		t.Fatalf("failed to build pay url: %v", err)
+	}
+
+	parsed, err := url.Parse(payURL)
+	if err != nil {
+		t.Fatalf("failed to parse pay url: %v", err)
+	}
+	query := parsed.Query()
+	sign := query.Get("sign")
+
+	buildVerifyString := func(excludeSignType bool) []byte {
+		params := make(map[string]string, len(query))
+		for k := range query {
+			params[k] = query.Get(k)
+		}
+		keys := make([]string, 0, len(params))
+		for k, v := range params {
+			if k == "sign" || v == "" {
+				continue
+			}
+			if excludeSignType && k == "sign_type" {
+				continue
+			}
+			keys = append(keys, k)
+		}
+		sort.Strings(keys)
+		pairs := make([]string, 0, len(keys))
+		for _, k := range keys {
+			pairs = append(pairs, k+"="+params[k])
+		}
+		return []byte(strings.Join(pairs, "&"))
+	}
+
+	verify := func(message []byte) error {
+		raw, err := base64.StdEncoding.DecodeString(sign)
+		if err != nil {
+			return err
+		}
+		digest := sha256.Sum256(message)
+		return rsa.VerifyPKCS1v15(&key.PublicKey, crypto.SHA256, digest[:], raw)
+	}
+
+	// Official gateway rule: sign_type stays in the signed string.
+	if err := verify(buildVerifyString(false)); err != nil {
+		t.Fatalf("signature must verify over the official gateway string (sign_type included): %v", err)
+	}
+	// The old wrong rule (excluding sign_type) must NOT verify — regression guard.
+	if err := verify(buildVerifyString(true)); err == nil {
+		t.Fatalf("signature must NOT verify over a string that excludes sign_type")
 	}
 }

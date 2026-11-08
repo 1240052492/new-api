@@ -64,13 +64,19 @@ func NewAlipayClient(appID string, appPrivateKey string, alipayPublicKey string,
 	}, nil
 }
 
-// signParams implements the official RSA2 signing rule: exclude `sign` and
-// `sign_type`, drop empty values, sort keys by ASCII order, join as k=v&…,
-// then SHA256-with-RSA sign and base64-encode.
+// signParams implements the official RSA2 request-signing rule per the
+// Alipay support knowledge base (如何使用私钥生成请求签名):
+// https://opensupport.alipay.com/support/knowledge/20060/201602088641
+//
+// Official rule: take all request parameters, exclude ONLY the `sign` field
+// itself and empty values (sign_type STAYS in the signed string), sort keys
+// by ASCII order, join as k=v&…, then SHA256-with-RSA sign and base64-encode.
+// (This is intentionally asymmetric with async-notify verification, which
+// excludes both sign and sign_type — see VerifyNotifyParams.)
 func (c *AlipayClient) signParams(params map[string]string) (string, error) {
 	keys := make([]string, 0, len(params))
 	for k, v := range params {
-		if k == "sign" || k == "sign_type" || v == "" {
+		if k == "sign" || v == "" {
 			continue
 		}
 		keys = append(keys, k)
