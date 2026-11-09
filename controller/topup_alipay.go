@@ -59,7 +59,7 @@ func RequestAlipayPay(c *gin.Context) {
 		paymentError(c, common.NewMessage("Invalid parameters"))
 		return
 	}
-	if req.Amount < getMinTopup() {
+	if req.Amount < float64(getMinTopup()) {
 		paymentError(c, common.NewMessage("Top-up amount cannot be less than {{min}}", map[string]any{"min": getMinTopup()}))
 		return
 	}
@@ -88,7 +88,7 @@ func RequestAlipayPay(c *gin.Context) {
 	// 官方要求金额为元、保留两位小数的字符串。
 	totalAmount := decimal.NewFromFloat(payMoney).StringFixed(2)
 	tradeNo := fmt.Sprintf("ALIUSR%dNO%s%d", id, common.GetRandomString(6), time.Now().Unix())
-	subject := fmt.Sprintf("Top-up %d", req.Amount)
+	subject := fmt.Sprintf("Top-up %v", req.Amount)
 
 	var payURL string
 	channel := "pc"
@@ -99,16 +99,16 @@ func RequestAlipayPay(c *gin.Context) {
 		payURL, err = client.PagePayURL(tradeNo, totalAmount, subject)
 	}
 	if err != nil {
-		logger.LogError(c.Request.Context(), common.LogText("Alipay failed to start payment user_id=%d trade_no=%s amount=%d error=%q", id, tradeNo, req.Amount, err.Error()))
+		logger.LogError(c.Request.Context(), common.LogText("Alipay failed to start payment user_id=%d trade_no=%s amount=%v error=%q", id, tradeNo, req.Amount, err.Error()))
 		paymentError(c, common.NewMessage("Failed to start payment"))
 		return
 	}
 
 	amount := req.Amount
 	if operation_setting.GetQuotaDisplayType() == operation_setting.QuotaDisplayTypeTokens {
-		dAmount := decimal.NewFromInt(amount)
+		dAmount := decimal.NewFromFloat(amount)
 		dQuotaPerUnit := decimal.NewFromFloat(common.QuotaPerUnit)
-		amount = dAmount.Div(dQuotaPerUnit).IntPart()
+		amount = dAmount.Div(dQuotaPerUnit).InexactFloat64()
 	}
 	topUp := &model.TopUp{
 		UserId:          id,
@@ -121,11 +121,11 @@ func RequestAlipayPay(c *gin.Context) {
 		Status:          common.TopUpStatusPending,
 	}
 	if err := topUp.Insert(); err != nil {
-		logger.LogError(c.Request.Context(), common.LogText("Alipay failed to create top-up order user_id=%d trade_no=%s amount=%d error=%q", id, tradeNo, req.Amount, err.Error()))
+		logger.LogError(c.Request.Context(), common.LogText("Alipay failed to create top-up order user_id=%d trade_no=%s amount=%v error=%q", id, tradeNo, req.Amount, err.Error()))
 		paymentError(c, common.NewMessage("Failed to create order"))
 		return
 	}
-	logger.LogInfo(c.Request.Context(), common.LogText("Alipay top-up order created user_id=%d trade_no=%s channel=%s amount=%d money=%.2f", id, tradeNo, channel, req.Amount, payMoney))
+	logger.LogInfo(c.Request.Context(), common.LogText("Alipay top-up order created user_id=%d trade_no=%s channel=%s amount=%v money=%.2f", id, tradeNo, channel, req.Amount, payMoney))
 	c.JSON(http.StatusOK, gin.H{
 		"message": "success",
 		"url":     payURL,

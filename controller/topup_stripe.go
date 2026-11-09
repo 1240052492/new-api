@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"math"
 	"net/http"
 	"strconv"
 	"strings"
@@ -28,8 +29,9 @@ var stripeAdaptor = &StripeAdaptor{}
 
 // StripePayRequest represents a payment request for Stripe checkout.
 type StripePayRequest struct {
-	// Amount is the quantity of units to purchase.
-	Amount int64 `json:"amount"`
+	// Amount is the quantity of units to purchase. Stripe Checkout prices
+	// are quantity-multiplied, so only whole numbers are accepted.
+	Amount float64 `json:"amount"`
 	// PaymentMethod specifies the payment method (e.g., "stripe").
 	PaymentMethod string `json:"payment_method"`
 	// SuccessURL is the optional custom URL to redirect after successful payment.
@@ -44,7 +46,11 @@ type StripeAdaptor struct {
 }
 
 func (*StripeAdaptor) RequestAmount(c *gin.Context, req *StripePayRequest) {
-	if req.Amount < getStripeMinTopup() {
+	if req.Amount != math.Trunc(req.Amount) {
+		paymentError(c, common.NewMessage("Stripe top-up amount must be a whole number"))
+		return
+	}
+	if req.Amount < float64(getStripeMinTopup()) {
 		paymentError(c, common.NewMessage("Top-up amount cannot be less than {{min}}", map[string]any{"min": getStripeMinTopup()}))
 		return
 	}
@@ -61,7 +67,7 @@ func (*StripeAdaptor) RequestAmount(c *gin.Context, req *StripePayRequest) {
 	if rejectInvalidCreditedQuota(c, id, getStripeCreditedQuota(req.Amount, group)) {
 		return
 	}
-	payMoney := getStripePayMoney(float64(req.Amount), group)
+	payMoney := getStripePayMoney(req.Amount, group)
 	if payMoney <= 0.01 {
 		paymentError(c, common.NewMessage("Payment amount is too low"))
 		return
@@ -74,7 +80,11 @@ func (*StripeAdaptor) RequestPay(c *gin.Context, req *StripePayRequest) {
 		paymentError(c, common.NewMessage("Unsupported payment channel"))
 		return
 	}
-	if req.Amount < getStripeMinTopup() {
+	if req.Amount != math.Trunc(req.Amount) {
+		paymentError(c, common.NewMessage("Stripe top-up amount must be a whole number"))
+		return
+	}
+	if req.Amount < float64(getStripeMinTopup()) {
 		common.ApiErrorStatus(c, http.StatusOK, common.NewMessage("Top-up amount cannot be less than {{min}}", map[string]any{"min": getStripeMinTopup()}), gin.H{"data": 10})
 		return
 	}
@@ -99,7 +109,7 @@ func (*StripeAdaptor) RequestPay(c *gin.Context, req *StripePayRequest) {
 		paymentError(c, common.NewMessage("User does not exist"))
 		return
 	}
-	chargedMoney := GetChargedAmount(float64(req.Amount), *user)
+	chargedMoney := GetChargedAmount(req.Amount, *user)
 	if rejectInvalidCreditedQuota(c, id,
 		decimal.NewFromFloat(chargedMoney).Mul(decimal.NewFromFloat(common.QuotaPerUnit)),
 	) {
@@ -109,9 +119,9 @@ func (*StripeAdaptor) RequestPay(c *gin.Context, req *StripePayRequest) {
 	reference := fmt.Sprintf("new-api-ref-%d-%d-%s", user.Id, time.Now().UnixMilli(), randstr.String(4))
 	referenceId := "ref_" + common.Sha1([]byte(reference))
 
-	payLink, err := genStripeLink(referenceId, user.StripeCustomer, user.Email, req.Amount, req.SuccessURL, req.CancelURL)
+	payLink, err := genStripeLink(referenceId, user.StripeCustomer, user.Email, int64(req.Amount), req.SuccessURL, req.CancelURL)
 	if err != nil {
-		logger.LogError(c.Request.Context(), common.LogText("Stripe failed to create Checkout Session user_id=%d trade_no=%s amount=%d error=%q", id, referenceId, req.Amount, err.Error()))
+		logger.LogError(c.Request.Context(), common.LogText("Stripe failed to create Checkout Session user_id=%d trade_no=%s amount=%v error=%q", id, referenceId, req.Amount, err.Error()))
 		paymentError(c, common.NewMessage("Failed to start payment"))
 		return
 	}
@@ -128,11 +138,11 @@ func (*StripeAdaptor) RequestPay(c *gin.Context, req *StripePayRequest) {
 	}
 	err = topUp.Insert()
 	if err != nil {
-		logger.LogError(c.Request.Context(), common.LogText("Stripe failed to create top-up order user_id=%d trade_no=%s amount=%d error=%q", id, referenceId, req.Amount, err.Error()))
+		logger.LogError(c.Request.Context(), common.LogText("Stripe failed to create top-up order user_id=%d trade_no=%s amount=%v error=%q", id, referenceId, req.Amount, err.Error()))
 		paymentError(c, common.NewMessage("Failed to create order"))
 		return
 	}
-	logger.LogInfo(c.Request.Context(), common.LogText("Stripe top-up order created user_id=%d trade_no=%s amount=%d money=%.2f", id, referenceId, req.Amount, chargedMoney))
+	logger.LogInfo(c.Request.Context(), common.LogText("Stripe top-up order created user_id=%d trade_no=%s amount=%v money=%.2f", id, referenceId, req.Amount, chargedMoney))
 	c.JSON(http.StatusOK, gin.H{
 		"message": "success",
 		"data": gin.H{
@@ -411,12 +421,12 @@ func GetChargedAmount(count float64, user model.User) float64 {
 	return count * topUpGroupRatio
 }
 
-func getStripeCreditedQuota(amount int64, group string) decimal.Decimal {
+func getStripeCreditedQuota(amount float64, group string) decimal.Decimal {
 	topUpGroupRatio := common.GetTopupGroupRatio(group)
 	if topUpGroupRatio == 0 {
 		topUpGroupRatio = 1
 	}
-	return decimal.NewFromInt(amount).
+	return decimal.NewFromFloat(amount).
 		Mul(decimal.NewFromFloat(topUpGroupRatio)).
 		Mul(decimal.NewFromFloat(common.QuotaPerUnit))
 }
@@ -442,10 +452,10 @@ func getStripePayMoney(amount float64, group string) float64 {
 	return payMoney
 }
 
-func getStripeMinTopup() int64 {
+func getStripeMinTopup() float64 {
 	minTopup := setting.StripeMinTopUp
 	if operation_setting.GetQuotaDisplayType() == operation_setting.QuotaDisplayTypeTokens {
-		minTopup = minTopup * int(common.QuotaPerUnit)
+		minTopup = minTopup * common.QuotaPerUnit
 	}
-	return int64(minTopup)
+	return minTopup
 }

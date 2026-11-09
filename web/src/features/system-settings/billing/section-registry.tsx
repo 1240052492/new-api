@@ -137,7 +137,7 @@ const BILLING_SECTIONS = [
           PayAddress: settings.PayAddress,
           EpayId: settings.EpayId,
           EpayKey: settings.EpayKey,
-          EpayEnabled: settings.EpayEnabled ?? true,
+          EpayEnabled: settings.EpayEnabled ?? false,
           EpayKeyConfigured: settings.EpayKeyConfigured ?? false,
           Price: settings.Price,
           MinTopUp: settings.MinTopUp,
@@ -145,7 +145,7 @@ const BILLING_SECTIONS = [
           PayMethods: settings.PayMethods,
           AmountOptions: settings['payment_setting.amount_options'],
           AmountDiscount: settings['payment_setting.amount_discount'],
-          StripeEnabled: settings.StripeEnabled ?? true,
+          StripeEnabled: settings.StripeEnabled ?? false,
           StripeApiSecret: settings.StripeApiSecret,
           StripeApiSecretConfigured:
             settings.StripeApiSecretConfigured ?? false,
@@ -156,7 +156,7 @@ const BILLING_SECTIONS = [
           StripeUnitPrice: settings.StripeUnitPrice,
           StripeMinTopUp: settings.StripeMinTopUp,
           StripePromotionCodesEnabled: settings.StripePromotionCodesEnabled,
-          CreemEnabled: settings.CreemEnabled ?? true,
+          CreemEnabled: settings.CreemEnabled ?? false,
           CreemApiKey: settings.CreemApiKey,
           CreemApiKeyConfigured: settings.CreemApiKeyConfigured ?? false,
           CreemWebhookSecret: settings.CreemWebhookSecret,
@@ -211,7 +211,7 @@ const BILLING_SECTIONS = [
           WaffoPayMethods: settings.WaffoPayMethods ?? '[]',
         }}
         waffoPancakeDefaultValues={{
-          WaffoPancakeEnabled: settings.WaffoPancakeEnabled ?? true,
+          WaffoPancakeEnabled: settings.WaffoPancakeEnabled ?? false,
           WaffoPancakeMerchantID: settings.WaffoPancakeMerchantID ?? '',
           WaffoPancakePrivateKey: settings.WaffoPancakePrivateKey ?? '',
           WaffoPancakeReturnURL: settings.WaffoPancakeReturnURL ?? '',

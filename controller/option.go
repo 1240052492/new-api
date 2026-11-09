@@ -85,21 +85,21 @@ func buildCompletionRatioMetaValue(optionValues map[string]string) string {
 // as "<key>Configured" so the console can keep "leave blank to keep
 // unchanged" working without re-entering credentials on every save.
 var paymentCredentialConfiguredKeys = map[string]struct{}{
-	"EpayKey":                      {},
-	"StripeApiSecret":              {},
-	"StripeWebhookSecret":          {},
-	"CreemApiKey":                  {},
-	"CreemWebhookSecret":           {},
-	"AlipayAppPrivateKey":          {},
-	"AlipayPublicKey":              {},
-	"WechatPayPrivateKey":          {},
-	"WechatPayAPIv3Key":            {},
-	"WechatPayPlatformPublicKey":   {},
-	"WaffoApiKey":                  {},
-	"WaffoPrivateKey":              {},
-	"WaffoSandboxApiKey":           {},
-	"WaffoSandboxPrivateKey":       {},
-	"WaffoPancakePrivateKey":       {},
+	"EpayKey":                    {},
+	"StripeApiSecret":            {},
+	"StripeWebhookSecret":        {},
+	"CreemApiKey":                {},
+	"CreemWebhookSecret":         {},
+	"AlipayAppPrivateKey":        {},
+	"AlipayPublicKey":            {},
+	"WechatPayPrivateKey":        {},
+	"WechatPayAPIv3Key":          {},
+	"WechatPayPlatformPublicKey": {},
+	"WaffoApiKey":                {},
+	"WaffoPrivateKey":            {},
+	"WaffoSandboxApiKey":         {},
+	"WaffoSandboxPrivateKey":     {},
+	"WaffoPancakePrivateKey":     {},
 }
 
 func GetOptions(c *gin.Context) {

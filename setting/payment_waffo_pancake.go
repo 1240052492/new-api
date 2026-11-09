@@ -6,12 +6,12 @@ package setting
 // so existing deployments keep their current behavior
 // (credentials + compliance gate visibility).
 var (
-	WaffoPancakeEnabled    = true
+	WaffoPancakeEnabled    = false
 	WaffoPancakeMerchantID string
 	WaffoPancakePrivateKey string
 	WaffoPancakeReturnURL  string
 	WaffoPancakeUnitPrice  float64 = 1.0
-	WaffoPancakeMinTopUp   int     = 1
+	WaffoPancakeMinTopUp   float64 = 1
 	WaffoPancakeStoreID    string
 	WaffoPancakeProductID  string
 )

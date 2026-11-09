@@ -114,7 +114,8 @@ export function usePayment() {
         setProcessing(true)
 
         const isStripe = isStripePayment(paymentType)
-        const amount = Math.floor(topupAmount)
+        // Preserve up to two decimal places (e.g. 0.5, 1.25); no silent truncation.
+        const amount = Math.round(topupAmount * 100) / 100
 
         const response = isStripe
           ? await requestStripePayment({

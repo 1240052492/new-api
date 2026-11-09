@@ -60,7 +60,8 @@ export function useWaffoPayment() {
 
       try {
         const response = await requestWaffoPayment({
-          amount: Math.floor(topupAmount),
+          // Preserve up to two decimal places (e.g. 0.5, 1.25).
+          amount: Math.round(topupAmount * 100) / 100,
           pay_method_index: payMethodIndex,
         })
 

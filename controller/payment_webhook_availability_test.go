@@ -32,14 +32,17 @@ func confirmPaymentComplianceForTest(t *testing.T) {
 
 func TestStripeWebhookEnabledRequiresTopUpAndWebhookConfig(t *testing.T) {
 	confirmPaymentComplianceForTest(t)
+	originalEnabled := setting.StripeEnabled
 	originalAPISecret := setting.StripeApiSecret
 	originalWebhookSecret := setting.StripeWebhookSecret
 	originalPriceID := setting.StripePriceId
 	t.Cleanup(func() {
+		setting.StripeEnabled = originalEnabled
 		setting.StripeApiSecret = originalAPISecret
 		setting.StripeWebhookSecret = originalWebhookSecret
 		setting.StripePriceId = originalPriceID
 	})
+	setting.StripeEnabled = true
 
 	setting.StripeWebhookSecret = ""
 	setting.StripeApiSecret = "sk_test_123"
@@ -55,14 +58,17 @@ func TestStripeWebhookEnabledRequiresTopUpAndWebhookConfig(t *testing.T) {
 
 func TestCreemWebhookEnabledRequiresTopUpAndWebhookConfig(t *testing.T) {
 	confirmPaymentComplianceForTest(t)
+	originalEnabled := setting.CreemEnabled
 	originalAPIKey := setting.CreemApiKey
 	originalProducts := setting.CreemProducts
 	originalWebhookSecret := setting.CreemWebhookSecret
 	t.Cleanup(func() {
+		setting.CreemEnabled = originalEnabled
 		setting.CreemApiKey = originalAPIKey
 		setting.CreemProducts = originalProducts
 		setting.CreemWebhookSecret = originalWebhookSecret
 	})
+	setting.CreemEnabled = true
 
 	setting.CreemWebhookSecret = ""
 	setting.CreemApiKey = "creem_api_key"
@@ -123,14 +129,17 @@ func TestWaffoWebhookEnabledRequiresTopUpAndWebhookConfig(t *testing.T) {
 
 func TestWaffoPancakeWebhookEnabledRequiresTopUpAndWebhookConfig(t *testing.T) {
 	confirmPaymentComplianceForTest(t)
+	originalEnabled := setting.WaffoPancakeEnabled
 	originalMerchantID := setting.WaffoPancakeMerchantID
 	originalPrivateKey := setting.WaffoPancakePrivateKey
 	originalProductID := setting.WaffoPancakeProductID
 	t.Cleanup(func() {
+		setting.WaffoPancakeEnabled = originalEnabled
 		setting.WaffoPancakeMerchantID = originalMerchantID
 		setting.WaffoPancakePrivateKey = originalPrivateKey
 		setting.WaffoPancakeProductID = originalProductID
 	})
+	setting.WaffoPancakeEnabled = true
 
 	// Presence of all three credentials enables the gateway. Webhook public
 	// keys are bundled in the SDK and there is no separate Enabled toggle —
@@ -153,16 +162,19 @@ func TestWaffoPancakeWebhookEnabledRequiresTopUpAndWebhookConfig(t *testing.T) {
 
 func TestEpayWebhookEnabledRequiresTopUpAndWebhookConfig(t *testing.T) {
 	confirmPaymentComplianceForTest(t)
+	originalEnabled := operation_setting.EpayEnabled
 	originalPayAddress := operation_setting.PayAddress
 	originalEpayID := operation_setting.EpayId
 	originalEpayKey := operation_setting.EpayKey
 	originalPayMethods := operation_setting.PayMethods
 	t.Cleanup(func() {
+		operation_setting.EpayEnabled = originalEnabled
 		operation_setting.PayAddress = originalPayAddress
 		operation_setting.EpayId = originalEpayID
 		operation_setting.EpayKey = originalEpayKey
 		operation_setting.PayMethods = originalPayMethods
 	})
+	operation_setting.EpayEnabled = true
 
 	operation_setting.PayAddress = "https://pay.example.com"
 	operation_setting.EpayId = "epay_id"
@@ -179,6 +191,7 @@ func TestEpayWebhookEnabledRequiresTopUpAndWebhookConfig(t *testing.T) {
 
 func TestEpayCallbacksVerifyBeforeSettlement(t *testing.T) {
 	confirmPaymentComplianceForTest(t)
+	originalEnabled := operation_setting.EpayEnabled
 	originalPayAddress := operation_setting.PayAddress
 	originalEpayID := operation_setting.EpayId
 	originalEpayKey := operation_setting.EpayKey
@@ -186,6 +199,7 @@ func TestEpayCallbacksVerifyBeforeSettlement(t *testing.T) {
 	originalServerAddress := system_setting.ServerAddress
 	originalDB := model.DB
 	t.Cleanup(func() {
+		operation_setting.EpayEnabled = originalEnabled
 		operation_setting.PayAddress = originalPayAddress
 		operation_setting.EpayId = originalEpayID
 		operation_setting.EpayKey = originalEpayKey
@@ -193,6 +207,7 @@ func TestEpayCallbacksVerifyBeforeSettlement(t *testing.T) {
 		system_setting.ServerAddress = originalServerAddress
 		model.DB = originalDB
 	})
+	operation_setting.EpayEnabled = true
 	operation_setting.PayAddress = "https://pay.example.com"
 	operation_setting.EpayId = "epay_id"
 	operation_setting.EpayKey = "test-key"

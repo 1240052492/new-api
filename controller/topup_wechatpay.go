@@ -49,8 +49,8 @@ func getWechatPayClient() (*payment.WechatPayClient, error) {
 }
 
 type WechatPayRequest struct {
-	Amount  int64  `json:"amount"`
-	Channel string `json:"channel"`
+	Amount  float64 `json:"amount"`
+	Channel string  `json:"channel"`
 }
 
 func RequestWechatPay(c *gin.Context) {
@@ -63,7 +63,7 @@ func RequestWechatPay(c *gin.Context) {
 		paymentError(c, common.NewMessage("Invalid parameters"))
 		return
 	}
-	if req.Amount < getMinTopup() {
+	if req.Amount < float64(getMinTopup()) {
 		paymentError(c, common.NewMessage("Top-up amount cannot be less than {{min}}", map[string]any{"min": getMinTopup()}))
 		return
 	}
@@ -106,7 +106,7 @@ func RequestWechatPay(c *gin.Context) {
 	}
 
 	tradeNo := fmt.Sprintf("WXUSR%dNO%s%d", id, common.GetRandomString(6), time.Now().Unix())
-	description := fmt.Sprintf("Top-up %d", req.Amount)
+	description := fmt.Sprintf("Top-up %v", req.Amount)
 
 	var codeURL string
 	var h5URL string
@@ -118,16 +118,16 @@ func RequestWechatPay(c *gin.Context) {
 		codeURL, err = client.NativeOrder(tradeNo, description, totalCents, "")
 	}
 	if err != nil {
-		logger.LogError(c.Request.Context(), common.LogText("WechatPay failed to start payment user_id=%d trade_no=%s channel=%s amount=%d error=%q", id, tradeNo, channel, req.Amount, err.Error()))
+		logger.LogError(c.Request.Context(), common.LogText("WechatPay failed to start payment user_id=%d trade_no=%s channel=%s amount=%v error=%q", id, tradeNo, channel, req.Amount, err.Error()))
 		paymentError(c, common.NewMessage("Failed to start payment"))
 		return
 	}
 
 	amount := req.Amount
 	if operation_setting.GetQuotaDisplayType() == operation_setting.QuotaDisplayTypeTokens {
-		dAmount := decimal.NewFromInt(amount)
+		dAmount := decimal.NewFromFloat(amount)
 		dQuotaPerUnit := decimal.NewFromFloat(common.QuotaPerUnit)
-		amount = dAmount.Div(dQuotaPerUnit).IntPart()
+		amount = dAmount.Div(dQuotaPerUnit).InexactFloat64()
 	}
 	topUp := &model.TopUp{
 		UserId:          id,
@@ -140,11 +140,11 @@ func RequestWechatPay(c *gin.Context) {
 		Status:          common.TopUpStatusPending,
 	}
 	if err := topUp.Insert(); err != nil {
-		logger.LogError(c.Request.Context(), common.LogText("WechatPay failed to create top-up order user_id=%d trade_no=%s amount=%d error=%q", id, tradeNo, req.Amount, err.Error()))
+		logger.LogError(c.Request.Context(), common.LogText("WechatPay failed to create top-up order user_id=%d trade_no=%s amount=%v error=%q", id, tradeNo, req.Amount, err.Error()))
 		paymentError(c, common.NewMessage("Failed to create order"))
 		return
 	}
-	logger.LogInfo(c.Request.Context(), common.LogText("WechatPay top-up order created user_id=%d trade_no=%s channel=%s amount=%d money=%.2f", id, tradeNo, channel, req.Amount, payMoney))
+	logger.LogInfo(c.Request.Context(), common.LogText("WechatPay top-up order created user_id=%d trade_no=%s channel=%s amount=%v money=%.2f", id, tradeNo, channel, req.Amount, payMoney))
 	c.JSON(http.StatusOK, gin.H{
 		"message": "success",
 		"data": gin.H{

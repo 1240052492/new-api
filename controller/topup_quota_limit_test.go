@@ -30,7 +30,7 @@ func TestTopUpQuotaValidation(t *testing.T) {
 	testCases := []struct {
 		name        string
 		displayType string
-		amount      int64
+		amount      float64
 		wantQuota   int
 		wantErr     bool
 	}{
@@ -88,9 +88,9 @@ func TestValidateTopUpQuotaReturnsMaximumAmount(t *testing.T) {
 		Div(decimal.NewFromFloat(common.QuotaPerUnit)).
 		Floor().IntPart()
 
-	_, err := validateTopUpQuota(maxAmount)
+	_, err := validateTopUpQuota(float64(maxAmount))
 	require.NoError(t, err)
-	_, err = validateTopUpQuota(maxAmount + 1)
+	_, err = validateTopUpQuota(float64(maxAmount) + 1)
 	require.EqualError(t, err, fmt.Sprintf("Top-up amount cannot exceed %d", maxAmount))
 }
 
@@ -195,7 +195,7 @@ func TestStripeCreditedQuotaIncludesGroupRatio(t *testing.T) {
 	require.NoError(t, err)
 	_, err = validateCreditedQuota(getStripeCreditedQuota(2148, "vip"))
 	require.NoError(t, err)
-	_, err = validateCreditedQuota(getStripeCreditedQuota(int64(common.MaxWalletQuota), "vip"))
+	_, err = validateCreditedQuota(getStripeCreditedQuota(float64(common.MaxWalletQuota), "vip"))
 	require.Error(t, err)
 
 	require.NoError(t, common.UpdateTopupGroupRatioByJSONString(`{"free":0}`))

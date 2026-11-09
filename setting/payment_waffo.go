@@ -20,7 +20,7 @@ var (
 	WaffoSubscriptionReturnUrl string
 	WaffoCurrency              string
 	WaffoUnitPrice             float64 = 1.0
-	WaffoMinTopUp              int     = 1
+	WaffoMinTopUp              float64 = 1
 )
 
 // GetWaffoPayMethods 从 options 读取 Waffo 支付方式配置

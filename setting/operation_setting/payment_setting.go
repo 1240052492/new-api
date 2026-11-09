@@ -20,7 +20,7 @@ const CurrentComplianceTermsVersion = "v1"
 // by a dedicated direct gateway). Defaults to true so existing deployments
 // keep their current behavior (credentials + PayMethods gate visibility);
 // operators can turn it off to hide Epay top-up without wiping credentials.
-var EpayEnabled = true
+var EpayEnabled = false
 
 // 默认配置
 var paymentSetting = PaymentSetting{

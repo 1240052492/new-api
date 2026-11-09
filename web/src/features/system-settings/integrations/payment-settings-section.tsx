@@ -1112,6 +1112,7 @@ export function PaymentSettingsSection({
     WaffoPayMethods: JSON.stringify(waffoPayMethods),
   }
   const waffoPancakeValues: WaffoPancakeSettingsValues = {
+    WaffoPancakeEnabled: currentFormValues.WaffoPancakeEnabled,
     WaffoPancakeMerchantID: currentFormValues.WaffoPancakeMerchantID,
     WaffoPancakePrivateKey: currentFormValues.WaffoPancakePrivateKey,
     WaffoPancakeReturnURL: currentFormValues.WaffoPancakeReturnURL,
