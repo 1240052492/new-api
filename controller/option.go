@@ -80,6 +80,28 @@ func buildCompletionRatioMetaValue(optionValues map[string]string) string {
 	return string(jsonBytes)
 }
 
+// paymentCredentialConfiguredKeys lists payment credential options whose
+// value must never leave the server, but whose configured state is exposed
+// as "<key>Configured" so the console can keep "leave blank to keep
+// unchanged" working without re-entering credentials on every save.
+var paymentCredentialConfiguredKeys = map[string]struct{}{
+	"EpayKey":                      {},
+	"StripeApiSecret":              {},
+	"StripeWebhookSecret":          {},
+	"CreemApiKey":                  {},
+	"CreemWebhookSecret":           {},
+	"AlipayAppPrivateKey":          {},
+	"AlipayPublicKey":              {},
+	"WechatPayPrivateKey":          {},
+	"WechatPayAPIv3Key":            {},
+	"WechatPayPlatformPublicKey":   {},
+	"WaffoApiKey":                  {},
+	"WaffoPrivateKey":              {},
+	"WaffoSandboxApiKey":           {},
+	"WaffoSandboxPrivateKey":       {},
+	"WaffoPancakePrivateKey":       {},
+}
+
 func GetOptions(c *gin.Context) {
 	var options []*model.Option
 	optionValues := make(map[string]string)
@@ -95,6 +117,12 @@ func GetOptions(c *gin.Context) {
 			strings.HasSuffix(k, "secret") ||
 			strings.HasSuffix(k, "api_key")
 		if isSensitiveKey {
+			if _, ok := paymentCredentialConfiguredKeys[k]; ok {
+				options = append(options, &model.Option{
+					Key:   k + "Configured",
+					Value: strconv.FormatBool(strings.TrimSpace(value) != ""),
+				})
+			}
 			continue
 		}
 		options = append(options, &model.Option{

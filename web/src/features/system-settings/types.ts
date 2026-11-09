@@ -352,7 +352,9 @@ export type BillingSettings = {
   AlipayEnabled: boolean
   AlipayAppID: string
   AlipayAppPrivateKey: string
+  AlipayAppPrivateKeyConfigured: boolean
   AlipayPublicKey: string
+  AlipayPublicKeyConfigured: boolean
   AlipayGateway: string
   AlipayNotifyURL: string
   AlipayReturnURL: string
@@ -361,8 +363,11 @@ export type BillingSettings = {
   WechatPayAppID: string
   WechatPaySerialNo: string
   WechatPayPrivateKey: string
+  WechatPayPrivateKeyConfigured: boolean
   WechatPayAPIv3Key: string
+  WechatPayAPIv3KeyConfigured: boolean
   WechatPayPlatformPublicKey: string
+  WechatPayPlatformPublicKeyConfigured: boolean
   WechatPayPlatformPublicKeyID: string
   WechatPayNotifyURL: string
   // Bound by the operator through the catalog flow in the admin Pancake

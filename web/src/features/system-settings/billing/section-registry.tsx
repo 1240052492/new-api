@@ -156,7 +156,11 @@ const BILLING_SECTIONS = [
           AlipayEnabled: settings.AlipayEnabled ?? false,
           AlipayAppID: settings.AlipayAppID ?? '',
           AlipayAppPrivateKey: settings.AlipayAppPrivateKey ?? '',
+          AlipayAppPrivateKeyConfigured:
+            settings.AlipayAppPrivateKeyConfigured ?? false,
           AlipayPublicKey: settings.AlipayPublicKey ?? '',
+          AlipayPublicKeyConfigured:
+            settings.AlipayPublicKeyConfigured ?? false,
           AlipayGateway: settings.AlipayGateway ?? '',
           AlipayNotifyURL: settings.AlipayNotifyURL ?? '',
           AlipayReturnURL: settings.AlipayReturnURL ?? '',
@@ -165,9 +169,15 @@ const BILLING_SECTIONS = [
           WechatPayAppID: settings.WechatPayAppID ?? '',
           WechatPaySerialNo: settings.WechatPaySerialNo ?? '',
           WechatPayPrivateKey: settings.WechatPayPrivateKey ?? '',
+          WechatPayPrivateKeyConfigured:
+            settings.WechatPayPrivateKeyConfigured ?? false,
           WechatPayAPIv3Key: settings.WechatPayAPIv3Key ?? '',
+          WechatPayAPIv3KeyConfigured:
+            settings.WechatPayAPIv3KeyConfigured ?? false,
           WechatPayPlatformPublicKey:
             settings.WechatPayPlatformPublicKey ?? '',
+          WechatPayPlatformPublicKeyConfigured:
+            settings.WechatPayPlatformPublicKeyConfigured ?? false,
           WechatPayPlatformPublicKeyID:
             settings.WechatPayPlatformPublicKeyID ?? '',
           WechatPayNotifyURL: settings.WechatPayNotifyURL ?? '',

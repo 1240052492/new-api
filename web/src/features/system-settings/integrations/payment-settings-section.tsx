@@ -182,7 +182,9 @@ const paymentSchema = z.object({
   AlipayEnabled: z.boolean(),
   AlipayAppID: z.string(),
   AlipayAppPrivateKey: z.string(),
+  AlipayAppPrivateKeyConfigured: z.boolean(),
   AlipayPublicKey: z.string(),
+  AlipayPublicKeyConfigured: z.boolean(),
   AlipayGateway: z.string(),
   AlipayNotifyURL: z.string(),
   AlipayReturnURL: z.string(),
@@ -191,8 +193,11 @@ const paymentSchema = z.object({
   WechatPayAppID: z.string(),
   WechatPaySerialNo: z.string(),
   WechatPayPrivateKey: z.string(),
+  WechatPayPrivateKeyConfigured: z.boolean(),
   WechatPayAPIv3Key: z.string(),
+  WechatPayAPIv3KeyConfigured: z.boolean(),
   WechatPayPlatformPublicKey: z.string(),
+  WechatPayPlatformPublicKeyConfigured: z.boolean(),
   WechatPayPlatformPublicKeyID: z.string(),
   WechatPayNotifyURL: z.string(),
 })
@@ -543,7 +548,10 @@ export function PaymentSettingsSection({
       AlipayEnabled: initialRef.current.AlipayEnabled,
       AlipayAppID: initialRef.current.AlipayAppID.trim(),
       AlipayAppPrivateKey: initialRef.current.AlipayAppPrivateKey.trim(),
+      AlipayAppPrivateKeyConfigured:
+        initialRef.current.AlipayAppPrivateKeyConfigured,
       AlipayPublicKey: initialRef.current.AlipayPublicKey.trim(),
+      AlipayPublicKeyConfigured: initialRef.current.AlipayPublicKeyConfigured,
       AlipayGateway: removeTrailingSlash(initialRef.current.AlipayGateway.trim()),
       AlipayNotifyURL: removeTrailingSlash(
         initialRef.current.AlipayNotifyURL.trim()
@@ -556,9 +564,15 @@ export function PaymentSettingsSection({
       WechatPayAppID: initialRef.current.WechatPayAppID.trim(),
       WechatPaySerialNo: initialRef.current.WechatPaySerialNo.trim(),
       WechatPayPrivateKey: initialRef.current.WechatPayPrivateKey.trim(),
+      WechatPayPrivateKeyConfigured:
+        initialRef.current.WechatPayPrivateKeyConfigured,
       WechatPayAPIv3Key: initialRef.current.WechatPayAPIv3Key.trim(),
+      WechatPayAPIv3KeyConfigured:
+        initialRef.current.WechatPayAPIv3KeyConfigured,
       WechatPayPlatformPublicKey:
         initialRef.current.WechatPayPlatformPublicKey.trim(),
+      WechatPayPlatformPublicKeyConfigured:
+        initialRef.current.WechatPayPlatformPublicKeyConfigured,
       WechatPayPlatformPublicKeyID:
         initialRef.current.WechatPayPlatformPublicKeyID.trim(),
       WechatPayNotifyURL: removeTrailingSlash(
@@ -866,9 +880,9 @@ export function PaymentSettingsSection({
     if (sanitized.AlipayEnabled) {
       const missing: string[] = []
       if (!sanitized.AlipayAppID) missing.push(t('App ID'))
-      if (!sanitized.AlipayAppPrivateKey && !initial.AlipayAppPrivateKey)
+      if (!sanitized.AlipayAppPrivateKey && !initial.AlipayAppPrivateKeyConfigured)
         missing.push(t('App private key (RSA2)'))
-      if (!sanitized.AlipayPublicKey && !initial.AlipayPublicKey)
+      if (!sanitized.AlipayPublicKey && !initial.AlipayPublicKeyConfigured)
         missing.push(t('Alipay public key'))
       if (missing.length > 0) {
         toast.error(
@@ -883,16 +897,16 @@ export function PaymentSettingsSection({
       if (!sanitized.WechatPayAppID) missing.push(t('App ID'))
       if (!sanitized.WechatPaySerialNo)
         missing.push(t('API certificate serial number'))
-      if (!sanitized.WechatPayPrivateKey && !initial.WechatPayPrivateKey)
+      if (!sanitized.WechatPayPrivateKey && !initial.WechatPayPrivateKeyConfigured)
         missing.push(t('Merchant private key'))
       if (
-        (!sanitized.WechatPayAPIv3Key && !initial.WechatPayAPIv3Key) ||
+        (!sanitized.WechatPayAPIv3Key && !initial.WechatPayAPIv3KeyConfigured) ||
         (sanitized.WechatPayAPIv3Key &&
           sanitized.WechatPayAPIv3Key.length !== 32)
       ) {
         missing.push(t('APIv3 key (32 bytes)'))
       }
-      if (!sanitized.WechatPayPlatformPublicKey && !initial.WechatPayPlatformPublicKey)
+      if (!sanitized.WechatPayPlatformPublicKey && !initial.WechatPayPlatformPublicKeyConfigured)
         missing.push(t('WeChat Pay platform public key'))
       if (!sanitized.WechatPayPlatformPublicKeyID)
         missing.push(t('WeChat Pay public key ID'))
@@ -972,6 +986,10 @@ export function PaymentSettingsSection({
   }
 
   const currentFormValues = form.watch()
+  const credentialPlaceholder = (configured: boolean) =>
+    configured
+      ? t('Configured, leave blank to keep unchanged')
+      : t('Not configured')
   const waffoValues: WaffoSettingsValues = {
     WaffoEnabled: currentFormValues.WaffoEnabled,
     WaffoApiKey: currentFormValues.WaffoApiKey,
@@ -1960,8 +1978,8 @@ export function PaymentSettingsSection({
                       <FormControl>
                         <Textarea
                           rows={4}
-                          placeholder={t(
-                            'Configured, leave blank to keep unchanged'
+                          placeholder={credentialPlaceholder(
+                            currentFormValues.AlipayAppPrivateKeyConfigured
                           )}
                           autoComplete='new-password'
                           {...field}
@@ -1989,8 +2007,8 @@ export function PaymentSettingsSection({
                       <FormControl>
                         <Textarea
                           rows={4}
-                          placeholder={t(
-                            'Configured, leave blank to keep unchanged'
+                          placeholder={credentialPlaceholder(
+                            currentFormValues.AlipayPublicKeyConfigured
                           )}
                           autoComplete='new-password'
                           {...field}
@@ -2260,8 +2278,8 @@ export function PaymentSettingsSection({
                       <FormControl>
                         <Textarea
                           rows={4}
-                          placeholder={t(
-                            'Configured, leave blank to keep unchanged'
+                          placeholder={credentialPlaceholder(
+                            currentFormValues.WechatPayPrivateKeyConfigured
                           )}
                           autoComplete='new-password'
                           {...field}
@@ -2291,8 +2309,8 @@ export function PaymentSettingsSection({
                           <Input
                             type='password'
                             autoComplete='new-password'
-                            placeholder={t(
-                              'Configured, leave blank to keep unchanged'
+                            placeholder={credentialPlaceholder(
+                              currentFormValues.WechatPayAPIv3KeyConfigured
                             )}
                             {...field}
                             onChange={(event) =>
@@ -2347,8 +2365,8 @@ export function PaymentSettingsSection({
                       <FormControl>
                         <Textarea
                           rows={4}
-                          placeholder={t(
-                            'Configured, leave blank to keep unchanged'
+                          placeholder={credentialPlaceholder(
+                            currentFormValues.WechatPayPlatformPublicKeyConfigured
                           )}
                           autoComplete='new-password'
                           {...field}
