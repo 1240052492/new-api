@@ -30,6 +30,7 @@ import { getPaymentErrorTranslation } from '@/features/wallet/lib/payment'
 import { handleServerError } from '@/lib/handle-server-error'
 
 import { removeTrailingSlash } from './utils'
+import { SettingsSwitchField } from '../components/settings-form-layout'
 import {
   type CatalogStore,
   type PairOrphanError,
@@ -39,6 +40,7 @@ import {
 } from './waffo-pancake-api'
 
 export type WaffoPancakeSettingsValues = {
+  WaffoPancakeEnabled: boolean
   WaffoPancakeMerchantID: string
   WaffoPancakePrivateKey: string
   WaffoPancakeReturnURL: string
@@ -386,6 +388,14 @@ export function WaffoPancakeSettingsSection({
           )}
         </p>
       </div>
+      <SettingsSwitchField
+        checked={values.WaffoPancakeEnabled}
+        onCheckedChange={(v) => onValueChange('WaffoPancakeEnabled', v)}
+        label={t('Enable Waffo Pancake gateway')}
+        description={t(
+          'Only when enabled and all required credentials are saved will Waffo Pancake appear for users. Configuration alone is never exposed.'
+        )}
+      />
       <div className='grid min-w-0 gap-x-5 gap-y-4 lg:grid-cols-2'>
         {/* Blue box — webhook configuration only. */}
         <div className='rounded-md bg-blue-50 p-4 text-sm text-blue-900 lg:col-span-2 dark:bg-blue-950 dark:text-blue-100'>

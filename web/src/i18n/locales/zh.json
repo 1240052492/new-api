@@ -7342,6 +7342,18 @@
     "Payment successful": "支付成功",
     "WeChat Pay QR code": "微信支付二维码",
     "Scan the QR code with WeChat to complete the payment.": "请使用微信扫码完成支付。",
-    "This page updates automatically once the payment is done.": "支付完成后本页会自动更新状态。"
+    "This page updates automatically once the payment is done.": "支付完成后本页会自动更新状态。",
+    "Enable Epay gateway": "启用 Epay（易支付）网关",
+    "Enable Stripe gateway": "启用 Stripe 网关",
+    "Enable Creem gateway": "启用 Creem 网关",
+    "Enable Waffo Pancake gateway": "启用 Waffo Pancake 网关",
+    "Only when enabled and all required credentials are saved will Epay appear for users. Configuration alone is never exposed.": "仅当启用且必填凭据全部保存后，用户端才会显示 Epay；仅配置不会对用户生效。",
+    "Only when enabled and all required credentials are saved will Stripe appear for users. Configuration alone is never exposed.": "仅当启用且必填凭据全部保存后，用户端才会显示 Stripe；仅配置不会对用户生效。",
+    "Only when enabled and all required credentials are saved will Creem appear for users. Configuration alone is never exposed.": "仅当启用且必填凭据全部保存后，用户端才会显示 Creem；仅配置不会对用户生效。",
+    "Only when enabled and all required credentials are saved will Waffo Pancake appear for users. Configuration alone is never exposed.": "仅当启用且必填凭据全部保存后，用户端才会显示 Waffo Pancake；仅配置不会对用户生效。",
+    "Cannot enable the Epay gateway. Missing:": "无法启用 Epay 网关，缺少：",
+    "Cannot enable the Stripe gateway. Missing:": "无法启用 Stripe 网关，缺少：",
+    "Cannot enable the Creem gateway. Missing:": "无法启用 Creem 网关，缺少：",
+    "Cannot enable the Waffo Pancake gateway. Missing:": "无法启用 Waffo Pancake 网关，缺少："
   }
 }

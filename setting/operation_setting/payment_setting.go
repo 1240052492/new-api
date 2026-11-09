@@ -15,6 +15,13 @@ type PaymentSetting struct {
 
 const CurrentComplianceTermsVersion = "v1"
 
+// EpayEnabled is the explicit operator switch for the user-facing Epay
+// channel (the gateway behind PayMethods entries whose type is not handled
+// by a dedicated direct gateway). Defaults to true so existing deployments
+// keep their current behavior (credentials + PayMethods gate visibility);
+// operators can turn it off to hide Epay top-up without wiping credentials.
+var EpayEnabled = true
+
 // 默认配置
 var paymentSetting = PaymentSetting{
 	AmountOptions:  []int{10, 20, 50, 100, 200, 500},

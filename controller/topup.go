@@ -26,14 +26,49 @@ import (
 func GetTopUpInfo(c *gin.Context) {
 	complianceConfirmed := operation_setting.IsPaymentComplianceConfirmed()
 
+	// Per-gateway visibility switches: a method is user-visible only when
+	// its gateway is enabled and every required credential is saved.
+	enableEpay := isEpayTopUpEnabled()
+	enableStripe := isStripeTopUpEnabled()
+	enableCreem := isCreemTopUpEnabled()
+	enableAlipay := isAlipayTopUpEnabled()
+	enableWechatPay := isWechatPayTopUpEnabled()
+	enableWaffoPancake := isWaffoPancakeTopUpEnabled()
+	enableWaffo := isWaffoTopUpEnabled()
+
+	gatewayEnabled := func(methodType string) bool {
+		switch methodType {
+		case "stripe":
+			return enableStripe
+		case model.PaymentMethodAlipayDirect:
+			return enableAlipay
+		case model.PaymentMethodWxpayDirect:
+			return enableWechatPay
+		case model.PaymentMethodWaffoPancake:
+			return enableWaffoPancake
+		case model.PaymentMethodWaffo:
+			return enableWaffo
+		default:
+			// Remaining types go through the Epay checkout flow.
+			return enableEpay
+		}
+	}
+
 	// 获取支付方式
 	payMethods := operation_setting.PayMethods
 	if !complianceConfirmed {
 		payMethods = []map[string]string{}
 	}
+	filtered := make([]map[string]string, 0, len(payMethods))
+	for _, method := range payMethods {
+		if gatewayEnabled(method["type"]) {
+			filtered = append(filtered, method)
+		}
+	}
+	payMethods = filtered
 
 	// 如果启用了 Stripe 支付，添加到支付方法列表
-	if isStripeTopUpEnabled() {
+	if enableStripe {
 		// 检查是否已经包含 Stripe
 		hasStripe := false
 		for _, method := range payMethods {
@@ -55,7 +90,6 @@ func GetTopUpInfo(c *gin.Context) {
 	}
 
 	// 支付宝 / 微信官方直连网关：仅当管理员显式启用且凭据齐全时对用户可见。
-	enableAlipay := isAlipayTopUpEnabled()
 	if enableAlipay {
 		hasAlipay := false
 		for _, method := range payMethods {
@@ -74,7 +108,6 @@ func GetTopUpInfo(c *gin.Context) {
 		}
 	}
 
-	enableWechatPay := isWechatPayTopUpEnabled()
 	if enableWechatPay {
 		hasWechatPay := false
 		for _, method := range payMethods {
@@ -94,7 +127,6 @@ func GetTopUpInfo(c *gin.Context) {
 	}
 
 	// Waffo Pancake is displayed above the standard Waffo gateway.
-	enableWaffoPancake := isWaffoPancakeTopUpEnabled()
 	if enableWaffoPancake {
 		hasWaffoPancake := false
 		for _, method := range payMethods {
@@ -115,7 +147,6 @@ func GetTopUpInfo(c *gin.Context) {
 	}
 
 	// 如果启用了 Waffo 支付，添加到支付方法列表
-	enableWaffo := isWaffoTopUpEnabled()
 	if enableWaffo {
 		hasWaffo := false
 		for _, method := range payMethods {
@@ -137,9 +168,9 @@ func GetTopUpInfo(c *gin.Context) {
 	}
 
 	data := gin.H{
-		"enable_online_topup":              isEpayTopUpEnabled(),
-		"enable_stripe_topup":              isStripeTopUpEnabled(),
-		"enable_creem_topup":               isCreemTopUpEnabled(),
+		"enable_online_topup":              enableEpay,
+		"enable_stripe_topup":              enableStripe,
+		"enable_creem_topup":               enableCreem,
 		"enable_alipay_topup":              enableAlipay,
 		"enable_wechatpay_topup":           enableWechatPay,
 		"enable_waffo_topup":               enableWaffo,

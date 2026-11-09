@@ -15,6 +15,9 @@ func isStripeTopUpEnabled() bool {
 	if !isPaymentComplianceConfirmed() {
 		return false
 	}
+	if !setting.StripeEnabled {
+		return false
+	}
 	return strings.TrimSpace(setting.StripeApiSecret) != "" &&
 		strings.TrimSpace(setting.StripeWebhookSecret) != "" &&
 		strings.TrimSpace(setting.StripePriceId) != ""
@@ -30,6 +33,9 @@ func isStripeWebhookEnabled() bool {
 
 func isCreemTopUpEnabled() bool {
 	if !isPaymentComplianceConfirmed() {
+		return false
+	}
+	if !setting.CreemEnabled {
 		return false
 	}
 	products := strings.TrimSpace(setting.CreemProducts)
@@ -77,8 +83,11 @@ func isWaffoPancakeTopUpEnabled() bool {
 	if !isPaymentComplianceConfirmed() {
 		return false
 	}
-	// Presence-of-credentials = enabled. Webhook public keys ship inside
-	// the SDK; mode (test/prod) is read from each event.
+	if !setting.WaffoPancakeEnabled {
+		return false
+	}
+	// Webhook public keys ship inside the SDK; mode (test/prod) is read
+	// from each event.
 	return strings.TrimSpace(setting.WaffoPancakeMerchantID) != "" &&
 		strings.TrimSpace(setting.WaffoPancakePrivateKey) != "" &&
 		strings.TrimSpace(setting.WaffoPancakeProductID) != ""
@@ -94,6 +103,9 @@ func isWaffoPancakeWebhookEnabled() bool {
 
 func isEpayTopUpEnabled() bool {
 	if !isPaymentComplianceConfirmed() {
+		return false
+	}
+	if !operation_setting.EpayEnabled {
 		return false
 	}
 	return isEpayWebhookConfigured() && len(operation_setting.PayMethods) > 0

@@ -105,6 +105,8 @@ const paymentSchema = z.object({
   }, 'Provide a valid callback URL starting with http:// or https://'),
   EpayId: z.string(),
   EpayKey: z.string(),
+  EpayEnabled: z.boolean(),
+  EpayKeyConfigured: z.boolean(),
   Price: z.coerce.number().min(0),
   MinTopUp: z.coerce.number().min(0),
   CustomCallbackAddress: z
@@ -144,13 +146,18 @@ const paymentSchema = z.object({
       })
     }
   }),
+  StripeEnabled: z.boolean(),
   StripeApiSecret: z.string(),
+  StripeApiSecretConfigured: z.boolean(),
   StripeWebhookSecret: z.string(),
+  StripeWebhookSecretConfigured: z.boolean(),
   StripePriceId: z.string(),
   StripeUnitPrice: z.coerce.number().min(0),
   StripeMinTopUp: z.coerce.number().min(0),
   StripePromotionCodesEnabled: z.boolean(),
+  CreemEnabled: z.boolean(),
   CreemApiKey: z.string(),
+  CreemApiKeyConfigured: z.boolean(),
   CreemWebhookSecret: z.string(),
   CreemTestMode: z.boolean(),
   CreemProducts: z.string().superRefine((value, ctx) => {
@@ -176,8 +183,10 @@ const paymentSchema = z.object({
   WaffoMinTopUp: z.coerce.number().min(1),
   WaffoNotifyUrl: z.string(),
   WaffoReturnUrl: z.string(),
+  WaffoPancakeEnabled: z.boolean(),
   WaffoPancakeMerchantID: z.string(),
   WaffoPancakePrivateKey: z.string(),
+  WaffoPancakePrivateKeyConfigured: z.boolean(),
   WaffoPancakeReturnURL: z.string(),
   AlipayEnabled: z.boolean(),
   AlipayAppID: z.string(),
@@ -445,19 +454,26 @@ export function PaymentSettingsSection({
       PayAddress: removeTrailingSlash(values.PayAddress),
       EpayId: values.EpayId.trim(),
       EpayKey: values.EpayKey.trim(),
+      EpayEnabled: values.EpayEnabled,
+      EpayKeyConfigured: values.EpayKeyConfigured,
       Price: values.Price,
       MinTopUp: values.MinTopUp,
       CustomCallbackAddress: removeTrailingSlash(values.CustomCallbackAddress),
       PayMethods: values.PayMethods.trim(),
       AmountOptions: values.AmountOptions.trim(),
       AmountDiscount: values.AmountDiscount.trim(),
+      StripeEnabled: values.StripeEnabled,
       StripeApiSecret: values.StripeApiSecret.trim(),
+      StripeApiSecretConfigured: values.StripeApiSecretConfigured,
       StripeWebhookSecret: values.StripeWebhookSecret.trim(),
+      StripeWebhookSecretConfigured: values.StripeWebhookSecretConfigured,
       StripePriceId: values.StripePriceId.trim(),
       StripeUnitPrice: values.StripeUnitPrice,
       StripeMinTopUp: values.StripeMinTopUp,
       StripePromotionCodesEnabled: values.StripePromotionCodesEnabled,
+      CreemEnabled: values.CreemEnabled,
       CreemApiKey: values.CreemApiKey.trim(),
+      CreemApiKeyConfigured: values.CreemApiKeyConfigured,
       CreemWebhookSecret: values.CreemWebhookSecret.trim(),
       CreemTestMode: values.CreemTestMode,
       CreemProducts: values.CreemProducts.trim(),
@@ -476,8 +492,10 @@ export function PaymentSettingsSection({
       WaffoSandboxApiKey: values.WaffoSandboxApiKey.trim(),
       WaffoSandboxPrivateKey: values.WaffoSandboxPrivateKey.trim(),
       WaffoPayMethods: JSON.stringify(waffoPayMethods),
+      WaffoPancakeEnabled: values.WaffoPancakeEnabled,
       WaffoPancakeMerchantID: values.WaffoPancakeMerchantID.trim(),
       WaffoPancakePrivateKey: values.WaffoPancakePrivateKey.trim(),
+      WaffoPancakePrivateKeyConfigured: values.WaffoPancakePrivateKeyConfigured,
       WaffoPancakeReturnURL: removeTrailingSlash(
         values.WaffoPancakeReturnURL.trim()
       ),
@@ -504,6 +522,8 @@ export function PaymentSettingsSection({
       PayAddress: removeTrailingSlash(initialRef.current.PayAddress),
       EpayId: initialRef.current.EpayId.trim(),
       EpayKey: initialRef.current.EpayKey.trim(),
+      EpayEnabled: initialRef.current.EpayEnabled,
+      EpayKeyConfigured: initialRef.current.EpayKeyConfigured,
       Price: initialRef.current.Price,
       MinTopUp: initialRef.current.MinTopUp,
       CustomCallbackAddress: removeTrailingSlash(
@@ -512,14 +532,20 @@ export function PaymentSettingsSection({
       PayMethods: initialRef.current.PayMethods.trim(),
       AmountOptions: initialRef.current.AmountOptions.trim(),
       AmountDiscount: initialRef.current.AmountDiscount.trim(),
+      StripeEnabled: initialRef.current.StripeEnabled,
       StripeApiSecret: initialRef.current.StripeApiSecret.trim(),
+      StripeApiSecretConfigured: initialRef.current.StripeApiSecretConfigured,
       StripeWebhookSecret: initialRef.current.StripeWebhookSecret.trim(),
+      StripeWebhookSecretConfigured:
+        initialRef.current.StripeWebhookSecretConfigured,
       StripePriceId: initialRef.current.StripePriceId.trim(),
       StripeUnitPrice: initialRef.current.StripeUnitPrice,
       StripeMinTopUp: initialRef.current.StripeMinTopUp,
       StripePromotionCodesEnabled:
         initialRef.current.StripePromotionCodesEnabled,
+      CreemEnabled: initialRef.current.CreemEnabled,
       CreemApiKey: initialRef.current.CreemApiKey.trim(),
+      CreemApiKeyConfigured: initialRef.current.CreemApiKeyConfigured,
       CreemWebhookSecret: initialRef.current.CreemWebhookSecret.trim(),
       CreemTestMode: initialRef.current.CreemTestMode,
       CreemProducts: initialRef.current.CreemProducts.trim(),
@@ -540,8 +566,11 @@ export function PaymentSettingsSection({
       WaffoPayMethods: JSON.stringify(
         parseWaffoPayMethods(waffoDefaultValues.WaffoPayMethods)
       ),
+      WaffoPancakeEnabled: initialRef.current.WaffoPancakeEnabled,
       WaffoPancakeMerchantID: initialRef.current.WaffoPancakeMerchantID.trim(),
       WaffoPancakePrivateKey: initialRef.current.WaffoPancakePrivateKey.trim(),
+      WaffoPancakePrivateKeyConfigured:
+        initialRef.current.WaffoPancakePrivateKeyConfigured,
       WaffoPancakeReturnURL: removeTrailingSlash(
         initialRef.current.WaffoPancakeReturnURL.trim()
       ),
@@ -616,6 +645,10 @@ export function PaymentSettingsSection({
       updates.push({ key: 'PayMethods', value: sanitized.PayMethods })
     }
 
+    if (sanitized.EpayEnabled !== initial.EpayEnabled) {
+      updates.push({ key: 'EpayEnabled', value: sanitized.EpayEnabled })
+    }
+
     if (
       normalizeJsonForComparison(sanitized.AmountOptions) !==
       normalizeJsonForComparison(initial.AmountOptions)
@@ -675,6 +708,10 @@ export function PaymentSettingsSection({
       })
     }
 
+    if (sanitized.StripeEnabled !== initial.StripeEnabled) {
+      updates.push({ key: 'StripeEnabled', value: sanitized.StripeEnabled })
+    }
+
     if (
       sanitized.CreemApiKey &&
       sanitized.CreemApiKey !== initial.CreemApiKey
@@ -694,6 +731,10 @@ export function PaymentSettingsSection({
 
     if (sanitized.CreemTestMode !== initial.CreemTestMode) {
       updates.push({ key: 'CreemTestMode', value: sanitized.CreemTestMode })
+    }
+
+    if (sanitized.CreemEnabled !== initial.CreemEnabled) {
+      updates.push({ key: 'CreemEnabled', value: sanitized.CreemEnabled })
     }
 
     if (
@@ -773,6 +814,13 @@ export function PaymentSettingsSection({
       normalizeJsonForComparison(initial.WaffoPayMethods)
     ) {
       updates.push({ key: 'WaffoPayMethods', value: sanitized.WaffoPayMethods })
+    }
+
+    if (sanitized.WaffoPancakeEnabled !== initial.WaffoPancakeEnabled) {
+      updates.push({
+        key: 'WaffoPancakeEnabled',
+        value: sanitized.WaffoPancakeEnabled,
+      })
     }
 
     const hasWaffoPancakeChanges =
@@ -913,6 +961,62 @@ export function PaymentSettingsSection({
       if (missing.length > 0) {
         toast.error(
           `${t('Cannot enable the WeChat Pay gateway. Missing:')} ${missing.join(', ')}`
+        )
+        return
+      }
+    }
+    if (sanitized.EpayEnabled) {
+      const missing: string[] = []
+      if (!sanitized.PayAddress) missing.push(t('Epay endpoint'))
+      if (!sanitized.EpayId) missing.push(t('Epay merchant ID'))
+      if (!sanitized.EpayKey && !initial.EpayKeyConfigured)
+        missing.push(t('Epay secret key'))
+      if (missing.length > 0) {
+        toast.error(
+          `${t('Cannot enable the Epay gateway. Missing:')} ${missing.join(', ')}`
+        )
+        return
+      }
+    }
+    if (sanitized.StripeEnabled) {
+      const missing: string[] = []
+      if (!sanitized.StripeApiSecret && !initial.StripeApiSecretConfigured)
+        missing.push(t('API secret'))
+      if (!sanitized.StripeWebhookSecret && !initial.StripeWebhookSecretConfigured)
+        missing.push(t('Webhook secret'))
+      if (!sanitized.StripePriceId) missing.push(t('Price ID'))
+      if (missing.length > 0) {
+        toast.error(
+          `${t('Cannot enable the Stripe gateway. Missing:')} ${missing.join(', ')}`
+        )
+        return
+      }
+    }
+    if (sanitized.CreemEnabled) {
+      const missing: string[] = []
+      if (!sanitized.CreemApiKey && !initial.CreemApiKeyConfigured)
+        missing.push(t('API Key'))
+      const products = sanitized.CreemProducts.trim()
+      if (!products || products === '[]') missing.push(t('Products'))
+      if (missing.length > 0) {
+        toast.error(
+          `${t('Cannot enable the Creem gateway. Missing:')} ${missing.join(', ')}`
+        )
+        return
+      }
+    }
+    if (sanitized.WaffoPancakeEnabled) {
+      const missing: string[] = []
+      if (!sanitized.WaffoPancakeMerchantID)
+        missing.push(t('Merchant ID'))
+      if (
+        !sanitized.WaffoPancakePrivateKey &&
+        !initial.WaffoPancakePrivateKeyConfigured
+      )
+        missing.push(t('API Private Key'))
+      if (missing.length > 0) {
+        toast.error(
+          `${t('Cannot enable the Waffo Pancake gateway. Missing:')} ${missing.join(', ')}`
         )
         return
       }
@@ -1372,6 +1476,29 @@ export function PaymentSettingsSection({
                   </AlertDescription>
                 </Alert>
 
+                <FormField
+                  control={form.control}
+                  name='EpayEnabled'
+                  render={({ field }) => (
+                    <SettingsSwitchItem>
+                      <SettingsSwitchContent>
+                        <FormLabel>{t('Enable Epay gateway')}</FormLabel>
+                        <FormDescription>
+                          {t(
+                            'Only when enabled and all required credentials are saved will Epay appear for users. Configuration alone is never exposed.'
+                          )}
+                        </FormDescription>
+                      </SettingsSwitchContent>
+                      <FormControl>
+                        <Switch
+                          checked={field.value}
+                          onCheckedChange={field.onChange}
+                        />
+                      </FormControl>
+                    </SettingsSwitchItem>
+                  )}
+                />
+
                 <div className='grid gap-6 md:grid-cols-2'>
                   <FormField
                     control={form.control}
@@ -1480,6 +1607,29 @@ export function PaymentSettingsSection({
                     {t('Configuration for Stripe payment integration')}
                   </p>
                 </div>
+
+                <FormField
+                  control={form.control}
+                  name='StripeEnabled'
+                  render={({ field }) => (
+                    <SettingsSwitchItem>
+                      <SettingsSwitchContent>
+                        <FormLabel>{t('Enable Stripe gateway')}</FormLabel>
+                        <FormDescription>
+                          {t(
+                            'Only when enabled and all required credentials are saved will Stripe appear for users. Configuration alone is never exposed.'
+                          )}
+                        </FormDescription>
+                      </SettingsSwitchContent>
+                      <FormControl>
+                        <Switch
+                          checked={field.value}
+                          onCheckedChange={field.onChange}
+                        />
+                      </FormControl>
+                    </SettingsSwitchItem>
+                  )}
+                />
 
                 <div className='rounded-md bg-blue-50 p-4 text-sm text-blue-900 dark:bg-blue-950 dark:text-blue-100'>
                   <p className='mb-2 font-medium'>
@@ -1672,6 +1822,29 @@ export function PaymentSettingsSection({
                     {t('Configuration for Creem payment integration')}
                   </p>
                 </div>
+
+                <FormField
+                  control={form.control}
+                  name='CreemEnabled'
+                  render={({ field }) => (
+                    <SettingsSwitchItem>
+                      <SettingsSwitchContent>
+                        <FormLabel>{t('Enable Creem gateway')}</FormLabel>
+                        <FormDescription>
+                          {t(
+                            'Only when enabled and all required credentials are saved will Creem appear for users. Configuration alone is never exposed.'
+                          )}
+                        </FormDescription>
+                      </SettingsSwitchContent>
+                      <FormControl>
+                        <Switch
+                          checked={field.value}
+                          onCheckedChange={field.onChange}
+                        />
+                      </FormControl>
+                    </SettingsSwitchItem>
+                  )}
+                />
 
                 <div className='rounded-md bg-blue-50 p-4 text-sm text-blue-900 dark:bg-blue-950 dark:text-blue-100'>
                   <p className='mb-2 font-medium'>

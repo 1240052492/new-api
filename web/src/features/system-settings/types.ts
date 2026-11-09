@@ -310,6 +310,8 @@ export type BillingSettings = {
   PayAddress: string
   EpayId: string
   EpayKey: string
+  EpayEnabled: boolean
+  EpayKeyConfigured: boolean
   Price: number
   MinTopUp: number
   CustomCallbackAddress: string
@@ -321,13 +323,18 @@ export type BillingSettings = {
   'payment_setting.compliance_confirmed_at': number
   'payment_setting.compliance_confirmed_by': number
   'payment_setting.compliance_confirmed_ip': string
+  StripeEnabled: boolean
   StripeApiSecret: string
+  StripeApiSecretConfigured: boolean
   StripeWebhookSecret: string
+  StripeWebhookSecretConfigured: boolean
   StripePriceId: string
   StripeUnitPrice: number
   StripeMinTopUp: number
   StripePromotionCodesEnabled: boolean
+  CreemEnabled: boolean
   CreemApiKey: string
+  CreemApiKeyConfigured: boolean
   CreemWebhookSecret: string
   CreemTestMode: boolean
   CreemProducts: string
@@ -346,8 +353,10 @@ export type BillingSettings = {
   WaffoNotifyUrl: string
   WaffoReturnUrl: string
   WaffoPayMethods: string
+  WaffoPancakeEnabled: boolean
   WaffoPancakeMerchantID: string
   WaffoPancakePrivateKey: string
+  WaffoPancakePrivateKeyConfigured: boolean
   WaffoPancakeReturnURL: string
   AlipayEnabled: boolean
   AlipayAppID: string

@@ -7342,6 +7342,18 @@
     "Payment successful": "Payment successful",
     "WeChat Pay QR code": "WeChat Pay QR code",
     "Scan the QR code with WeChat to complete the payment.": "Scan the QR code with WeChat to complete the payment.",
-    "This page updates automatically once the payment is done.": "This page updates automatically once the payment is done."
+    "This page updates automatically once the payment is done.": "This page updates automatically once the payment is done.",
+    "Enable Epay gateway": "Enable Epay gateway",
+    "Enable Stripe gateway": "Enable Stripe gateway",
+    "Enable Creem gateway": "Enable Creem gateway",
+    "Enable Waffo Pancake gateway": "Enable Waffo Pancake gateway",
+    "Only when enabled and all required credentials are saved will Epay appear for users. Configuration alone is never exposed.": "Only when enabled and all required credentials are saved will Epay appear for users. Configuration alone is never exposed.",
+    "Only when enabled and all required credentials are saved will Stripe appear for users. Configuration alone is never exposed.": "Only when enabled and all required credentials are saved will Stripe appear for users. Configuration alone is never exposed.",
+    "Only when enabled and all required credentials are saved will Creem appear for users. Configuration alone is never exposed.": "Only when enabled and all required credentials are saved will Creem appear for users. Configuration alone is never exposed.",
+    "Only when enabled and all required credentials are saved will Waffo Pancake appear for users. Configuration alone is never exposed.": "Only when enabled and all required credentials are saved will Waffo Pancake appear for users. Configuration alone is never exposed.",
+    "Cannot enable the Epay gateway. Missing:": "Cannot enable the Epay gateway. Missing:",
+    "Cannot enable the Stripe gateway. Missing:": "Cannot enable the Stripe gateway. Missing:",
+    "Cannot enable the Creem gateway. Missing:": "Cannot enable the Creem gateway. Missing:",
+    "Cannot enable the Waffo Pancake gateway. Missing:": "Cannot enable the Waffo Pancake gateway. Missing:"
   }
 }

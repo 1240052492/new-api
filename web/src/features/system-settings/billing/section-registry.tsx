@@ -137,19 +137,28 @@ const BILLING_SECTIONS = [
           PayAddress: settings.PayAddress,
           EpayId: settings.EpayId,
           EpayKey: settings.EpayKey,
+          EpayEnabled: settings.EpayEnabled ?? true,
+          EpayKeyConfigured: settings.EpayKeyConfigured ?? false,
           Price: settings.Price,
           MinTopUp: settings.MinTopUp,
           CustomCallbackAddress: settings.CustomCallbackAddress,
           PayMethods: settings.PayMethods,
           AmountOptions: settings['payment_setting.amount_options'],
           AmountDiscount: settings['payment_setting.amount_discount'],
+          StripeEnabled: settings.StripeEnabled ?? true,
           StripeApiSecret: settings.StripeApiSecret,
+          StripeApiSecretConfigured:
+            settings.StripeApiSecretConfigured ?? false,
           StripeWebhookSecret: settings.StripeWebhookSecret,
+          StripeWebhookSecretConfigured:
+            settings.StripeWebhookSecretConfigured ?? false,
           StripePriceId: settings.StripePriceId,
           StripeUnitPrice: settings.StripeUnitPrice,
           StripeMinTopUp: settings.StripeMinTopUp,
           StripePromotionCodesEnabled: settings.StripePromotionCodesEnabled,
+          CreemEnabled: settings.CreemEnabled ?? true,
           CreemApiKey: settings.CreemApiKey,
+          CreemApiKeyConfigured: settings.CreemApiKeyConfigured ?? false,
           CreemWebhookSecret: settings.CreemWebhookSecret,
           CreemTestMode: settings.CreemTestMode,
           CreemProducts: settings.CreemProducts,
@@ -181,6 +190,8 @@ const BILLING_SECTIONS = [
           WechatPayPlatformPublicKeyID:
             settings.WechatPayPlatformPublicKeyID ?? '',
           WechatPayNotifyURL: settings.WechatPayNotifyURL ?? '',
+          WaffoPancakePrivateKeyConfigured:
+            settings.WaffoPancakePrivateKeyConfigured ?? false,
         }}
         waffoDefaultValues={{
           WaffoEnabled: settings.WaffoEnabled ?? false,
@@ -200,20 +211,21 @@ const BILLING_SECTIONS = [
           WaffoPayMethods: settings.WaffoPayMethods ?? '[]',
         }}
         waffoPancakeDefaultValues={{
+          WaffoPancakeEnabled: settings.WaffoPancakeEnabled ?? true,
           WaffoPancakeMerchantID: settings.WaffoPancakeMerchantID ?? '',
           WaffoPancakePrivateKey: settings.WaffoPancakePrivateKey ?? '',
           WaffoPancakeReturnURL: settings.WaffoPancakeReturnURL ?? '',
         }}
         waffoPancakeProvisionedStoreID={settings.WaffoPancakeStoreID ?? ''}
         waffoPancakeProvisionedProductID={settings.WaffoPancakeProductID ?? ''}
-        complianceDefaults={{
-          confirmed: settings['payment_setting.compliance_confirmed'] ?? false,
-          termsVersion:
-            settings['payment_setting.compliance_terms_version'] ?? '',
-          confirmedAt: settings['payment_setting.compliance_confirmed_at'] ?? 0,
-          confirmedBy: settings['payment_setting.compliance_confirmed_by'] ?? 0,
-        }}
-      />
+          complianceDefaults={{
+            confirmed: settings['payment_setting.compliance_confirmed'] ?? false,
+            termsVersion:
+              settings['payment_setting.compliance_terms_version'] ?? '',
+            confirmedAt: settings['payment_setting.compliance_confirmed_at'] ?? 0,
+            confirmedBy: settings['payment_setting.compliance_confirmed_by'] ?? 0,
+          }}
+        />
     ),
   },
   {
