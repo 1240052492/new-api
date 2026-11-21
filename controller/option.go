@@ -225,7 +225,7 @@ func UpdateOption(c *gin.Context) {
 		option.Value = fmt.Sprintf("%v", option.Value)
 	}
 	switch option.Key {
-	case "QuotaForInviter", "QuotaForInvitee":
+	case "QuotaForInviter", "QuotaForInvitee", "AffiliateTopUpCommissionRate", "AffiliateMaxInviteeCount":
 		if isPositiveOptionValue(option.Value.(string)) && !operation_setting.IsPaymentComplianceConfirmed() {
 			common.ApiErrorT(c, "Payment, redemption, subscription, and invitation reward features are disabled. The administrator must confirm compliance terms before enabling them.")
 			return
@@ -233,6 +233,25 @@ func UpdateOption(c *gin.Context) {
 	default:
 		if isPaymentComplianceOptionKey(option.Key) {
 			common.ApiErrorT(c, "Compliance confirmation fields cannot be changed through the general settings API")
+			return
+		}
+	}
+	switch option.Key {
+	case "AffiliateTopUpCommissionRate":
+		rate, err := strconv.ParseFloat(strings.TrimSpace(option.Value.(string)), 64)
+		if err != nil || rate < 0 || rate > 100 {
+			common.ApiErrorT(c, "The affiliate commission rate must be between 0 and 100.")
+			return
+		}
+	case "AffiliateMaxInviteeCount":
+		count, err := strconv.Atoi(strings.TrimSpace(option.Value.(string)))
+		if err != nil || count < 0 {
+			common.ApiErrorT(c, "The invitee cap must be a whole number greater than or equal to 0.")
+			return
+		}
+	case "AffiliateRewardToBalance":
+		if _, err := strconv.ParseBool(strings.TrimSpace(option.Value.(string))); err != nil {
+			common.ApiErrorT(c, "Invalid parameters")
 			return
 		}
 	}

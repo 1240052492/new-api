@@ -31,6 +31,8 @@ import type {
   StripePaymentResponse,
   AffiliateCodeResponse,
   AffiliateTransferResponse,
+  AffiliateCommissionListResponse,
+  AffiliateSummary,
   BillingHistoryResponse,
   CompleteOrderRequest,
   CreemPaymentRequest,
@@ -241,6 +243,29 @@ export async function queryWechatPayment(
  */
 export async function getAffiliateCode(): Promise<AffiliateCodeResponse> {
   const res = await api.get('/api/user/aff')
+  return res.data
+}
+
+/**
+ * Get the referral programme summary of the current user
+ */
+export async function getAffiliateSummary(): Promise<
+  ApiResponse<AffiliateSummary>
+> {
+  const res = await api.get('/api/user/aff/summary')
+  return res.data
+}
+
+/**
+ * Get affiliate commission records of the current user
+ */
+export async function getAffiliateCommissions(
+  page: number,
+  pageSize: number
+): Promise<ApiResponse<AffiliateCommissionListResponse>> {
+  const res = await api.get(
+    `/api/user/aff/commissions?p=${page}&page_size=${pageSize}`
+  )
   return res.data
 }
 

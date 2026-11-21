@@ -25,6 +25,7 @@ import { Card, CardContent } from '@/components/ui/card'
 import { IconBadge, type IconBadgeTone } from '@/components/ui/icon-badge'
 import { Skeleton } from '@/components/ui/skeleton'
 import { getUserAvatarFallback, getUserAvatarStyle } from '@/lib/avatar'
+import { maskPhone } from '@/lib/phone'
 import { formatCompactNumber, formatQuota } from '@/lib/format'
 import { getRoleLabel } from '@/lib/roles'
 
@@ -146,6 +147,12 @@ export function ProfileHeader({ profile, loading }: ProfileHeaderProps) {
 
             <div className='text-muted-foreground flex flex-wrap items-center gap-x-2 gap-y-0.5 text-xs sm:gap-x-4 sm:text-sm'>
               <span className='truncate'>@{profile.username}</span>
+              {profile.phone && (
+                <>
+                  <span>•</span>
+                  <span className='truncate'>{maskPhone(profile.phone)}</span>
+                </>
+              )}
               {profile.email && (
                 <>
                   <span>•</span>

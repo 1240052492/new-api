@@ -164,6 +164,9 @@ func InitOptionMap() {
 	common.OptionMap["QuotaForNewUser"] = strconv.Itoa(common.QuotaForNewUser)
 	common.OptionMap["QuotaForInviter"] = strconv.Itoa(common.QuotaForInviter)
 	common.OptionMap["QuotaForInvitee"] = strconv.Itoa(common.QuotaForInvitee)
+	common.OptionMap["AffiliateTopUpCommissionRate"] = strconv.FormatFloat(common.AffiliateTopUpCommissionRate, 'f', -1, 64)
+	common.OptionMap["AffiliateRewardToBalance"] = strconv.FormatBool(common.AffiliateRewardToBalance)
+	common.OptionMap["AffiliateMaxInviteeCount"] = strconv.Itoa(common.AffiliateMaxInviteeCount)
 	common.OptionMap["QuotaRemindThreshold"] = strconv.Itoa(common.QuotaRemindThreshold)
 	common.OptionMap["PreConsumedQuota"] = strconv.Itoa(common.PreConsumedQuota)
 	common.OptionMap["ModelRequestRateLimitCount"] = strconv.Itoa(setting.ModelRequestRateLimitCount)
@@ -677,6 +680,12 @@ func updateOptionMap(key string, value string) (err error) {
 		common.QuotaForInviter, _ = strconv.Atoi(value)
 	case "QuotaForInvitee":
 		common.QuotaForInvitee, _ = strconv.Atoi(value)
+	case "AffiliateTopUpCommissionRate":
+		common.AffiliateTopUpCommissionRate, _ = strconv.ParseFloat(value, 64)
+	case "AffiliateRewardToBalance":
+		common.AffiliateRewardToBalance, _ = strconv.ParseBool(value)
+	case "AffiliateMaxInviteeCount":
+		common.AffiliateMaxInviteeCount, _ = strconv.Atoi(value)
 	case "QuotaRemindThreshold":
 		common.QuotaRemindThreshold, _ = strconv.Atoi(value)
 	case "PreConsumedQuota":

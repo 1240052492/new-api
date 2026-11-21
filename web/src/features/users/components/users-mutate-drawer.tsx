@@ -24,6 +24,7 @@ import { useForm } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 
+import { ConfirmDialog } from '@/components/confirm-dialog'
 import {
   SideDrawerSection,
   sideDrawerContentClassName,
@@ -116,6 +117,8 @@ export function UsersMutateDrawer({
   const currentUser = useAuthStore((s) => s.auth.user)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [quotaDialogOpen, setQuotaDialogOpen] = useState(false)
+  const [clearPhoneConfirmOpen, setClearPhoneConfirmOpen] = useState(false)
+  const pendingPhoneClear = useRef<UserFormValues | null>(null)
   // Matrix as loaded from the server; an unchanged matrix is not resubmitted so
   // routine edits of an administrator do not require step-up verification.
   const loadedPermissions = useRef<AdminPermissionMatrix | undefined>(undefined)
@@ -171,6 +174,17 @@ export function UsersMutateDrawer({
   const targetIsAdmin = (selectedRole ?? currentRow?.role ?? 0) >= ROLE.ADMIN
 
   const onSubmit = async (data: UserFormValues) => {
+    // Clearing a bound number is destructive (it also frees the number for other
+    // accounts), so ask before the request goes out.
+    if (isUpdate && !data.phone && (currentRow?.phone ?? '')) {
+      pendingPhoneClear.current = data
+      setClearPhoneConfirmOpen(true)
+      return
+    }
+    await submitUser(data)
+  }
+
+  const submitUser = async (data: UserFormValues) => {
     if (!isUpdate || data.password) {
       if (!accountPasswordSchema.safeParse(data.password ?? '').success) {
         form.setError('password', {
@@ -366,6 +380,31 @@ export function UsersMutateDrawer({
                     )}
                   />
                 )}
+
+                <FormField
+                  control={form.control}
+                  name='phone'
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>{t('Phone Number')}</FormLabel>
+                      <FormControl>
+                        <Input
+                          {...field}
+                          type='tel'
+                          inputMode='tel'
+                          autoComplete='off'
+                          placeholder={t('Enter your phone number')}
+                        />
+                      </FormControl>
+                      <FormDescription>
+                        {t(
+                          'Supports mainland China, Hong Kong, Macao and Taiwan mobile numbers.'
+                        )}
+                      </FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
 
                 <FormField
                   control={form.control}
@@ -602,6 +641,30 @@ export function UsersMutateDrawer({
           onSuccess={refreshUserData}
         />
       )}
+
+      <ConfirmDialog
+        open={clearPhoneConfirmOpen}
+        onOpenChange={(next) => {
+          setClearPhoneConfirmOpen(next)
+          if (!next) pendingPhoneClear.current = null
+        }}
+        title={t('Clear phone number?')}
+        desc={t(
+          'The phone number {{phone}} will be unbound from {{username}} and can be registered by another account. This cannot be undone.',
+          {
+            phone: currentRow?.phone ?? '',
+            username: currentRow?.username ?? '',
+          }
+        )}
+        confirmText={t('Clear phone number')}
+        destructive
+        handleConfirm={() => {
+          const pending = pendingPhoneClear.current
+          pendingPhoneClear.current = null
+          setClearPhoneConfirmOpen(false)
+          if (pending) void submitUser(pending)
+        }}
+      />
     </>
   )
 }

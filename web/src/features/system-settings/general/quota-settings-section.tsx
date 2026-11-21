@@ -55,6 +55,15 @@ const quotaSchema = z.object({
   QuotaForNewUser: z.coerce.number().min(0),
   QuotaForInviter: z.coerce.number().min(0),
   QuotaForInvitee: z.coerce.number().min(0),
+  AffiliateTopUpCommissionRate: z.coerce
+    .number({ error: () => i18next.t('Please enter a valid number') })
+    .min(0, { error: () => i18next.t('Must be greater than or equal to 0') })
+    .max(100, { error: () => i18next.t('Must be less than or equal to 100') }),
+  AffiliateMaxInviteeCount: z.coerce
+    .number({ error: () => i18next.t('Please enter a valid number') })
+    .int({ error: () => i18next.t('Must be a whole number') })
+    .min(0, { error: () => i18next.t('Must be greater than or equal to 0') }),
+  AffiliateRewardToBalance: z.boolean(),
   TopUpLink: z.string(),
   quota_setting: z.object({
     enable_free_model_pre_consume: z.boolean(),
@@ -278,6 +287,89 @@ export function QuotaSettingsSection({
                 </FormItem>
               )}
             />
+
+            <FormField
+              control={form.control}
+              name='AffiliateTopUpCommissionRate'
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>{t('Top-Up Commission Rate (%)')}</FormLabel>
+                  <FormControl>
+                    <Input
+                      type='number'
+                      min={0}
+                      max={100}
+                      step='any'
+                      value={field.value ?? ''}
+                      onChange={field.onChange}
+                      name={field.name}
+                      onBlur={field.onBlur}
+                      ref={field.ref}
+                    />
+                  </FormControl>
+                  <FormDescription>
+                    {t(
+                      'The inviter earns this percentage of the amount an invited user actually pays, on every top-up and redemption code. Set to 0 to disable commissions.'
+                    )}
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name='AffiliateMaxInviteeCount'
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>{t('Max Invitees per User')}</FormLabel>
+                  <FormControl>
+                    <Input
+                      type='number'
+                      min={0}
+                      step={1}
+                      value={field.value ?? ''}
+                      onChange={handleNumberChange(field.onChange)}
+                      name={field.name}
+                      onBlur={field.onBlur}
+                      ref={field.ref}
+                    />
+                  </FormControl>
+                  <FormDescription>
+                    {t(
+                      'The maximum number of users one inviter may bring in. Set to 0 for no limit. Once the cap is reached, new sign-ups still succeed but are not attributed to the inviter.'
+                    )}
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <SettingsFormGridItem span='full'>
+              <FormField
+                control={form.control}
+                name='AffiliateRewardToBalance'
+                render={({ field }) => (
+                  <SettingsSwitchItem>
+                    <SettingsSwitchContent>
+                      <FormLabel>{t('Pay Affiliate Rewards to Balance')}</FormLabel>
+                      <FormDescription>
+                        {t(
+                          'When enabled, invitation rewards and top-up commissions are credited straight to the wallet balance. When disabled, they go to the affiliate quota, which users must transfer to their balance manually.'
+                        )}
+                      </FormDescription>
+                    </SettingsSwitchContent>
+                    <FormControl>
+                      <Switch
+                        checked={field.value}
+                        onCheckedChange={field.onChange}
+                        disabled={updateOption.isPending}
+                      />
+                    </FormControl>
+                  </SettingsSwitchItem>
+                )}
+              />
+            </SettingsFormGridItem>
 
             <SettingsFormGridItem span='full'>
               <FormField

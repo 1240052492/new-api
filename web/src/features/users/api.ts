@@ -18,6 +18,7 @@ For commercial licensing, please contact support@quantumnous.com
 */
 import type { AxiosRequestConfig } from 'axios'
 
+import type { AffiliateCommissionListResponse } from '@/features/wallet/types'
 import type { PermissionCatalog } from '@/lib/admin-permissions'
 import { api } from '@/lib/api'
 import type { CustomOAuthBinding } from '@/lib/oauth'
@@ -264,6 +265,20 @@ export async function adminUnbindCustomOAuth(
   const res = await api.delete(
     `/api/user/${userId}/oauth/bindings/${providerId}`,
     securityProofConfig(proofToken)
+  )
+  return res.data
+}
+
+/**
+ * List the affiliate commissions earned by a user (admin view)
+ */
+export async function getAdminAffiliateCommissions(
+  userId: number,
+  page: number,
+  pageSize: number
+): Promise<ApiResponse<AffiliateCommissionListResponse>> {
+  const res = await api.get(
+    `/api/user/${userId}/affiliate/commissions?p=${page}&page_size=${pageSize}`
   )
   return res.data
 }

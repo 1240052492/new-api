@@ -93,8 +93,10 @@ func ValidateTopUpQuotaCapacity(userId int, creditedQuota int) error {
 
 // creditTopUpQuota atomically enforces the wallet ceiling while adding quota.
 // Keeping the predicate and increment in one UPDATE prevents two
-// concurrent callbacks from both passing a separate read/check.
-func creditTopUpQuota(tx *gorm.DB, userId int, creditedQuota int, updates map[string]any) error {
+// concurrent callbacks from both passing a separate read/check. When source is
+// set the inviter's commission is settled in the same transaction, guarded by a
+// savepoint so a commission failure never blocks the credit itself.
+func creditTopUpQuota(tx *gorm.DB, userId int, creditedQuota int, updates map[string]any, source *CommissionSource) error {
 	maxCurrentQuota, err := topUpQuotaMaxCurrent(creditedQuota)
 	if err != nil {
 		return err
@@ -111,6 +113,7 @@ func creditTopUpQuota(tx *gorm.DB, userId int, creditedQuota int, updates map[st
 		return result.Error
 	}
 	if result.RowsAffected == 1 {
+		settleCommissionSafely(tx, userId, source)
 		return nil
 	}
 
@@ -122,6 +125,37 @@ func creditTopUpQuota(tx *gorm.DB, userId int, creditedQuota int, updates map[st
 		return gorm.ErrRecordNotFound
 	}
 	return ErrTopUpQuotaLimitExceeded
+}
+
+// topUpCommissionSource describes a completed top-up as a commissionable event.
+// The commission base is the amount the user actually paid, not the credited
+// wallet quota, so discounts reduce the commission proportionally.
+func topUpCommissionSource(topUp *TopUp) *CommissionSource {
+	if topUp == nil {
+		return nil
+	}
+	return &CommissionSource{
+		Type:       AffiliateSourceTopUp,
+		Reference:  topUp.TradeNo,
+		BaseAmount: topUp.Money,
+	}
+}
+
+// settleCommissionSafely isolates the commission from the credit it belongs to.
+func settleCommissionSafely(tx *gorm.DB, userId int, source *CommissionSource) {
+	if source == nil || common.AffiliateTopUpCommissionRate <= 0 {
+		return
+	}
+	if err := tx.SavePoint("affiliate_commission").Error; err != nil {
+		common.SysLog(common.LogText("failed to create affiliate savepoint: %s", err.Error()))
+		return
+	}
+	if err := settleCommission(tx, userId, source); err != nil {
+		common.SysLog(common.LogText("failed to settle affiliate commission for user %d: %s", userId, err.Error()))
+		if rbErr := tx.RollbackTo("affiliate_commission").Error; rbErr != nil {
+			common.SysLog(common.LogText("failed to roll back affiliate savepoint: %s", rbErr.Error()))
+		}
+	}
 }
 
 func (topUp *TopUp) Update() error {
@@ -222,7 +256,7 @@ func RechargeEpay(tradeNo string, actualPaymentMethod string, callerIp string) (
 		if err := tx.Save(topUp).Error; err != nil {
 			return err
 		}
-		return creditTopUpQuota(tx, topUp.UserId, quotaToAdd, nil)
+		return creditTopUpQuota(tx, topUp.UserId, quotaToAdd, nil, topUpCommissionSource(topUp))
 	})
 	if err != nil {
 		if !errors.Is(err, ErrTopUpNotFound) && !errors.Is(err, ErrPaymentMethodMismatch) && !errors.Is(err, ErrTopUpStatusInvalid) {
@@ -283,7 +317,7 @@ func RechargeDirectTopUp(tradeNo string, expectedProvider string, providerLabel 
 		if err := tx.Save(topUp).Error; err != nil {
 			return err
 		}
-		return creditTopUpQuota(tx, topUp.UserId, quotaToAdd, nil)
+		return creditTopUpQuota(tx, topUp.UserId, quotaToAdd, nil, topUpCommissionSource(topUp))
 	})
 	if err != nil {
 		if !errors.Is(err, ErrTopUpNotFound) && !errors.Is(err, ErrPaymentMethodMismatch) && !errors.Is(err, ErrTopUpStatusInvalid) {
@@ -343,7 +377,7 @@ func Recharge(referenceId string, customerId string, callerIp string) (err error
 		}
 		return creditTopUpQuota(tx, topUp.UserId, quota, map[string]any{
 			"stripe_customer": customerId,
-		})
+		}, topUpCommissionSource(topUp))
 	})
 
 	if err != nil {
@@ -571,7 +605,7 @@ func ManualCompleteTopUp(tradeNo string, callerIp string) error {
 		}
 
 		// 增加用户额度（立即写库，保持一致性）
-		if err := creditTopUpQuota(tx, topUp.UserId, quotaToAdd, nil); err != nil {
+		if err := creditTopUpQuota(tx, topUp.UserId, quotaToAdd, nil, topUpCommissionSource(topUp)); err != nil {
 			return err
 		}
 
@@ -648,7 +682,7 @@ func RechargeCreem(referenceId string, customerEmail string, customerName string
 			}
 		}
 
-		return creditTopUpQuota(tx, topUp.UserId, quota, updateFields)
+		return creditTopUpQuota(tx, topUp.UserId, quota, updateFields, topUpCommissionSource(topUp))
 	})
 
 	if err != nil {
@@ -706,7 +740,7 @@ func RechargeWaffo(tradeNo string, callerIp string) (err error) {
 			return err
 		}
 
-		return creditTopUpQuota(tx, topUp.UserId, quotaToAdd, nil)
+		return creditTopUpQuota(tx, topUp.UserId, quotaToAdd, nil, topUpCommissionSource(topUp))
 	})
 
 	if err != nil {
@@ -766,7 +800,7 @@ func RechargeWaffoPancake(tradeNo string) (err error) {
 			return err
 		}
 
-		return creditTopUpQuota(tx, topUp.UserId, quotaToAdd, nil)
+		return creditTopUpQuota(tx, topUp.UserId, quotaToAdd, nil, topUpCommissionSource(topUp))
 	})
 
 	if err != nil {

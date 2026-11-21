@@ -19,19 +19,26 @@ For commercial licensing, please contact support@quantumnous.com
 import { z } from 'zod'
 
 import { accountPasswordSchema } from '@/lib/password-policy'
+import { isValidPhone } from '@/lib/phone'
 
 // ============================================================================
 // Form Schemas
 // ============================================================================
 
 export const loginFormSchema = z.object({
-  username: z.string().min(1, 'Please enter your username or email'),
+  username: z.string().min(1, 'Please enter your username, phone or email'),
   password: z.string().min(1, 'Please enter your password'),
 })
 
 export const registerFormSchema = z
   .object({
     username: z.string().min(1, 'Please enter your username'),
+    phone: z
+      .string()
+      .min(1, 'Please enter your phone number')
+      .refine((value) => isValidPhone(value), {
+        message: 'Please enter a valid phone number',
+      }),
     email: z.string().optional(),
     password: accountPasswordSchema,
     confirmPassword: z.string().min(1, 'Please confirm your password'),

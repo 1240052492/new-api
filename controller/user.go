@@ -231,8 +231,17 @@ func Register(c *gin.Context) {
 	}
 	user.Username = strings.TrimSpace(user.Username)
 	user.Email = model.NormalizeEmail(user.Email)
+	user.Phone = model.NormalizePhone(user.Phone)
 	if user.Username == "" {
 		common.ApiErrorT(c, "Invalid parameters")
+		return
+	}
+	if user.Phone == "" {
+		common.ApiErrorT(c, "Please enter your phone number")
+		return
+	}
+	if !common.IsValidPhone(user.Phone) {
+		common.ApiErrorT(c, "Please enter a valid phone number")
 		return
 	}
 	if err := common.Validate.Struct(&user); err != nil {
@@ -271,12 +280,21 @@ func Register(c *gin.Context) {
 		common.ApiErrorT(c, "Username already exists or has been deleted")
 		return
 	}
+	if err := model.EnsurePhoneAvailable(user.Phone, 0); err != nil {
+		if errors.Is(err, model.ErrPhoneAlreadyTaken) {
+			common.ApiErrorT(c, "Phone number is already in use")
+			return
+		}
+		common.ApiErrorT(c, "Database error, please contact the administrator")
+		return
+	}
 	affCode := user.AffCode // this code is the inviter's code, not the user's own code
 	inviterId, _ := model.GetUserIdByAffCode(affCode)
 	cleanUser := model.User{
 		Username:    user.Username,
 		Password:    user.Password,
 		DisplayName: user.Username,
+		Phone:       user.Phone,
 		InviterId:   inviterId,
 		Role:        common.RoleCommonUser, // 明确设置角色为普通用户
 	}
@@ -286,6 +304,10 @@ func Register(c *gin.Context) {
 	if err := cleanUser.Insert(inviterId); err != nil {
 		if errors.Is(err, model.ErrEmailAlreadyTaken) {
 			common.ApiErrorT(c, "Email address is already in use")
+			return
+		}
+		if errors.Is(err, model.ErrPhoneAlreadyTaken) {
+			common.ApiErrorT(c, "Phone number is already in use")
 			return
 		}
 		common.ApiError(c, err)
@@ -502,6 +524,7 @@ func buildSelfUserData(user *model.User) map[string]any {
 		"role":              user.Role,
 		"status":            user.Status,
 		"email":             user.Email,
+		"phone":             user.Phone,
 		"github_id":         user.GitHubId,
 		"discord_id":        user.DiscordId,
 		"oidc_id":           user.OidcId,
@@ -649,11 +672,21 @@ func GetUserModels(c *gin.Context) {
 }
 
 func UpdateUser(c *gin.Context) {
-	var updatedUser model.User
-	err := common.DecodeJson(c.Request.Body, &updatedUser)
-	if err != nil || updatedUser.Id == 0 {
+	// The dashboard always sends the phone field, so distinguishing "omitted"
+	// from "sent empty" needs an explicit pointer.
+	var payload struct {
+		model.User
+		Phone *string `json:"phone"`
+	}
+	err := common.DecodeJson(c.Request.Body, &payload)
+	if err != nil || payload.Id == 0 {
 		common.ApiErrorT(c, "Invalid parameters")
 		return
+	}
+	updatedUser := payload.User
+	if payload.Phone != nil {
+		updatedUser.Phone = *payload.Phone
+		updatedUser.PhoneSpecified = true
 	}
 	updatedUser.Username = strings.TrimSpace(updatedUser.Username)
 	if updatedUser.Username == "" {
@@ -663,6 +696,13 @@ func UpdateUser(c *gin.Context) {
 	if err := common.Validate.StructExcept(&updatedUser, "Password"); err != nil {
 		common.ApiErrorT(c, "Invalid input {{error}}", map[string]any{"error": err.Error()})
 		return
+	}
+	if updatedUser.Phone != "" {
+		updatedUser.Phone = model.NormalizePhone(updatedUser.Phone)
+		if !common.IsValidPhone(updatedUser.Phone) {
+			common.ApiErrorT(c, "Please enter a valid phone number")
+			return
+		}
 	}
 	originUser, err := model.GetUserById(updatedUser.Id, false)
 	if err != nil {
@@ -704,6 +744,10 @@ func UpdateUser(c *gin.Context) {
 		authzTouched = touched
 		return err
 	}); err != nil {
+		if errors.Is(err, model.ErrPhoneAlreadyTaken) {
+			common.ApiErrorT(c, "Phone number is already in use")
+			return
+		}
 		common.ApiError(c, err)
 		return
 	}
@@ -863,12 +907,20 @@ func UpdateSelf(c *gin.Context) {
 		common.ApiErrorT(c, "Invalid input")
 		return
 	}
+	if user.Phone != "" {
+		user.Phone = model.NormalizePhone(user.Phone)
+		if !common.IsValidPhone(user.Phone) {
+			common.ApiErrorT(c, "Please enter a valid phone number")
+			return
+		}
+	}
 
 	cleanUser := model.User{
 		Id:          c.GetInt("id"),
 		Username:    user.Username,
 		Password:    user.Password,
 		DisplayName: user.DisplayName,
+		Phone:       user.Phone,
 	}
 	if user.Password != "" {
 		identity, ok := middleware.GetStepUpIdentity(c)
@@ -916,6 +968,10 @@ func UpdateSelf(c *gin.Context) {
 		return
 	}
 	if err := cleanUser.Update(false); err != nil {
+		if errors.Is(err, model.ErrPhoneAlreadyTaken) {
+			common.ApiErrorT(c, "Phone number is already in use")
+			return
+		}
 		common.ApiError(c, err)
 		return
 	}
@@ -1014,6 +1070,13 @@ func CreateUser(c *gin.Context) {
 	if user.DisplayName == "" {
 		user.DisplayName = user.Username
 	}
+	if user.Phone != "" {
+		user.Phone = model.NormalizePhone(user.Phone)
+		if !common.IsValidPhone(user.Phone) {
+			common.ApiErrorT(c, "Please enter a valid phone number")
+			return
+		}
+	}
 	myRole := c.GetInt("role")
 	if user.Role >= myRole {
 		common.ApiErrorT(c, "Cannot create users with permission level equal to or higher than yourself")
@@ -1033,6 +1096,7 @@ func CreateUser(c *gin.Context) {
 		Username:    user.Username,
 		Password:    user.Password,
 		DisplayName: user.DisplayName,
+		Phone:       user.Phone,
 		Role:        user.Role, // 保持管理员设置的角色
 	}
 	authzTouched := false
@@ -1044,6 +1108,10 @@ func CreateUser(c *gin.Context) {
 		authzTouched = touched
 		return err
 	}); err != nil {
+		if errors.Is(err, model.ErrPhoneAlreadyTaken) {
+			common.ApiErrorT(c, "Phone number is already in use")
+			return
+		}
 		common.ApiError(c, err)
 		return
 	}

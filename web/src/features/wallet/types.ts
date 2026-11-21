@@ -265,6 +265,40 @@ export interface UserWalletData {
   group: string
 }
 
+/** One commission payout earned from an invitee's payment */
+export interface AffiliateCommissionItem {
+  id: number
+  inviter_id: number
+  invitee_id: number
+  source_type: string
+  reference: string
+  base_amount: number
+  rate: number
+  quota: number
+  create_time: number
+}
+
+/** Paginated commission history */
+export interface AffiliateCommissionListResponse {
+  page: number
+  page_size: number
+  total: number
+  items: AffiliateCommissionItem[]
+}
+
+/** Referral programme summary for the current user */
+export interface AffiliateSummary {
+  aff_code: string
+  aff_count: number
+  aff_quota: number
+  aff_history_quota: number
+  commission_total: number
+  commission_rate: number
+  reward_to_balance: boolean
+  max_invitee_count: number
+  remaining_invitee_count: number
+}
+
 /**
  * Topup record status
  */

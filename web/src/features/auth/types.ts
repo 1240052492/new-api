@@ -38,6 +38,7 @@ export interface TwoFAPayload {
 
 export interface RegisterPayload {
   username: string
+  phone: string
   password: string
   email?: string
   verification_code?: string

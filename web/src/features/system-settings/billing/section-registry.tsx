@@ -63,6 +63,10 @@ const BILLING_SECTIONS = [
           QuotaForNewUser: settings.QuotaForNewUser,
           QuotaForInviter: settings.QuotaForInviter,
           QuotaForInvitee: settings.QuotaForInvitee,
+          AffiliateTopUpCommissionRate:
+            settings.AffiliateTopUpCommissionRate ?? 0,
+          AffiliateRewardToBalance: settings.AffiliateRewardToBalance ?? true,
+          AffiliateMaxInviteeCount: settings.AffiliateMaxInviteeCount ?? 0,
           TopUpLink: settings.TopUpLink,
           quota_setting: {
             trust_quota_usd: settings['quota_setting.trust_quota_usd'],

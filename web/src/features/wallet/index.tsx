@@ -25,6 +25,7 @@ import { useSystemConfig } from '@/hooks/use-system-config'
 import { getSelf } from '@/lib/api'
 
 import { AffiliateRewardsCard } from './components/affiliate-rewards-card'
+import { AffiliateCommissionsDialog } from './components/dialogs/affiliate-commissions-dialog'
 import { BillingHistoryDialog } from './components/dialogs/billing-history-dialog'
 import { CreemConfirmDialog } from './components/dialogs/creem-confirm-dialog'
 import { PaymentConfirmDialog } from './components/dialogs/payment-confirm-dialog'
@@ -44,6 +45,7 @@ import {
   useWaffoPancakePayment,
   useDirectGatewayPayment,
 } from './hooks'
+import { getAffiliateCommissions, getAffiliateSummary } from './api'
 import {
   getDefaultPaymentType,
   getMinTopupAmount,
@@ -76,6 +78,9 @@ export function Wallet(props: WalletProps) {
   const [confirmDialogOpen, setConfirmDialogOpen] = useState(false)
   const [transferDialogOpen, setTransferDialogOpen] = useState(false)
   const [billingDialogOpen, setBillingDialogOpen] = useState(false)
+  const [commissionsDialogOpen, setCommissionsDialogOpen] = useState(false)
+  const [commissionTotal, setCommissionTotal] = useState(0)
+  const [rewardToBalance, setRewardToBalance] = useState(true)
   const [redemptionCode, setRedemptionCode] = useState('')
   const [creemDialogOpen, setCreemDialogOpen] = useState(false)
   const [selectedCreemProduct, setSelectedCreemProduct] =
@@ -105,6 +110,32 @@ export function Wallet(props: WalletProps) {
     transferQuota,
     transferring,
   } = useAffiliate()
+  const loadCommissions = useCallback(
+    async (page: number, pageSize: number) => {
+      const res = await getAffiliateCommissions(page, pageSize)
+      return {
+        items: res.data?.items ?? [],
+        total: res.data?.total ?? 0,
+      }
+    },
+    []
+  )
+
+  useEffect(() => {
+    let cancelled = false
+    getAffiliateSummary()
+      .then((res) => {
+        if (!cancelled) {
+          setCommissionTotal(res.data?.commission_total ?? 0)
+          setRewardToBalance(res.data?.reward_to_balance ?? true)
+        }
+      })
+      .catch(() => {})
+    return () => {
+      cancelled = true
+    }
+  }, [])
+
   const { redeeming, redeemCode } = useRedemption()
   const { processing: creemProcessing, processCreemPayment } = useCreemPayment()
   const { processing: waffoProcessing, processWaffoPayment } = useWaffoPayment()
@@ -353,6 +384,9 @@ export function Wallet(props: WalletProps) {
               user={user}
               affiliateLink={affiliateLink}
               onTransfer={() => setTransferDialogOpen(true)}
+              onShowCommissions={() => setCommissionsDialogOpen(true)}
+              commissionTotal={commissionTotal}
+              rewardToBalance={rewardToBalance}
               complianceConfirmed={
                 topupInfo?.payment_compliance_confirmed !== false
               }
@@ -391,6 +425,12 @@ export function Wallet(props: WalletProps) {
       <BillingHistoryDialog
         open={billingDialogOpen}
         onOpenChange={setBillingDialogOpen}
+      />
+
+      <AffiliateCommissionsDialog
+        open={commissionsDialogOpen}
+        onOpenChange={setCommissionsDialogOpen}
+        loadPage={loadCommissions}
       />
 
       <CreemConfirmDialog

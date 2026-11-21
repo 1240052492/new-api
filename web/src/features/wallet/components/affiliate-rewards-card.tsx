@@ -33,7 +33,11 @@ interface AffiliateRewardsCardProps {
   user: UserWalletData | null
   affiliateLink: string
   onTransfer: () => void
+  onShowCommissions?: () => void
+  commissionTotal?: number
   complianceConfirmed?: boolean
+  /** Mirrors the backend switch: rewards land in the balance instead of aff_quota. */
+  rewardToBalance?: boolean
   loading?: boolean
 }
 
@@ -41,7 +45,10 @@ export function AffiliateRewardsCard({
   user,
   affiliateLink,
   onTransfer,
+  onShowCommissions,
+  commissionTotal = 0,
   complianceConfirmed = true,
+  rewardToBalance = true,
   loading,
 }: AffiliateRewardsCardProps) {
   const { t } = useTranslation()
@@ -74,17 +81,22 @@ export function AffiliateRewardsCard({
               {t('Referral Program')}
             </h3>
             <p className='text-muted-foreground line-clamp-1 text-xs'>
-              {t(
-                'Earn rewards when users join through your referral link. Transfer accumulated rewards to your balance anytime.'
-              )}
+              {rewardToBalance
+                ? t(
+                    'Earn rewards when users join through your referral link. Rewards are credited to your balance immediately.'
+                  )
+                : t(
+                    'Earn rewards when users join through your referral link. Transfer accumulated rewards to your balance anytime.'
+                  )}
             </p>
           </div>
         </div>
 
-        <div className='grid grid-cols-3 gap-1.5 text-center'>
+        <div className='grid grid-cols-4 gap-1.5 text-center'>
           {[
             [t('Pending'), formatQuota(user?.aff_quota ?? 0)],
-            [t('Total Earned'), formatQuota(user?.aff_history_quota ?? 0)],
+            [t('Invite Rewards'), formatQuota(user?.aff_history_quota ?? 0)],
+            [t('Commission'), formatQuota(commissionTotal)],
             [t('Invites'), String(user?.aff_count ?? 0)],
           ].map(([label, value]) => (
             <div key={label}>
@@ -112,6 +124,16 @@ export function AffiliateRewardsCard({
             tooltip={t('Copy referral link')}
             aria-label={t('Copy referral link')}
           />
+          {onShowCommissions ? (
+            <Button
+              onClick={onShowCommissions}
+              variant='outline'
+              className='bg-background h-9 shrink-0 px-3'
+              size='sm'
+            >
+              {t('Details')}
+            </Button>
+          ) : null}
           {hasRewards && (
             <Button
               onClick={onTransfer}

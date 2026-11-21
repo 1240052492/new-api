@@ -77,15 +77,20 @@ func resolveUserSortOptions(sortOptions []UserSortOptions) UserSortOptions {
 // User if you add sensitive fields, don't forget to clean them in setupLogin function.
 // Otherwise, the sensitive information will be saved on local storage in plain text!
 type User struct {
-	Id                   int                        `json:"id"`
-	Username             string                     `json:"username" gorm:"unique;index" validate:"max=20"`
-	Password             string                     `json:"password" gorm:"not null;" validate:"min=8,max=128"`
-	HasPassword          bool                       `json:"-" gorm:"-:all"`
-	OriginalPassword     string                     `json:"original_password" gorm:"-:all"` // this field is only for Password change verification, don't save it to database!
-	DisplayName          string                     `json:"display_name" gorm:"index" validate:"max=20"`
-	Role                 int                        `json:"role" gorm:"type:int;default:1"`   // admin, common
-	Status               int                        `json:"status" gorm:"type:int;default:1"` // enabled, disabled
-	Email                string                     `json:"email" gorm:"index" validate:"max=50"`
+	Id               int    `json:"id"`
+	Username         string `json:"username" gorm:"unique;index" validate:"max=20"`
+	Password         string `json:"password" gorm:"not null;" validate:"min=8,max=128"`
+	HasPassword      bool   `json:"-" gorm:"-:all"`
+	OriginalPassword string `json:"original_password" gorm:"-:all"` // this field is only for Password change verification, don't save it to database!
+	DisplayName      string `json:"display_name" gorm:"index" validate:"max=20"`
+	Role             int    `json:"role" gorm:"type:int;default:1"`   // admin, common
+	Status           int    `json:"status" gorm:"type:int;default:1"` // enabled, disabled
+	Email            string `json:"email" gorm:"index" validate:"max=50"`
+	Phone            string `json:"phone" gorm:"type:varchar(20);column:phone;index" validate:"max=20"`
+	// PhoneSpecified marks an explicit phone submission so an administrator can
+	// clear the field by sending an empty string, while an edit that simply omits
+	// the field leaves the stored number untouched.
+	PhoneSpecified       bool                       `json:"-" gorm:"-:all"`
 	GitHubId             string                     `json:"github_id" gorm:"column:github_id;index"`
 	DiscordId            string                     `json:"discord_id" gorm:"column:discord_id;index"`
 	OidcId               string                     `json:"oidc_id" gorm:"column:oidc_id;index"`
@@ -455,8 +460,8 @@ func SearchUsers(keyword string, group string, role *int, status *int, startIdx 
 	query := tx.Unscoped().Model(&User{})
 
 	// 构建搜索条件
-	likeCondition := "username LIKE ? OR email LIKE ? OR display_name LIKE ?"
-	likeArgs := []any{"%" + keyword + "%", "%" + keyword + "%", "%" + keyword + "%"}
+	likeCondition := "username LIKE ? OR email LIKE ? OR display_name LIKE ? OR phone LIKE ?"
+	likeArgs := []any{"%" + keyword + "%", "%" + keyword + "%", "%" + keyword + "%", "%" + keyword + "%"}
 
 	// 尝试将关键字转换为整数ID
 	keywordInt, err := strconv.Atoi(keyword)
@@ -529,7 +534,7 @@ func GetSelfUserById(id int) (*User, error) {
 		HasPassword bool `gorm:"column:has_password"`
 	}
 	err := DB.Model(&User{}).Select([]string{
-		"id", "username", "display_name", "role", "status", "email",
+		"id", "username", "display_name", "role", "status", "email", "phone",
 		"github_id", "discord_id", "oidc_id", "wechat_id", "telegram_id",
 		"group", "quota", "used_quota", "request_count", "aff_code", "aff_count",
 		"aff_quota", "aff_history", "inviter_id", "linux_do_id", "setting",
@@ -569,19 +574,85 @@ func HardDeleteUserById(id int) (int64, error) {
 	return user.HardDelete()
 }
 
-func inviteUser(inviterId int) error {
-	result := DB.Model(&User{}).Where("id = ?", inviterId).Updates(map[string]any{
+// countInvitee atomically records one more invitee for the inviter and reports
+// whether the invitation was accepted. A rejected invitation means the
+// configured invitee cap has been reached, so the caller must drop the
+// invitation relation instead of granting any reward.
+func countInvitee(inviterId int, rewardQuota int) (bool, error) {
+	updates := map[string]any{
 		"aff_count":   gorm.Expr("aff_count + ?", 1),
-		"aff_quota":   gorm.Expr("aff_quota + ?", common.QuotaForInviter),
-		"aff_history": gorm.Expr("aff_history + ?", common.QuotaForInviter),
-	})
+		"aff_history": gorm.Expr("aff_history + ?", rewardQuota),
+	}
+	if !common.AffiliateRewardToBalance {
+		updates["aff_quota"] = gorm.Expr("aff_quota + ?", rewardQuota)
+	}
+	query := DB.Model(&User{}).Where("id = ?", inviterId)
+	if common.AffiliateMaxInviteeCount > 0 {
+		query = query.Where("aff_count < ?", common.AffiliateMaxInviteeCount)
+	}
+	result := query.Updates(updates)
 	if result.Error != nil {
-		return result.Error
+		return false, result.Error
 	}
-	if result.RowsAffected == 0 {
-		return gorm.ErrRecordNotFound
+	if result.RowsAffected == 1 {
+		return true, nil
 	}
-	return nil
+	var inviter User
+	if err := DB.Select("id").First(&inviter, inviterId).Error; err != nil {
+		return false, err
+	}
+	return false, nil
+}
+
+// settleInvitation grants the registration rewards for a freshly created user.
+// When the inviter has no invitation capacity left the relation is dropped: the
+// new user keeps their account but is not attributed to anyone, so no reward and
+// no later top-up commission is paid.
+func settleInvitation(userId int, inviterId int) {
+	if inviterId == 0 || !operation_setting.IsPaymentComplianceConfirmed() {
+		return
+	}
+	accepted, err := countInvitee(inviterId, common.QuotaForInviter)
+	if err != nil {
+		common.SysLog(common.LogText("failed to settle invitation for user %d from inviter %d: %s", userId, inviterId, err.Error()))
+		return
+	}
+	if !accepted {
+		if err := DB.Model(&User{}).Where("id = ?", userId).Update("inviter_id", 0).Error; err != nil {
+			common.SysLog(common.LogText("failed to drop exhausted invitation for user %d: %s", userId, err.Error()))
+		}
+		common.SysLog(common.LogText("inviter %d reached the invitee cap; user %d was registered without an invitation", inviterId, userId))
+		return
+	}
+	if common.QuotaForInviter > 0 {
+		if common.AffiliateRewardToBalance {
+			if err := IncreaseUserQuota(inviterId, common.QuotaForInviter, true); err != nil {
+				common.SysLog(common.LogText("failed to credit inviter quota for user %d: %s", userId, err.Error()))
+			}
+		}
+		RecordLog(inviterId, LogTypeSystem, common.NewMessage("Bonus for inviting a user {{quota}}", map[string]any{"quota": logger.FormatQuota(common.QuotaForInviter)}))
+	}
+	if common.QuotaForInvitee > 0 {
+		// The invitee bonus follows the same destination as the inviter reward:
+		// wallet mode pays into the balance, referral mode parks it in aff_quota so
+		// it must be transferred before it can be spent.
+		if common.AffiliateRewardToBalance {
+			if err := IncreaseUserQuota(userId, common.QuotaForInvitee, true); err != nil {
+				common.SysLog(common.LogText("failed to credit invitee quota for user %d: %s", userId, err.Error()))
+				return
+			}
+		} else {
+			if err := DB.Model(&User{}).Where("id = ?", userId).
+				Update("aff_quota", gorm.Expr("aff_quota + ?", common.QuotaForInvitee)).Error; err != nil {
+				common.SysLog(common.LogText("failed to credit invitee referral quota for user %d: %s", userId, err.Error()))
+				return
+			}
+			if err := invalidateUserCache(userId); err != nil {
+				common.SysLog(common.LogText("failed to invalidate invitee %d cache: %s", userId, err.Error()))
+			}
+		}
+		RecordLog(userId, LogTypeSystem, common.NewMessage("Invitation code bonus {{quota}}", map[string]any{"quota": logger.FormatQuota(common.QuotaForInvitee)}))
+	}
 }
 
 func (user *User) TransferAffQuotaToQuota(quota int) error {
@@ -624,6 +695,10 @@ func (user *User) TransferAffQuotaToQuota(quota int) error {
 func (user *User) prepareForInsert(tx *gorm.DB) error {
 	user.Email = NormalizeEmail(user.Email)
 	if err := ensureEmailAvailableWithTx(tx, user.Email, 0); err != nil {
+		return err
+	}
+	user.Phone = NormalizePhone(user.Phone)
+	if err := ensurePhoneAvailableWithTx(tx, user.Phone, 0); err != nil {
 		return err
 	}
 	if user.Password == "" {
@@ -675,20 +750,22 @@ func ensureEmailAvailableWithTx(tx *gorm.DB, email string, excludeUserID int) er
 func (user *User) Insert(inviterId int) error {
 	if err := DB.Transaction(func(tx *gorm.DB) error {
 		return withNormalizedEmailLock(tx, user.Email, func(tx *gorm.DB) error {
-			if err := user.prepareForInsert(tx); err != nil {
-				return err
-			}
-			user.Quota = common.QuotaForNewUser
-			user.AffCode = common.GetRandomString(4)
+			return withNormalizedPhoneLock(tx, user.Phone, func(tx *gorm.DB) error {
+				if err := user.prepareForInsert(tx); err != nil {
+					return err
+				}
+				user.Quota = common.QuotaForNewUser
+				user.AffCode = common.GetRandomString(4)
 
-			// 初始化用户设置，包括默认的边栏配置
-			if user.Setting == "" {
-				defaultSetting := dto.UserSetting{}
-				// 这里暂时不设置SidebarModules，因为需要在用户创建后根据角色设置
-				user.SetSetting(defaultSetting)
-			}
+				// 初始化用户设置，包括默认的边栏配置
+				if user.Setting == "" {
+					defaultSetting := dto.UserSetting{}
+					// 这里暂时不设置SidebarModules，因为需要在用户创建后根据角色设置
+					user.SetSetting(defaultSetting)
+				}
 
-			return tx.Create(user).Error
+				return tx.Create(user).Error
+			})
 		})
 	}); err != nil {
 		return err
@@ -717,17 +794,7 @@ func (user *User) finishInsert(inviterId int) {
 	if common.QuotaForNewUser > 0 {
 		RecordLog(user.Id, LogTypeSystem, common.NewMessage("New user sign-up bonus {{quota}}", map[string]any{"quota": logger.FormatQuota(common.QuotaForNewUser)}))
 	}
-	if inviterId != 0 && operation_setting.IsPaymentComplianceConfirmed() {
-		if common.QuotaForInvitee > 0 {
-			_ = IncreaseUserQuota(user.Id, common.QuotaForInvitee, true)
-			RecordLog(user.Id, LogTypeSystem, common.NewMessage("Invitation code bonus {{quota}}", map[string]any{"quota": logger.FormatQuota(common.QuotaForInvitee)}))
-		}
-		if common.QuotaForInviter > 0 {
-			//_ = IncreaseUserQuota(inviterId, common.QuotaForInviter)
-			RecordLog(inviterId, LogTypeSystem, common.NewMessage("Bonus for inviting a user {{quota}}", map[string]any{"quota": logger.FormatQuota(common.QuotaForInviter)}))
-			_ = inviteUser(inviterId)
-		}
-	}
+	settleInvitation(user.Id, inviterId)
 }
 
 func (user *User) FinishInsert(inviterId int) {
@@ -739,19 +806,21 @@ func (user *User) FinishInsert(inviterId int) {
 // Post-creation tasks (sidebar config, logs, inviter rewards) are handled after the transaction commits.
 func (user *User) InsertWithTx(tx *gorm.DB, inviterId int) error {
 	return withNormalizedEmailLock(tx, user.Email, func(tx *gorm.DB) error {
-		if err := user.prepareForInsert(tx); err != nil {
-			return err
-		}
-		user.Quota = common.QuotaForNewUser
-		user.AffCode = common.GetRandomString(4)
+		return withNormalizedPhoneLock(tx, user.Phone, func(tx *gorm.DB) error {
+			if err := user.prepareForInsert(tx); err != nil {
+				return err
+			}
+			user.Quota = common.QuotaForNewUser
+			user.AffCode = common.GetRandomString(4)
 
-		// 初始化用户设置
-		if user.Setting == "" {
-			defaultSetting := dto.UserSetting{}
-			user.SetSetting(defaultSetting)
-		}
+			// 初始化用户设置
+			if user.Setting == "" {
+				defaultSetting := dto.UserSetting{}
+				user.SetSetting(defaultSetting)
+			}
 
-		return tx.Create(user).Error
+			return tx.Create(user).Error
+		})
 	})
 }
 
@@ -774,16 +843,7 @@ func (user *User) FinalizeOAuthUserCreation(inviterId int) {
 	if common.QuotaForNewUser > 0 {
 		RecordLog(user.Id, LogTypeSystem, common.NewMessage("New user sign-up bonus {{quota}}", map[string]any{"quota": logger.FormatQuota(common.QuotaForNewUser)}))
 	}
-	if inviterId != 0 && operation_setting.IsPaymentComplianceConfirmed() {
-		if common.QuotaForInvitee > 0 {
-			_ = IncreaseUserQuota(user.Id, common.QuotaForInvitee, true)
-			RecordLog(user.Id, LogTypeSystem, common.NewMessage("Invitation code bonus {{quota}}", map[string]any{"quota": logger.FormatQuota(common.QuotaForInvitee)}))
-		}
-		if common.QuotaForInviter > 0 {
-			RecordLog(inviterId, LogTypeSystem, common.NewMessage("Bonus for inviting a user {{quota}}", map[string]any{"quota": logger.FormatQuota(common.QuotaForInviter)}))
-			_ = inviteUser(inviterId)
-		}
-	}
+	settleInvitation(user.Id, inviterId)
 }
 
 func (user *User) Update(updatePassword bool) error {
@@ -818,6 +878,14 @@ func (user *User) UpdateWithTx(tx *gorm.DB, updatePassword bool) error {
 	current := User{}
 	if err = tx.First(&current, user.Id).Error; err != nil {
 		return err
+	}
+	// A non-empty phone is normalized and checked for uniqueness here so both
+	// the self-service profile form and the admin editor share one guard.
+	if newUser.Phone != "" {
+		newUser.Phone = NormalizePhone(newUser.Phone)
+		if err = ensurePhoneAvailableWithTx(tx, newUser.Phone, user.Id); err != nil {
+			return err
+		}
 	}
 	// Updates(struct) ignores zero values. Match that behavior when deciding
 	// whether this request actually changes authentication-sensitive state;
@@ -890,6 +958,18 @@ func (user *User) EditWithTx(tx *gorm.DB, updatePassword bool) error {
 	current := User{}
 	if err = tx.First(&current, user.Id).Error; err != nil {
 		return err
+	}
+	// A non-empty phone has always meant "write this number", so internal callers
+	// keep that behaviour. Clearing requires an explicit submission, otherwise an
+	// admin edit that simply omits the field would wipe the stored number.
+	if newUser.PhoneSpecified || newUser.Phone != "" {
+		newUser.Phone = NormalizePhone(newUser.Phone)
+		if newUser.Phone != "" {
+			if err = ensurePhoneAvailableWithTx(tx, newUser.Phone, user.Id); err != nil {
+				return err
+			}
+		}
+		updates["phone"] = newUser.Phone
 	}
 	authChanged := (updatePassword && current.Password != newUser.Password) || current.Group != newUser.Group
 	if authChanged {
@@ -1066,6 +1146,19 @@ func (user *User) ValidateAndFill() (err error) {
 	}
 	// find by username or email
 	err = DB.Where("username = ? OR email = ?", username, username).First(user).Error
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		// Password login also accepts the mobile number. Only fall back when the
+		// identifier is a well-formed number so arbitrary strings never reach the
+		// phone column.
+		normalizedPhone := NormalizePhone(username)
+		if normalizedPhone != "" && common.IsValidPhone(normalizedPhone) {
+			found := User{}
+			if phoneErr := DB.Where("phone = ?", normalizedPhone).First(&found).Error; phoneErr == nil {
+				*user = found
+				err = nil
+			}
+		}
+	}
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return ErrInvalidCredentials

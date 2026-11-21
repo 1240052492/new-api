@@ -24,10 +24,11 @@ import {
   normalizeAdminPermissions,
 } from '@/lib/admin-permissions'
 import { quotaUnitsToDollars } from '@/lib/format'
+import { isValidPhone, normalizePhone } from '@/lib/phone'
 import { ROLE } from '@/lib/roles'
 
 import { DEFAULT_GROUP } from '../constants'
-import { type UserFormData, type User } from '../types'
+import type { UserFormData, User } from '../types'
 
 // ============================================================================
 // Form Schema
@@ -36,6 +37,12 @@ import { type UserFormData, type User } from '../types'
 export const userFormSchema = z.object({
   username: z.string().min(1, 'Username is required'),
   display_name: z.string().optional(),
+  phone: z
+    .string()
+    .optional()
+    .refine((value) => !value || isValidPhone(value), {
+      message: 'Please enter a valid phone number',
+    }),
   password: z.string().optional(),
   role: z.number().optional(),
   quota_dollars: z.number().min(0).optional(),
@@ -55,6 +62,7 @@ export type UserFormValues = z.infer<typeof userFormSchema>
 export const USER_FORM_DEFAULT_VALUES: UserFormValues = {
   username: '',
   display_name: '',
+  phone: '',
   password: '',
   role: 1, // Default to common user
   quota_dollars: 0,
@@ -80,6 +88,15 @@ export function transformFormDataToPayload(
     username: data.username,
     display_name: data.display_name || data.username,
     password: data.password || undefined,
+  }
+
+  // On update an empty string is an explicit "clear the binding"; omitting the
+  // field would leave the stored number untouched. Creation keeps it omitted so
+  // the backend applies its own default.
+  if (data.phone) {
+    payload.phone = normalizePhone(data.phone)
+  } else if (userId !== undefined) {
+    payload.phone = ''
   }
 
   const role = userId === undefined ? data.role || 1 : (data.role ?? 0)
@@ -116,6 +133,7 @@ export function transformUserToFormDefaults(user: User): UserFormValues {
   return {
     username: user.username,
     display_name: user.display_name,
+    phone: user.phone ?? '',
     password: '',
     role: user.role,
     quota_dollars: quotaUnitsToDollars(user.quota),

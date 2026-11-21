@@ -130,6 +130,19 @@ var TelegramBotName = ""
 var QuotaForNewUser = 0
 var QuotaForInviter = 0
 var QuotaForInvitee = 0
+
+// AffiliateTopUpCommissionRate is the share of an invitee's paid amount that
+// the inviter receives, expressed as a percentage (0 disables the commission).
+var AffiliateTopUpCommissionRate = 0.0
+
+// AffiliateRewardToBalance decides where invitation rewards land. When true the
+// reward is credited to the wallet balance directly; otherwise it is credited to
+// the affiliate quota, which the inviter transfers to the balance manually.
+var AffiliateRewardToBalance = true
+
+// AffiliateMaxInviteeCount caps how many invitees one inviter may accumulate.
+// Zero means unlimited.
+var AffiliateMaxInviteeCount = 0
 var ChannelDisableThreshold = 5.0
 var AutomaticDisableChannelEnabled = false
 var AutomaticEnableChannelEnabled = false
@@ -237,14 +250,14 @@ var (
 	// Sharing the critical bucket made a couple of page loads exhaust the
 	// login/registration quota (spurious 429 on sign-in).
 	OAuthPublicRateLimitEnable   bool
-	OAuthPublicRateLimitNum      = 120
+	OAuthPublicRateLimitNum            = 120
 	OAuthPublicRateLimitDuration int64 = 20 * 60
 
 	// SessionRefreshRateLimit guards cookie-based session renewal. A dashboard
 	// page load renews its session, so this traffic is routine and must not
 	// consume the budget reserved for credential-submitting requests.
 	SessionRefreshRateLimitEnable   bool
-	SessionRefreshRateLimitNum      = 60
+	SessionRefreshRateLimitNum            = 60
 	SessionRefreshRateLimitDuration int64 = 20 * 60
 
 	UploadRateLimitNum            = 10

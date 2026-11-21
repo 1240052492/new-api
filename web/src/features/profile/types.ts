@@ -47,6 +47,8 @@ export interface UserProfile {
   role: number
   /** Email address */
   email?: string
+  /** Mobile phone number (digits only) */
+  phone?: string
   /** User group */
   group: string
   /** Current quota balance */
@@ -129,6 +131,7 @@ export interface UserSettings {
  */
 export interface UpdateUserRequest {
   display_name?: string
+  phone?: string
   password?: string
   original_password?: string
 }

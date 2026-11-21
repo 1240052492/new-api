@@ -28,6 +28,7 @@ import {
   ShieldAlert,
   Link2,
   CreditCard,
+  Share2,
 } from 'lucide-react'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -51,7 +52,9 @@ import { UserSubscriptionsDialog } from '@/features/subscriptions/components/dia
 import { handleServerError } from '@/lib/handle-server-error'
 import { AuthOperationError } from '@/lib/secure-verification'
 
-import { manageUser, resetUserPasskey, resetUserTwoFA } from '../api'
+import { AffiliateCommissionsDialog } from '@/features/wallet/components/dialogs/affiliate-commissions-dialog'
+
+import { getAdminAffiliateCommissions, manageUser, resetUserPasskey, resetUserTwoFA } from '../api'
 import {
   USER_STATUS,
   USER_ROLE,
@@ -88,6 +91,7 @@ export function DataTableRowActions({ row }: DataTableRowActionsProps) {
   const [resetTwoFAOpen, setResetTwoFAOpen] = useState(false)
   const [bindingDialogOpen, setBindingDialogOpen] = useState(false)
   const [subscriptionsDialogOpen, setSubscriptionsDialogOpen] = useState(false)
+  const [commissionsDialogOpen, setCommissionsDialogOpen] = useState(false)
 
   const handleEdit = () => {
     setCurrentRow(user)
@@ -275,6 +279,18 @@ export function DataTableRowActions({ row }: DataTableRowActionsProps) {
           </DropdownMenuShortcut>
         </DropdownMenuItem>
 
+        <DropdownMenuItem
+          onSelect={(event) => {
+            event.preventDefault()
+            setCommissionsDialogOpen(true)
+          }}
+        >
+          {t('Commission Details')}
+          <DropdownMenuShortcut>
+            <Share2 size={16} />
+          </DropdownMenuShortcut>
+        </DropdownMenuItem>
+
         <DropdownMenuSeparator />
 
         <DropdownMenuItem
@@ -353,6 +369,23 @@ export function DataTableRowActions({ row }: DataTableRowActionsProps) {
         onOpenChange={setSubscriptionsDialogOpen}
         user={{ id: user.id, username: user.username }}
         onSuccess={triggerRefresh}
+      />
+
+      <AffiliateCommissionsDialog
+        open={commissionsDialogOpen}
+        onOpenChange={setCommissionsDialogOpen}
+        inviterId={user.id}
+        loadPage={async (page, pageSize) => {
+          const res = await getAdminAffiliateCommissions(
+            user.id,
+            page,
+            pageSize
+          )
+          return {
+            items: res.data?.items ?? [],
+            total: res.data?.total ?? 0,
+          }
+        }}
       />
     </div>
   )
